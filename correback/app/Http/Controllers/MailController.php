@@ -37,9 +37,9 @@ class MailController extends Controller
     {
 //        return Mail::where('unit_id',$request->user()->unit_id)->get();
         return Mail::with('logs')
-            ->where('user_id',$request->user()->id)
             ->where('estado','EN PROCESO')
             ->orWhere('estado','ACEPTADO')
+            ->where('user_id',$request->user()->id)
             ->orderBy('id','DESC')
             ->get();
     }
