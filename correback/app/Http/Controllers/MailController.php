@@ -22,9 +22,10 @@ class MailController extends Controller
     {
 //        return Mail::where('unit_id',$request->user()->unit_id)->get();
         return Mail::with('logs')
-            ->where('unit_id',$request->user()->unit_id)
-            ->where('estado','EN PROCESO')
-            ->orWhere('estado','ACEPTADO')
+//            ->where('unit_id',$request->user()->unit_id)
+//            ->where('estado','EN PROCESO')
+//            ->orWhere('estado','ACEPTADO')
+            ->whereRaw("(estado='?' OR estado='?') AND unit_id=?",['EN PROCESO','ACEPTADO',$request->user()->unit_id])
             ->orderBy('id','DESC')
             ->get();
     }
