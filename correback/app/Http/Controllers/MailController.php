@@ -41,7 +41,7 @@ class MailController extends Controller
 //            ->where('estado','EN PROCESO')
 //            ->orWhere('estado','ACEPTADO')
 //            ->where('user_id',$request->user()->id)
-            ->whereRaw("(estado='?' OR estado='?') AND user_id=?",['EN PROCESO','ACEPTADO',$request->user()->id])
+            ->whereRaw("estado in ('EN PROCESO','ACEPTADO')  AND user_id=?",[$request->user()->id])
             ->orderBy('id','DESC')
             ->get();
     }
