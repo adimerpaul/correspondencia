@@ -23,7 +23,7 @@ class MailController extends Controller
 //        return Mail::where('unit_id',$request->user()->unit_id)->get();
         return Mail::with('logs')
 //            ->where('unit_id',$request->user()->unit_id)
-            ->where('estado','EN PROCESO')
+//            ->where('estado','EN PROCESO')
             ->orderBy('id','DESC')
             ->get();
     }

@@ -90,9 +90,9 @@
             </q-item-section>
 
             <q-item-section>
-              <q-item-label>Asignaciones unidad</q-item-label>
+              <q-item-label>Registro de correspondencia</q-item-label>
               <q-item-label caption>
-                Recepciones por unidad
+                Recepciones de correspondencia
               </q-item-label>
             </q-item-section>
           </q-item>
