@@ -22,7 +22,7 @@ class MailController extends Controller
     {
 //        return Mail::where('unit_id',$request->user()->unit_id)->get();
         return Mail::with('logs')
-            ->where('unit_id',$request->user()->unit_id)
+//            ->where('unit_id',$request->user()->unit_id)
             ->where('estado','EN PROCESO')
             ->orderBy('id','DESC')
             ->get();
@@ -188,13 +188,14 @@ class MailController extends Controller
      * @param  \App\Models\Mail  $mail
      * @return \Illuminate\Http\Response
      */
-    public function show(Mail $mail)
+    public function show(Mail $mail,User $user)
     {
-//        return $mail;
+//        return $user;
         $pdf = App::make('dompdf.wrapper');
 //        $customPaper = array(0,0,360,360);
         $pdf->setPaper('letter','landscape');
-
+        if ($user)
+//        return $request->user();
         $pdf->loadHTML('
                 <style>
 .tablex , th , .tdx  {
@@ -205,7 +206,7 @@ class MailController extends Controller
 padding: 0px;
 margin: 0px;
 border: 0px;
-font-size: 14px;
+font-size: 13px;
     font-family: Elegance, sans-serif;
 }
 </style>

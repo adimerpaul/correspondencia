@@ -132,7 +132,7 @@
 <!--              {{ props.row.opciones }}-->
 <!--            </q-badge>-->
             <q-btn-group v-if="props.row.estado!='ARCHIVADO' && props.row.estado!='ANULADO'">
-              <q-btn type="a"  target="__blank" dense :href="url+'/mail/'+props.row.id" color="primary" label="Imprimir" icon="timeline" size="xs" />
+              <q-btn type="a"  target="__blank" dense :href="url+'/mail/'+props.row.id+'/'+$store.getters['login/user'].id" color="primary" label="Imprimir" icon="timeline" size="xs" />
               <q-btn dense @click="editar(props)" color="teal" label="Editar" icon="edit" size="xs" />
               <q-btn dense @click="diaglosasiganacion=true;mail=props.row;miaccion='';usuario=''" color="positive" label="Remitir" icon="code" size="xs" />
 <!--              <q-btn dense @click="anular(props.row)" color="negative" label="Anular" icon="delete" size="xs" />-->

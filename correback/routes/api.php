@@ -42,5 +42,5 @@ Route::group(['middleware'=>'auth:sanctum'],function (){
     Route::resource('/permiso',\App\Http\Controllers\PermisoController::class);
     Route::post('/upload',[\App\Http\Controllers\MailController::class,'upload']);
 });
-Route::get('/mail/{mail}',[\App\Http\Controllers\MailController::class,'show']);
+Route::get('/mail/{mail}/{user}',[\App\Http\Controllers\MailController::class,'show']);
 
