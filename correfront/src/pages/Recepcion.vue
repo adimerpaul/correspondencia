@@ -80,9 +80,11 @@
 <!--            </q-badge>-->
           </q-td>
           <q-td key="ref" :props="props">
-<!--            <q-badge color="orange">-->
-              {{ props.row.ref }}
-<!--            </q-badge>-->
+            <!--            <q-badge color="orange">-->
+            <q-badge color="info" v-if="props.row.ref!=''" @click="mostrar(props.row.ref)">
+              {{ props.row.ref.substring(0,10) }}...
+            </q-badge>
+            <!--            </q-badge>-->
           </q-td>
           <q-td key="remitente" :props="props">
 <!--            <q-badge color="primary">-->
@@ -132,10 +134,10 @@
             <q-btn-group v-if="props.row.estado!='ARCHIVADO' && props.row.estado!='ANULADO'">
               <q-btn type="a"  target="__blank" dense :href="url+'/mail/'+props.row.id" color="primary" label="Imprimir" icon="timeline" size="xs" />
               <q-btn dense @click="editar(props)" color="teal" label="Editar" icon="edit" size="xs" />
-              <q-btn dense @click="diaglosasiganacion=true;mail=props.row" color="positive" label="Remitir" icon="code" size="xs" />
-              <q-btn dense @click="anular(props.row)" color="negative" label="Anular" icon="delete" size="xs" />
-              <q-btn dense @click="archivar(props.row)" color="accent" label="Archivar" icon="list" size="xs" />
-              <q-btn dense @click="archivo(props.row)" color="amber" label="Archivo" icon="upload" size="xs" />
+              <q-btn dense @click="diaglosasiganacion=true;mail=props.row;miaccion='';usuario=''" color="positive" label="Remitir" icon="code" size="xs" />
+<!--              <q-btn dense @click="anular(props.row)" color="negative" label="Anular" icon="delete" size="xs" />-->
+              <q-btn dense @click="archivar(props.row)" color="accent" label="Terminar" icon="list" size="xs" />
+              <q-btn dense @click="archivo(props.row)" color="amber" label="Subir " icon="upload" size="xs" />
               <q-btn dense @click="dividir(props.row)" color="red" label="Dividir" icon="content_cut" size="xs" />
             </q-btn-group>
           </q-td>
@@ -328,6 +330,12 @@ export default {
       })
     },
     // remitir(){},
+    mostrar(ref){
+      this.$q.dialog({
+        title:'Referencia',
+        message:ref
+      })
+    },
     archivar(mail){
       this.$q.dialog({
         title:'Seguro de archivar?',
@@ -506,7 +514,7 @@ export default {
       })
     },
     guardar(){
-      if (!confirm("seguro de registrar?")){
+      if (!confirm("seguro de continuar?")){
         return false
       }
       // console.log(this.remitente)

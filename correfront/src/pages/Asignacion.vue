@@ -28,7 +28,9 @@
               </q-td>
               <q-td key="ref" :props="props">
                 <!--            <q-badge color="orange">-->
-                {{ props.row.ref }}
+                <q-badge color="info" v-if="props.row.ref!=''" @click="mostrar(props.row.ref)">
+                  {{ props.row.ref.substring(0,10) }}...
+                </q-badge>
                 <!--            </q-badge>-->
               </q-td>
               <q-td key="remitente" :props="props">
@@ -74,14 +76,17 @@
               </q-td>
               <q-td key="opciones" :props="props">
                 <!--            <q-badge color="amber">-->
-                <!--              {{ props.row.opciones }}-->
+<!--                              {{ props.row.estado }}-->
                 <!--            </q-badge>-->
-                <q-btn-group v-if="props.row.estado!='ARCHIVADO' && props.row.estado!='ANULADO'">
+                <q-btn-group v-if="props.row.estado=='EN PROCESO'">
+                  <q-btn dense @click="aceptar(props.row)" color="info" label="Aceptar" icon="code" size="xs" />
+                </q-btn-group >
+                <q-btn-group v-if="props.row.estado=='ACEPTADO'">
 <!--                  <q-btn type="a"  target="__blank" dense :href="url+'/mail/'+props.row.id" color="primary" label="Imprimir" icon="timeline" size="xs" />-->
 <!--                  <q-btn dense @click="editar(props)" color="teal" label="Editar" icon="edit" size="xs" />-->
                   <q-btn dense @click="diaglosasiganacion=true;mail=props.row" color="positive" label="Remitir" icon="code" size="xs" />
-                  <q-btn dense @click="anular(props.row)" color="negative" label="Anular" icon="delete" size="xs" />
-                  <q-btn dense @click="archivar(props.row)" color="accent" label="Archivar" icon="list" size="xs" />
+<!--                  <q-btn dense @click="anular(props.row)" color="negative" label="Anular" icon="delete" size="xs" />-->
+                  <q-btn dense @click="archivar(props.row)" color="accent" label="Terminar" icon="list" size="xs" />
 <!--                  <q-btn dense @click="archivo(props.row)" color="amber" label="Archivo" icon="upload" size="xs" />-->
 <!--                  <q-btn dense @click="dividir(props.row)" color="red" label="Dividir" icon="content_cut" size="xs" />-->
                 </q-btn-group>
@@ -175,9 +180,9 @@ export default {
     for (let i=1;i<=1000;i++){
       this.folios.push(i)
     }
-    this.misremitentes()
+    // this.misremitentes()
 
-    this.$axios.post(process.env.API+'/usuarios').then(res=>{
+    this.$axios.post(process.env.API+'/misremetentes').then(res=>{
       res.data.forEach(r=>{
         // console.log(r)
         this.usuarios.push({
@@ -275,6 +280,35 @@ export default {
       })
     },
     // remitir(){},
+    aceptar(mail){
+      this.$q.dialog({
+        title:'Seguro de Aceptar?',
+        message:'Seguro de aceptar',
+        // prompt:{
+        //   model:'',
+        //   type:'text'
+        // },
+        cancel:true,
+      }).onOk(()=>{
+        // console.log(data)
+        this.$q.loading.show()
+        this.$axios.post(process.env.API+'/aceptar',{mail_id:mail.id}).then(res=>{
+          this.misdatos();
+          this.$q.notify({
+            message: 'Aceptado',
+            caption: 'Registro aceptado',
+            color: 'green',
+            icon:'done'
+          });
+        })
+      })
+    },
+    mostrar(ref){
+      this.$q.dialog({
+        title:'Referencia',
+        message:ref
+      })
+    },
     archivar(mail){
       this.$q.dialog({
         title:'Seguro de archivar?',

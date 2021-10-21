@@ -21,7 +21,11 @@ class MailController extends Controller
     public function index(Request $request)
     {
 //        return Mail::where('unit_id',$request->user()->unit_id)->get();
-        return Mail::with('logs')->where('unit_id',$request->user()->unit_id)->where('estado','EN PROCESO')->get();
+        return Mail::with('logs')
+            ->where('unit_id',$request->user()->unit_id)
+            ->where('estado','EN PROCESO')
+            ->orderBy('id','DESC')
+            ->get();
     }
     public function buscar(Request $request)
     {
@@ -31,7 +35,12 @@ class MailController extends Controller
     public function micorre(Request $request)
     {
 //        return Mail::where('unit_id',$request->user()->unit_id)->get();
-        return Mail::with('logs')->where('user_id',$request->user()->id)->where('estado','EN PROCESO')->get();
+        return Mail::with('logs')
+            ->where('user_id',$request->user()->id)
+            ->where('estado','EN PROCESO')
+            ->orWhere('estado','ACEPTADO')
+            ->orderBy('id','DESC')
+            ->get();
     }
 
     public function dividir(Request $request)
@@ -52,7 +61,7 @@ class MailController extends Controller
             $m->folio=$mail->folio;
             $m->archivo=$mail->archivo;
             $m->codinterno=$mail->codinterno;
-            $m->codexterno=$mail->codexterno.".".$i;
+            $m->codexterno=$mail->codexterno;
             $m->user_id=$mail->user_id;
             $m->unit_id=$mail->unit_id;
             $m->mail_id=$mail->id;
@@ -108,10 +117,10 @@ class MailController extends Controller
      */
     public function store(Request $request)
     {
-        if (Mail::where('unit_id',$request->user()->unit_id)->max("codinterno")==''){
+        if (Mail::whereYear('created_at',date('Y'))->where('unit_id',$request->user()->unit_id)->max("codinterno")==''){
             $codigointerno=1;
         }else{
-            $codigointerno=Mail::where('unit_id',$request->user()->unit_id)->max("codinterno")+1;
+            $codigointerno=Mail::whereYear('created_at',date('Y'))->where('unit_id',$request->user()->unit_id)->max("codinterno")+1;
         }
 //        return Mail::max("codinterno");
         $user=User::where('id',$request->user()->id)->with('unit')->get();
@@ -128,7 +137,7 @@ class MailController extends Controller
 //        return 'a';
 
         $mail=new Mail();
-        $mail->codigo=$user[0]->unit->codigo.str_pad($codigointerno, 4, '0', STR_PAD_LEFT);
+        $mail->codigo=$user[0]->unit->codigo.str_pad($codigointerno, 4, '0', STR_PAD_LEFT).'/'.date('y');
         $mail->tipo=$request->tipo;
 //        $mail->tipo2=$request->tipo2;
         $mail->remitente= strtoupper( $request->remitente);
@@ -357,5 +366,10 @@ font-size: 14px;
         $mail->estado='ARCHIVADO';
         $mail->save();
 
+    }
+    public function aceptar(Request $request){
+        $mail=Mail::find($request->mail_id);
+        $mail->estado='ACEPTADO';
+        $mail->save();
     }
 }

@@ -16,6 +16,9 @@ class UserController extends Controller
     public function usuarios(Request $request){
         return User::with('unit')->where('id','!=',$request->user()->id)->where('id','!=',1)->orderBy('unit_id')->get();
     }
+    public function misremetentes(Request $request){
+        return User::with('unit')->where('unit_id',$request->user()->unit_id)->where('id','!=',$request->user()->id)->where('id','!=',1)->orderBy('unit_id')->get();
+    }
     public function login(Request $request){
         if (!Auth::attempt($request->all())){
             return response()->json(['res'=>'No existe el usuario'],400);

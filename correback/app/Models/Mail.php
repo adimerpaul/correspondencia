@@ -37,6 +37,6 @@ class Mail extends Model
         return $this->belongsTo(Mail::class);
     }
     public function logs(){
-        return $this->hasMany(Log::class);
+        return $this->hasMany(Log::class)->with('unit');
     }
 }
