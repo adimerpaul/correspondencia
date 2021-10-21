@@ -102,8 +102,17 @@
             <q-card-section class="q-pt-none">
               <q-form @submit.prevent="registrarlog">
                 <q-input type="textarea" outlined label="Mi acccion" v-model="miaccion" required/>
-                <q-select :options="usuarios" label="Seleccionar personal" v-model="usuario" outlined required/>
-                <q-btn label="Registrar" color="teal" icon="send" class="full-width" type="submit"/>
+<!--                <q-select :options="usuarios" label="Seleccionar personal" v-model="usuario" outlined required/>-->
+                <q-select use-input :options="usuarios" label="Seleccionar personal" v-model="usuario" @filter="filterFn" outlined required>
+                  <template v-slot:no-option>
+                    <q-item>
+                      <q-item-section class="text-grey">
+                        Sin resultados
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                </q-select>
+                <q-btn label="Remitir" color="teal" icon="send" class="full-width" type="submit"/>
               </q-form>
             </q-card-section>
             <q-card-section align="right">
@@ -150,6 +159,7 @@ export default {
       dato:{tipo:'INTERNO',fecha:date.formatDate(Date.now(),'YYYY-MM-DD'),folio:1},
       folios:[],
       usuarios:[],
+      usuarios2:[],
       mails:[],
       mail:{},
       remitentes:[],
@@ -191,10 +201,27 @@ export default {
           unit_id:r.unit_id,
           label:r.unit.nombre+'-'+r.name
         })
+        this.usuarios2=this.usuarios
       })
     })
   },
   methods:{
+    filterFn (val, update) {
+      if (val === '') {
+        update(() => {
+          this.usuarios = this.usuarios2
+
+          // here you have access to "ref" which
+          // is the Vue reference of the QSelect
+        })
+        return
+      }
+
+      update(() => {
+        const needle = val.toLowerCase()
+        this.usuarios = this.usuarios2.filter(v => v.label.toLowerCase().indexOf(needle) > -1)
+      })
+    },
     uploadFile(files) {
       this.file_path = files[0]
       const fileData = new FormData()

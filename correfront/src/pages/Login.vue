@@ -97,7 +97,7 @@
                     </q-input>
                   </div>
                   <div class="col-12 q-pt-md">
-                    <q-select outlined v-model="user.unit" label="Unidad*" :options="units" option-label="nombre"  hint="Porfavor ingresar unidad" required >
+                    <q-select use-input @filter="filterFn" outlined v-model="user.unit" label="Unidad*" :options="units" option-label="nombre"  hint="Porfavor ingresar unidad" required >
                       <template v-slot:prepend>
                         <q-icon name="home" />
                       </template>
@@ -114,7 +114,7 @@
                     <q-btn label="Crea tu cuenta" color="primary" icon="login" class="full-width" type="submit"/>
                     <q-btn label="Ingresa" color="secondary" icon="how_to_reg" @click="tab='login'" class="full-width q-mt-xs" />
                     <div class="text-caption q-py-xs">
-                      <a target="_blank" href="https://api.whatsapp.com/send?phone=59169603027&text=olvide mi contraseña">Olvidate tu contraseña?</a>
+                      <a target="_blank" href="https://api.whatsapp.com/send?phone=59169603027&text=olvide mi contraseña gamo">Olvidate tu contraseña?</a>
                     </div>
                   </div>
                 </div>
@@ -143,6 +143,7 @@ export default {
       user:{},
       isPwd:true,
       units:[],
+      units2:[],
     }
   },
   created() {
@@ -153,12 +154,29 @@ export default {
     this.$q.loading.show()
     this.$axios.get(process.env.API+'/unit').then(res=>{
       this.units=res.data
+      this.units2=res.data
       // this.user.unit=res.data[0]
       this.$q.loading.hide()
     })
 
   },
   methods: {
+    filterFn (val, update) {
+      if (val === '') {
+        update(() => {
+          this.units = this.units2
+
+          // here you have access to "ref" which
+          // is the Vue reference of the QSelect
+        })
+        return
+      }
+
+      update(() => {
+        const needle = val.toLowerCase()
+        this.units = this.units2.filter(v => v.nombre.toLowerCase().indexOf(needle) > -1)
+      })
+    },
     registrar(){
       // console.log(this.user.unit_id)
       if (this.user.unit=='' || this.user.unit==undefined){
