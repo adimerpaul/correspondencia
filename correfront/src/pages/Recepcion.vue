@@ -161,6 +161,7 @@
                   </q-item>
                 </template>
               </q-select>
+              {{usuario}}
               <q-btn label="Remitir" color="teal" icon="send" class="full-width" type="submit"/>
             </q-form>
           </q-card-section>
