@@ -152,7 +152,7 @@
           <q-card-section class="q-pt-none">
             <q-form @submit.prevent="registrarlog">
             <q-input type="textarea" outlined label="Mi acccion" v-model="miaccion" required/>
-              <q-select use-input :options="usuarios" label="Seleccionar personal" v-model="usuario" @filter="filterFn" outlined required>
+              <q-select use-input :options="usuarios" label="Seleccionar personal" v-model="usuario" @filter="filterFn" outlined >
                 <template v-slot:no-option>
                   <q-item>
                     <q-item-section class="text-grey">
@@ -161,7 +161,7 @@
                   </q-item>
                 </template>
               </q-select>
-              {{usuario}}
+<!--              {{usuario}}-->
               <q-btn label="Remitir" color="teal" icon="send" class="full-width" type="submit"/>
             </q-form>
           </q-card-section>

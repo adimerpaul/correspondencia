@@ -103,7 +103,7 @@
               <q-form @submit.prevent="registrarlog">
                 <q-input type="textarea" outlined label="Mi acccion" v-model="miaccion" required/>
 <!--                <q-select :options="usuarios" label="Seleccionar personal" v-model="usuario" outlined required/>-->
-                <q-select use-input :options="usuarios" label="Seleccionar personal" v-model="usuario" @filter="filterFn" outlined required>
+                <q-select use-input :options="usuarios" label="Seleccionar personal" v-model="usuario" @filter="filterFn" outlined >
                   <template v-slot:no-option>
                     <q-item>
                       <q-item-section class="text-grey">

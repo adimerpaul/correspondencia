@@ -24,7 +24,7 @@
               <q-form @submit.prevent="login">
                 <div class="row">
                   <div class="col-12 ">
-                    <q-input outlined v-model="email" label="Email*" hint="Porfavor ingresar email" :rules="rule">
+                    <q-input type="email" outlined v-model="email" label="Email*" hint="Porfavor ingresar email" :rules="rule">
                       <template v-slot:prepend>
                         <q-icon name="email" />
                       </template>
@@ -62,7 +62,7 @@
                 <div class="row">
                   <div class="col-12">
                     <!--                    color="purple-12"-->
-                    <q-input outlined v-model="user.email" label="Email*" hint="Porfavor ingresar email" :rules="rule" >
+                    <q-input outlined type="email" v-model="user.email" label="Email*" hint="Porfavor ingresar email" :rules="rule" required>
                       <template v-slot:prepend>
                         <q-icon name="email" />
                       </template>
@@ -97,7 +97,7 @@
                     </q-input>
                   </div>
                   <div class="col-12 q-pt-md">
-                    <q-select use-input @filter="filterFn" outlined v-model="user.unit" label="Unidad*" :options="units" option-label="nombre"  hint="Porfavor ingresar unidad" required >
+                    <q-select use-input @filter="filterFn" outlined v-model="user.unit" label="Unidad*" :options="units" option-label="nombre"  hint="Porfavor ingresar unidad"  >
                       <template v-slot:prepend>
                         <q-icon name="home" />
                       </template>
