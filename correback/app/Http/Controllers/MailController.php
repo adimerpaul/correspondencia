@@ -29,6 +29,11 @@ class MailController extends Controller
             ->orderBy('id','DESC')
             ->get();
     }
+    public function todos()
+    {
+        return Mail::with('logs')
+            ->get();
+    }
     public function buscar(Request $request)
     {
 //        return Mail::where('unit_id',$request->user()->unit_id)->get();
@@ -111,6 +116,15 @@ class MailController extends Controller
     {
         return Mail::select('remitente','cargo','institucion')->groupBy('remitente','cargo','institucion')->get();
     }
+    public function consulta(Request $request)
+    {
+        return Mail::
+            where('userorigen_id',$request->user()->id)
+            ->where('unitorigen_id',$request->user()->unit_id)
+            ->whereRaw('fecha>=? AND fecha<=? ',[$request->fecha1,$request->fecha2])
+            ->with('logs')
+            ->get();
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -148,6 +162,7 @@ class MailController extends Controller
         $mail->institucion=strtoupper($request->institucion);
         $mail->ref=strtoupper($request->ref);
         $mail->fecha=date('Y-m-d');
+        $mail->hora=date('H:i:s');
         $mail->fechacarta=$request->fecha;
 //        $mail->estado=$request->estado;
         $mail->folio=$request->folio;
@@ -156,6 +171,8 @@ class MailController extends Controller
         $mail->codexterno=$request->codexterno;
         $mail->user_id=$request->user()->id;
         $mail->unit_id=$request->user()->unit_id;
+        $mail->userorigen_id=$request->user()->id;
+        $mail->unitorigen_id=$request->user()->unit_id;
 //        $mail->mail_id=$request->mail_id;
         $mail->save();
         $log=new Log();

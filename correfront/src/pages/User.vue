@@ -154,6 +154,9 @@
           <q-td key="fechalimite" :props="props">
             {{props.row.fechalimite}}
           </q-td>
+          <q-td key="tipo" :props="props">
+            <q-badge :color="props.row.tipo=='USUARIO'?'teal':'accent'">{{props.row.tipo}}</q-badge>
+          </q-td>
           <q-td key="opcion" :props="props">
             <q-btn
               dense
@@ -323,6 +326,12 @@
               type="date"
               v-model="dato2.fechalimite"
             />
+            <q-select
+              filled
+              label="Tipo usuario"
+              v-model="dato2.tipo"
+              :options="['USUARIO','SECRETARIA']"
+            />
             <div>
               <q-btn label="Modificar" type="submit" color="positive" icon="add_circle" />
               <q-btn label="Cancelar" icon="delete" color="negative" v-close-popup />
@@ -398,6 +407,7 @@ export default {
         {name: "unit", align: "left", label: "UNIDAD", field: "unit", sortable: true,},
         {name: "permisos", align: "left", label: "PERMISOS", field: "permisos", sortable: true,},
         {name: "fechalimite", align: "left", label: "FECHA LÍMITE", field: "fechalimite", sortable: true,},
+        {name: "tipo", align: "left", label: "TIPO", field: "tipo", sortable: true,},
         { name: "opcion", label: "OPCIÓN", field: "action", sortable: false },
       ],
       data: [],
@@ -534,6 +544,7 @@ export default {
         carnet:this.dato2.carnet,
         unit_id:this.dato2.unit.id,
         celular:this.dato2.celular,
+        tipo:this.dato2.tipo,
         fechalimite:this.dato2.fechalimite,
         // codigo:this.dato2.codigo,
       }).then((res) => {

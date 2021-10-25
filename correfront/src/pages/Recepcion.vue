@@ -11,38 +11,7 @@
             <q-input  @keyup="cambio" style="text-transform: uppercase" outlined dense label="remitente" list="browsers" name="myBrowser" v-model="remitente" />
             <datalist id="browsers">
               <option v-for="r in remitentes" :key="r.id">{{r.remitente}}</option>
-
             </datalist>
-<!--            <q-input dense autofocus label="Remitente" v-model="dato.remitentes" outlined/>-->
-<!--            <div class="row">-->
-<!--              <div class="col-1 flex flex-center"><q-icon color="primary" name="add_circle" size="xs" /></div>-->
-<!--              <div class="col-11">-->
-<!--&lt;!&ndash;                <q-input dense label="Remitente" v-model="remitente" outlined/>&ndash;&gt;-->
-<!--                  <q-select-->
-<!--                    dense-->
-<!--                    outlined-->
-<!--                    v-model="remitente"-->
-<!--                    use-input-->
-<!--                    label="Remitente"-->
-<!--                    :options="remitentes"-->
-<!--                    @filter="filterFn"-->
-<!--                    option-label="remitente"-->
-<!--                  />-->
-<!--              </div>-->
-<!--            </div>-->
-
-
-
-<!--            <input list="browsers" name="browser" id="browser">-->
-<!--            <datalist id="browsers">-->
-<!--              <option value="Edge">-->
-<!--              <option value="Firefox">-->
-<!--              <option value="Chrome">-->
-<!--              <option value="Opera">-->
-<!--              <option value="Safari">-->
-<!--            </datalist>-->
-
-<!--            {{remitente}}-->
           </div>
           <div class="col-sm-2 col-12 q-pa-xs"><q-input style="text-transform: uppercase" dense label="Cargo" v-model="cargo" outlined/></div>
           <div class="col-sm-2 col-12 q-pa-xs"><q-input style="text-transform: uppercase" dense label="Institucion" v-model="institucion" outlined/></div>
@@ -70,72 +39,47 @@
             {{ props.row.codigo }}
           </q-td>
           <q-td key="codexterno" :props="props">
-<!--            <q-badge color="green">-->
               {{ props.row.codexterno }}
-<!--            </q-badge>-->
           </q-td>
           <q-td key="codinterno" :props="props">
-<!--            <q-badge color="purple">-->
               {{ props.row.codinterno }}
-<!--            </q-badge>-->
           </q-td>
           <q-td key="ref" :props="props">
-            <!--            <q-badge color="orange">-->
             <q-badge color="info" v-if="props.row.ref!=''" @click="mostrar(props.row.ref)">
               {{ props.row.ref.substring(0,10) }}...
             </q-badge>
-            <!--            </q-badge>-->
           </q-td>
           <q-td key="remitente" :props="props">
-<!--            <q-badge color="primary">-->
               {{ props.row.remitente }}
-<!--            </q-badge>-->
           </q-td>
-<!--          <q-td key="fecha" :props="props">-->
-<!--&lt;!&ndash;            <q-badge color="teal">&ndash;&gt;-->
-<!--              {{ props.row.fecha }}-->
-<!--&lt;!&ndash;            </q-badge>&ndash;&gt;-->
-<!--          </q-td>-->
           <q-td key="logs" :props="props">
-            <!--            <q-badge color="teal">-->
-            <!--              {{ props.row.logs }}-->
             <ul style="font-size: 0.6em;padding: 0px;margin: 0px;border: 0px;    list-style: none;">
               <li v-for="l in props.row.logs" :key="l.id">de {{l.remitente}} a {{l.destinatario}}</li>
             </ul>
-            <!--            </q-badge>-->
           </q-td>
           <q-td key="dias" :props="props">
             <q-badge :color="props.row.dias==0?'positive':props.row.dias==1?'amber':'negative'">
             {{ props.row.dias }} d
             </q-badge>
           </q-td>
-          <q-td key="estado" :props="props">
-            <q-badge :color="props.row.estado=='EN PROCESO'?'amber':'negative'">
-              {{ props.row.estado }}
-            </q-badge>
-          </q-td>
-          <q-td key="folio" :props="props">
-<!--            <q-badge color="amber">-->
-              {{ props.row.folio }}
+<!--          <q-td key="estado" :props="props">-->
+<!--            <q-badge :color="props.row.estado=='EN PROCESO'?'amber':'negative'">-->
+<!--              {{ props.row.estado }}-->
 <!--            </q-badge>-->
+<!--          </q-td>-->
+          <q-td key="folio" :props="props">
+              {{ props.row.folio }}
           </q-td>
           <q-td key="archivo" :props="props">
-            <!--            <q-badge color="amber">-->
-<!--            {{ props.row.archivo }}-->
             <template v-if="props.row.archivo!=''">
               <q-btn label="Descargar" color="primary" size="xs" type="a" :href="url+'/../imagenes/'+props.row.archivo" target="__blank"/>
             </template>
-            <!--            </q-badge>-->
           </q-td>
           <q-td key="opciones" :props="props">
-<!--            <q-badge color="amber">-->
-<!--              {{ props.row.opciones }}-->
-<!--            </q-badge>-->
             <q-btn-group v-if="props.row.estado!='ARCHIVADO' && props.row.estado!='ANULADO'">
               <q-btn type="a"  target="__blank" dense :href="url+'/mail/'+props.row.id+'/'+$store.getters['login/user'].id" color="primary" label="Imprimir" icon="timeline" size="xs" />
               <q-btn dense @click="editar(props)" color="teal" label="Editar" icon="edit" size="xs" />
               <q-btn dense @click="diaglosasiganacion=true;mail=props.row;miaccion='';usuario=''" color="positive" label="Remitir" icon="code" size="xs" />
-<!--              <q-btn dense @click="anular(props.row)" color="negative" label="Anular" icon="delete" size="xs" />-->
               <q-btn dense @click="archivar(props.row)" color="accent" label="Terminar" icon="list" size="xs" />
               <q-btn dense @click="archivo(props.row)" color="amber" label="Subir " icon="upload" size="xs" />
               <q-btn dense @click="dividir(props.row)" color="red" label="Dividir" icon="content_cut" size="xs" />
@@ -161,7 +105,6 @@
                   </q-item>
                 </template>
               </q-select>
-<!--              {{usuario}}-->
               <q-btn label="Remitir" color="teal" icon="send" class="full-width" type="submit"/>
             </q-form>
           </q-card-section>
@@ -245,12 +188,14 @@ export default {
     this.$axios.post(process.env.API+'/usuarios').then(res=>{
       res.data.forEach(r=>{
         // console.log(r)
-        this.usuarios.push({
-          id:r.id,
-          name:r.name,
-          unit_id:r.unit_id,
-          label:r.unit.nombre+'-'+r.name
-        })
+        if (r.tipo=='SECRETARIA'){
+          this.usuarios.push({
+            id:r.id,
+            name:r.name,
+            unit_id:r.unit_id,
+            label:r.unit.nombre+'-'+r.name
+          })
+        }
       })
       this.usuarios2=this.usuarios
     })

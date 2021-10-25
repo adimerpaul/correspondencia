@@ -8,6 +8,7 @@ export default function () {
     boolrecepcion:false,
     boolseguimiento:false,
     booldesignacion:false,
+    boolmisrecepciones:false,
     // inventario:false,
     // ventadetalle:false,
     // historialventadetalle:false,

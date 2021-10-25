@@ -25,6 +25,8 @@ class Mail extends Model
         "codexterno",
         'user_id',
         'unit_id',
+        'userorigen_id',
+        'unitorigen_id',
         'mail_id',
     ];
     public function user(){

@@ -23,7 +23,8 @@ class User extends Authenticatable
         'password',
         'carnet',
         'fechalimite',
-        'unit_id'
+        'unit_id',
+        'tipo'
     ];
 
     /**

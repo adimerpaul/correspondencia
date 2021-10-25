@@ -134,6 +134,25 @@
             </q-item-section>
           </q-item>
 
+          <q-item
+            v-if="$store.state.login.boolmisrecepciones"
+            clickable
+            to="/misrecepciones"
+          >
+            <q-item-section
+              avatar
+            >
+              <q-icon name="picture_as_pdf" />
+            </q-item-section>
+
+            <q-item-section>
+              <q-item-label>Mis recepciones</q-item-label>
+              <q-item-label caption>
+                Historial de mis recepciones
+              </q-item-label>
+            </q-item-section>
+          </q-item>
+
 
           <q-item
             v-if="$store.getters['login/isLoggedIn']"

@@ -4,10 +4,10 @@
     <div class="col-12">
       <q-form @submit.prevent="buscar">
         <div class="row">
-          <div class="col-12 col-md-6 q-pa-xs">
-            <q-input label="Ingresar codigo" v-model="codigo" outlined required/>
+          <div class="col-12 col-md-10 q-pa-xs">
+            <q-select use-input label="Ingresar codigo" v-model="codigo" :options="mails" outlined @filter="filterFn"/>
           </div>
-          <div class="col-12 col-md-6 q-pa-xs flex flex-center">
+          <div class="col-12 col-md-2 q-pa-xs flex flex-center">
             <q-btn label="Buscar" color="primary" icon="send" type="submit" />
           </div>
         </div>
@@ -37,9 +37,9 @@
         Datos de historial
       </q-banner>
         <div class="row" v-for="l in email.logs" :key="l.id">
-          <div class="col-4 q-pa-xs"><q-chip dense color="primary" icon="alarm" :label="'DE '+l.remitente"  /></div>
-          <div class="col-4 q-pa-xs"><q-chip dense color="secondary" icon="directions" :label="'A '+l.destinatario"/></div>
-          <div class="col-4 q-pa-xs"><q-chip dense color="info" icon="home" :label="'U '+l.unit.nombre"/></div>
+<!--          <div class="col-4 q-pa-xs"><q-chip dense color="primary" icon="alarm" :label="'DE '+l.remitente"  /></div>-->
+          <div class="col-6 q-pa-xs"><q-chip dense color="secondary" icon="directions" :label="'A '+l.destinatario"/></div>
+          <div class="col-6 q-pa-xs"><q-chip dense color="info" icon="home" :label="'U '+l.unit.nombre"/></div>
         </div>
 <!--      <pre>{{email.logs}}</pre>-->
     </div>
@@ -53,18 +53,57 @@ export default {
     return{
       url:process.env.API,
       codigo:'',
-      email:{}
+      email:{},
+      mails:[],
+      mails2:[],
     }
+  },
+  created() {
+    this.$q.loading.show()
+    this.$axios.get(process.env.API+'/todos').then(res=>{
+      this.mails=[]
+      res.data.forEach(r=>{
+        // console.log(r)
+        r.label=r.remitente+' '+r.ref+' '+r.codexterno+' '+r.codinterno
+        this.mails.push(r)
+        this.mails2.push(r)
+      })
+      // this.mails=res.data
+      this.$q.loading.hide()
+    }).catch(err=>{
+      this.$q.loading.hide()
+      this.$q.notify({
+        message:err.response.data.message,
+        color:'red',
+        icon:'error'
+      })
+    })
   },
   methods:{
     buscar(){
       this.$q.loading.show()
       this.email={}
-      this.$axios.post(process.env.API+'/buscar',{codigo:this.codigo}).then(res=>{
+      console.log(this.codigo.codinterno)
+      this.$axios.post(process.env.API+'/buscar',{codigo:this.codigo.codigo}).then(res=>{
         // console.log(res.data)
         if (res.data.length>0)
         this.email=res.data[0]
         this.$q.loading.hide()
+      })
+    },
+    filterFn (val, update) {
+      if (val === '') {
+        update(() => {
+          this.mails = this.mails2
+          // here you have access to "ref" which
+          // is the Vue reference of the QSelect
+        })
+        return
+      }
+
+      update(() => {
+        const needle = val.toLowerCase()
+        this.mails = this.mails2.filter(v => v.label.toLowerCase().indexOf(needle) > -1)
       })
     }
   }
