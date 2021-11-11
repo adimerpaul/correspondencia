@@ -21,7 +21,7 @@
       <div class="q-px-lg q-pt-xs q-mb-md" >
         <div class="text-h5 text-bold">
           <template v-if="!$store.getters['login/isLoggedIn']">
-          SICIG Sistema Informacion de Correspondencia Interna GAMO
+          SICIG <div style="font-size:14px">Sistema de Informacion de Correspondencia Interna GAMO</div>
 
           </template>
           <template v-else>
