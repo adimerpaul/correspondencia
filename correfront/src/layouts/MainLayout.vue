@@ -21,7 +21,8 @@
       <div class="q-px-lg q-pt-xs q-mb-md" >
         <div class="text-h5 text-bold">
           <template v-if="!$store.getters['login/isLoggedIn']">
-          Correspondencia
+          SICIG Sistema Informacion de Correspondencia Interna GAMO
+
           </template>
           <template v-else>
             Unidad: {{$store.state.login.user.unit.nombre}}
