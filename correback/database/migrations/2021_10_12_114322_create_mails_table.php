@@ -23,6 +23,7 @@ class CreateMailsTable extends Migration
             $table->string("cargo");
             $table->string("institucion");
             $table->date("fecha");
+            $table->time("hora");
             $table->date("fechacarta");
             $table->string("estado")->default('EN PROCESO');
             $table->string("folio");

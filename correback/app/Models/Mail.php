@@ -41,4 +41,7 @@ class Mail extends Model
     public function logs(){
         return $this->hasMany(Log::class)->with('unit');
     }
+    public function asignas(){
+        return $this->hasMany(Asigna::class);
+    }
 }

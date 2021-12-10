@@ -79,7 +79,7 @@
             <q-btn-group v-if="props.row.estado!='ARCHIVADO' && props.row.estado!='ANULADO'">
               <q-btn type="a"  target="__blank" dense :href="url+'/mail/'+props.row.id+'/'+$store.getters['login/user'].id" color="primary" label="Imprimir" icon="timeline" size="xs" />
               <q-btn dense @click="editar(props)" color="teal" label="Editar" icon="edit" size="xs" />
-              <q-btn dense @click="diaglosasiganacion=true;mail=props.row;miaccion='';usuario=''" color="positive" label="Remitir" icon="code" size="xs" />
+              <q-btn dense @click="diaglosasiganacion=true;mail=props.row;miaccion='';usuario='',dest=[]" color="positive" label="Remitir" icon="code" size="xs" />
               <q-btn dense @click="archivar(props.row)" color="accent" label="Terminar" icon="list" size="xs" />
               <q-btn dense @click="archivo(props.row)" color="amber" label="Subir " icon="upload" size="xs" />
               <q-btn dense @click="dividir(props.row)" color="red" label="Dividir" icon="content_cut" size="xs" />
@@ -105,6 +105,12 @@
                   </q-item>
                 </template>
               </q-select>
+             <q-btn color="secondary" label="Agregar Dest" @click="tabdest"/>
+              <table>
+                <tbody>
+                  <tr v-for="(row,index) in dest" :key="index"><td>{{row.name}}</td></tr>
+                </tbody>
+              </table>
               <q-btn label="Remitir" color="teal" icon="send" class="full-width" type="submit"/>
             </q-form>
           </q-card-section>
@@ -153,6 +159,7 @@ export default {
       folios:[],
       usuarios:[],
       usuarios2:[],
+      dest:[],
       mails:[],
       mail:{},
       remitentes:[],
@@ -188,19 +195,28 @@ export default {
     this.$axios.post(process.env.API+'/usuarios').then(res=>{
       res.data.forEach(r=>{
         // console.log(r)
-        if (r.tipo=='SECRETARIA'){
+        //if (r.tipo=='SECRETARIA'){
           this.usuarios.push({
             id:r.id,
             name:r.name,
             unit_id:r.unit_id,
             label:r.unit.nombre+'-'+r.name
           })
-        }
+       // }
       })
       this.usuarios2=this.usuarios
     })
   },
   methods:{
+    tabdest(){
+      let verif=false;
+      this.dest.forEach(element => {
+        if(element.id==this.usuario.id)
+        verif=true;
+      });
+      if(!verif)
+        this.dest.push(this.usuario);
+    },
     filterFn (val, update) {
       if (val === '') {
         update(() => {
@@ -252,12 +268,22 @@ export default {
       //   accion:this.miaccion
       // })
       // return false
+      console.log(this.dest);
+      if(this.dest.length==0){
+        this.$q.notify({
+          message:'Debe seleccionar al menos 1 Dest',
+          color:'red',
+          icon:'error'
+        })
+        return false;
+      }
       this.$q.loading.show()
       this.$axios.post(process.env.API+'/log',{
         mail_id:this.mail.id,
-        user_id2:this.usuario.id,
-        destinatario:this.usuario.name,
-        unit_id:this.usuario.unit_id,
+        list_user:this.dest,
+        //user_id2:this.usuario.id,
+        //destinatario:this.usuario.name,
+        //unit_id:this.usuario.unit_id,
         accion:this.miaccion
       }).then(res=>{
         // console.log(res.data)

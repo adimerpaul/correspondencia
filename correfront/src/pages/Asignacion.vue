@@ -2,7 +2,9 @@
   <q-page class="q-pa-xs">
     <div class="row">
       <div class="col-12">
-        <q-table dense title="Correspondencia " :rows="mails" :columns="columns" :filter="filter"       :rows-per-page-options="[50,100,150,200,0]"
+        <q-table dense title="Correspondencia " :rows="mails" :columns="columns" :filter="filter"
+               :rows-per-page-options="[50,100,150,200,0]"
+               row-key="name"
         >
           <template v-slot:top-right>
             <q-input borderless dense debounce="300" v-model="filter" placeholder="Buscar">
@@ -11,21 +13,8 @@
               </template>
             </q-input>
           </template>
-          <template v-slot:body="props">
+          <template v-slot:body-cell-ref="props">
             <q-tr :props="props">
-              <q-td key="codigo" :props="props">
-                {{ props.row.codigo }}
-              </q-td>
-              <q-td key="codexterno" :props="props">
-                <!--            <q-badge color="green">-->
-                {{ props.row.codexterno }}
-                <!--            </q-badge>-->
-              </q-td>
-              <q-td key="codinterno" :props="props">
-                <!--            <q-badge color="purple">-->
-                {{ props.row.codinterno }}
-                <!--            </q-badge>-->
-              </q-td>
               <q-td key="ref" :props="props">
                 <!--            <q-badge color="orange">-->
                 <q-badge color="info" v-if="props.row.ref!=''" @click="mostrar(props.row.ref)">
@@ -33,65 +22,47 @@
                 </q-badge>
                 <!--            </q-badge>-->
               </q-td>
-              <q-td key="remitente" :props="props">
-                <!--            <q-badge color="primary">-->
-                {{ props.row.remitente }}
-                <!--            </q-badge>-->
-              </q-td>
-              <!--          <q-td key="fecha" :props="props">-->
-              <!--&lt;!&ndash;            <q-badge color="teal">&ndash;&gt;-->
-              <!--              {{ props.row.fecha }}-->
-              <!--&lt;!&ndash;            </q-badge>&ndash;&gt;-->
-              <!--          </q-td>-->
+                          </q-tr>
+          </template>
+          <template v-slot:body-cell-logs="props">
               <q-td key="logs" :props="props">
-                <!--            <q-badge color="teal">-->
-                <!--              {{ props.row.logs }}-->
                 <ul style="font-size: 0.6em;padding: 0px;margin: 0px;border: 0px;    list-style: none;">
                   <li v-for="l in props.row.logs" :key="l.id">de {{l.remitente}} a {{l.destinatario}}</li>
                 </ul>
                 <!--            </q-badge>-->
               </q-td>
+          </template>
+          <template v-slot:body-cell-dias="props">
               <q-td key="dias" :props="props">
                 <q-badge :color="props.row.dias==0?'positive':props.row.dias==1?'amber':'negative'">
                   {{ props.row.dias }} d
                 </q-badge>
               </q-td>
+          </template>
+          <template v-slot:body-cell-estado="props">
               <q-td key="estado" :props="props">
                 <q-badge :color="props.row.estado=='EN PROCESO'?'amber':'negative'">
                   {{ props.row.estado }}
                 </q-badge>
               </q-td>
-              <q-td key="folio" :props="props">
-                <!--            <q-badge color="amber">-->
-                {{ props.row.folio }}
-                <!--            </q-badge>-->
-              </q-td>
+          </template>
+          <template v-slot:body-cell-archivo="props">
               <q-td key="archivo" :props="props">
-                <!--            <q-badge color="amber">-->
-                <!--            {{ props.row.archivo }}-->
                 <template v-if="props.row.archivo!=''">
                   <q-btn label="Descargar" color="primary" size="xs" type="a" :href="url+'/../imagenes/'+props.row.archivo" target="__blank"/>
                 </template>
-                <!--            </q-badge>-->
               </q-td>
+          </template>
+          <template v-slot:body-cell-opciones="props">
               <q-td key="opciones" :props="props">
-                <!--            <q-badge color="amber">-->
-<!--                              {{ props.row.estado }}-->
-                <!--            </q-badge>-->
                 <q-btn-group v-if="props.row.estado=='EN PROCESO'">
                   <q-btn dense @click="aceptar(props.row)" color="info" label="Aceptar" icon="code" size="xs" />
                 </q-btn-group >
                 <q-btn-group v-if="props.row.estado=='ACEPTADO'">
-<!--                  <q-btn type="a"  target="__blank" dense :href="url+'/mail/'+props.row.id" color="primary" label="Imprimir" icon="timeline" size="xs" />-->
-<!--                  <q-btn dense @click="editar(props)" color="teal" label="Editar" icon="edit" size="xs" />-->
                   <q-btn dense @click="diaglosasiganacion=true;mail=props.row" color="positive" label="Remitir" icon="code" size="xs" />
-<!--                  <q-btn dense @click="anular(props.row)" color="negative" label="Anular" icon="delete" size="xs" />-->
                   <q-btn dense @click="archivar(props.row)" color="accent" label="Terminar" icon="list" size="xs" />
-<!--                  <q-btn dense @click="archivo(props.row)" color="amber" label="Archivo" icon="upload" size="xs" />-->
-<!--                  <q-btn dense @click="dividir(props.row)" color="red" label="Dividir" icon="content_cut" size="xs" />-->
                 </q-btn-group>
               </q-td>
-            </q-tr>
           </template>
         </q-table>
         <q-dialog v-model="diaglosasiganacion">
@@ -168,20 +139,20 @@ export default {
       cargo:'',
       institucion:'',
       columns:[
-        {field:'codigo',name:'codigo',label:'codigo',align:'right'},
-        {field:'codexterno',name:'codexterno',label:'codexterno',align:'right'},
+        {name:'codigo',field:'codigo',label:'codigo',align:'right'},
+        {name:'codexterno',field:'codexterno',label:'codexterno',align:'right'},
         // {field:'codinterno',name:'codinterno',label:'codinterno',align:'right'},
-        {field:'ref',name:'ref',label:'ref',align:'right'},
-        {field:'remitente',name:'remitente',label:'remitente',align:'right'},
+        {name:'ref',field:'ref',label:'ref',align:'right'},
+        {name:'remitente',field:'remitente',label:'remitente',align:'right'},
         // {field:'cargo',name:'cargo',label:'cargo',align:'right'},
         // {field:'institucion',name:'institucion',label:'institucion',align:'right'},
         // {field:'fecha',name:'fecha',label:'fecha',align:'right'},
-        {field:'logs',name:'logs',label:'logs',align:'left'},
-        {field:'dias',name:'dias',label:'dias',align:'right'},
+        {name:'logs',field:row=>'logs',label:'logs',align:'left'},
+        {name:'dias',field:'dias',label:'dias',align:'right'},
         // {field:'estado',name:'estado',label:'estado',align:'right'},
-        {field:'folio',name:'folio',label:'folio',align:'right'},
-        {field:'archivo',name:'archivo',label:'archivo',align:'right'},
-        {field:'opciones',name:'opciones',label:'opciones',align:'right'},
+        {name:'folio',field:'folio',label:'folio',align:'right'},
+        {name:'archivo',field:'archivo',label:'archivo',align:'right'},
+        {name:'opciones',field:'opciones',label:'opciones',align:'right'},
       ]
     }
   },
@@ -459,31 +430,31 @@ export default {
     misdatos(){
       this.$q.loading.show()
       this.$axios.post(process.env.API+'/micorre').then(res=>{
-        // console.log(res.data)
+         console.log(res.data)
         // this.mails=res.data
         this.mails=[]
         res.data.forEach(r=>{
           const date1 = new Date()
-          const date2 = date.extractDate(r.fecha, 'YYYY-MM-DD')
+          const date2 = date.extractDate(r.mail.fecha, 'YYYY-MM-DD')
           const dias = date.getDateDiff(date1, date2, 'days')
 
           this.mails.push({
             id:r.id,
-            codigo:r.codigo,
-            tipo:r.tipo,
-            tipo2:r.tipo2,
-            ref:r.ref,
-            remitente:r.remitente,
-            cargo:r.cargo,
-            institucion:r.institucion,
-            fecha:r.fecha,
-            fechacarta:r.fechacarta,
+            codigo:r.mail.codigo,
+            tipo:r.mail.tipo,
+            tipo2:r.mail.tipo2,
+            ref:r.mail.ref,
+            remitente:r.mail.remitente,
+            cargo:r.mail.cargo,
+            institucion:r.mail.institucion,
+            fecha:r.mail.fecha,
+            fechacarta:r.mail.fechacarta,
             estado:r.estado,
-            folio:r.folio,
-            archivo:r.archivo,
-            codinterno:r.codinterno,
-            codexterno:r.codexterno,
-            logs:r.logs,
+            folio:r.mail.folio,
+            archivo:r.mail.archivo,
+            codinterno:r.mail.codinterno,
+            codexterno:r.mail.codexterno,
+            logs:r.mail.logs,
             dias:dias,
           })
         })

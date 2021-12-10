@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Asigna;
 use App\Models\Log;
 use App\Models\Mail;
 use App\Models\User;
@@ -42,14 +43,20 @@ class MailController extends Controller
     public function micorre(Request $request)
     {
 //        return Mail::where('unit_id',$request->user()->unit_id)->get();
-        return Mail::with('logs')
+        //return Mail::with('logs')
 //            ->where('estado','EN PROCESO')
 //            ->orWhere('estado','ACEPTADO')
-//            ->where('user_id',$request->user()->id)
-            ->whereRaw("estado in ('EN PROCESO','ACEPTADO')  AND user_id=?",[$request->user()->id])
-            ->orderBy('id','DESC')
-            ->get();
+        //    ->where('user_id',$request->user()->id)
+        //    ->whereRaw("estado in ('EN PROCESO','ACEPTADO')  AND user_id=?",[$request->user()->id])
+         //   ->orderBy('id','DESC')
+          //  ->get();
+
+        return Asigna::with('mail')
+        ->whereRaw("estado in ('EN PROCESO','ACEPTADO')  AND user_id=?",[$request->user()->id])
+        ->orderBy('id','DESC')
+        ->get();
     }
+
 
     public function dividir(Request $request)
     {
@@ -195,9 +202,9 @@ class MailController extends Controller
         $mail->ref = $request->ref;
         $mail->fechacarta= $request->fechacarta;
         $mail->folio= $request->folio;
-        $mail->remitente= $request->remitente;
-        $mail->cargo= $request->cargo;
-        $mail->institucion=$request->institucion;
+        $mail->remitente= strtoupper( $request->remitente);
+        $mail->cargo=strtoupper($request->cargo);
+        $mail->institucion=strtoupper($request->institucion);
         $mail->codinterno=$request->codinterno;
         $mail->save();
         return $mail;
@@ -389,7 +396,7 @@ font-size: 13px;
 
     }
     public function aceptar(Request $request){
-        $mail=Mail::find($request->mail_id);
+        $mail=Asigna::find($request->mail_id);
         $mail->estado='ACEPTADO';
         $mail->save();
     }

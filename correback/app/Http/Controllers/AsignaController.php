@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Log;
-use App\Models\Mail;
 use App\Models\Asigna;
 use Illuminate\Http\Request;
 
-class LogController extends Controller
+class AsignaController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -37,39 +35,16 @@ class LogController extends Controller
      */
     public function store(Request $request)
     {
-//        return $request;
-        foreach ($request->list_user as $list) {
-        $log= new Log();
-        $log->mail_id=$request->mail_id;
-        $log->user_id=$request->user()->id;
-        $log->user_id2=$list['id'];
-        $log->remitente=$request->user()->name;
-        $log->destinatario=$list['name'];
-        $log->accion=$request->accion;
-        $log->estado='EN PROCESO';
-        $log->fecha=date('Y-m-d');
-        $log->hora=date('H:i:s');
-        $log->unit_id=$list['unit_id'];
-        $log->save();
-
-        $asigna =new Asigna;
-        $asigna->mail_id=$request->mail_id;
-        $asigna->user_id=$list['id'];
-        $asigna->unit_id=$list['unit_id'];
-        $asigna->fecha_reg=date('Y-m-d H:i:s');
-        $asigna->estado='EN PROCESO';
-        $asigna->save();
-    }
-
+        //
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Log  $log
+     * @param  \App\Models\Asigna  $asigna
      * @return \Illuminate\Http\Response
      */
-    public function show(Log $log)
+    public function show(Asigna $asigna)
     {
         //
     }
@@ -77,10 +52,10 @@ class LogController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Log  $log
+     * @param  \App\Models\Asigna  $asigna
      * @return \Illuminate\Http\Response
      */
-    public function edit(Log $log)
+    public function edit(Asigna $asigna)
     {
         //
     }
@@ -89,10 +64,10 @@ class LogController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Log  $log
+     * @param  \App\Models\Asigna  $asigna
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Log $log)
+    public function update(Request $request, Asigna $asigna)
     {
         //
     }
@@ -100,10 +75,10 @@ class LogController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Log  $log
+     * @param  \App\Models\Asigna  $asigna
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Log $log)
+    public function destroy(Asigna $asigna)
     {
         //
     }
