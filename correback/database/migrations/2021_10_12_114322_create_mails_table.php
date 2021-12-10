@@ -17,7 +17,7 @@ class CreateMailsTable extends Migration
             $table->id();
             $table->string("codigo");
             $table->string("tipo")->default('INTERNO');
-            $table->string("tipo2")->default('ARCHIVO');
+            //$table->string("tipo2")->default('ARCHIVO');
             $table->string("ref");
             $table->string("remitente");
             $table->string("cargo");
@@ -34,12 +34,9 @@ class CreateMailsTable extends Migration
             $table->foreign('user_id')->references('id')->on('users');
             $table->unsignedBigInteger('unit_id')->nullable();;
             $table->foreign('unit_id')->references('id')->on('units');
-            $table->unsignedBigInteger('userorigen_id')->nullable();
-            $table->foreign('userorigen_id')->references('id')->on('users');
-            $table->unsignedBigInteger('unitorigen_id')->nullable();;
-            $table->foreign('unitorigen_id')->references('id')->on('units');
-            $table->unsignedBigInteger('mail_id')->nullable()->default(null);
-            $table->foreign('mail_id')->references('id')->on('mails');
+
+            //$table->unsignedBigInteger('mail_id')->nullable()->default(null);
+            //$table->foreign('mail_id')->references('id')->on('mails');
             $table->timestamps();
         });
     }

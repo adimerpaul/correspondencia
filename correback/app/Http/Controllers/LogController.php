@@ -52,6 +52,10 @@ class LogController extends Controller
         $log->unit_id=$list['unit_id'];
         $log->save();
 
+        $mail=Mail::find($request->mail_id);
+        $mail->estado='ENVIADO';
+        $mail->save();
+
         $asigna =new Asigna;
         $asigna->mail_id=$request->mail_id;
         $asigna->user_id=$list['id'];

@@ -52,7 +52,7 @@ class MailController extends Controller
           //  ->get();
 
         return Asigna::with('mail')
-        ->whereRaw("estado in ('EN PROCESO','ACEPTADO')  AND user_id=?",[$request->user()->id])
+        ->whereRaw("estado in ('EN PROCESO','ACEPTADO')  AND user_id=".$request->user()->id)
         ->orderBy('id','DESC')
         ->get();
     }
