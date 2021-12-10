@@ -51,10 +51,11 @@ class MailController extends Controller
          //   ->orderBy('id','DESC')
           //  ->get();
 
-        return Asigna::with('mail')
-        ->whereRaw("estado in ('EN PROCESO','ACEPTADO')  AND user_id=".$request->user()->id)
-        ->orderBy('id','DESC')
-        ->get();
+//        return Asigna::with('mail')
+//        ->whereRaw("estado in ('EN PROCESO','ACEPTADO')  AND user_id=".$request->user()->id)
+//        ->orderBy('id','DESC')
+//        ->get();
+        return Log::where('user_id2',$request->user()->id)->with('mail')->with('user')->with('user2')->get();
     }
 
 
@@ -178,20 +179,20 @@ class MailController extends Controller
         $mail->codexterno=$request->codexterno;
         $mail->user_id=$request->user()->id;
         $mail->unit_id=$request->user()->unit_id;
-        $mail->userorigen_id=$request->user()->id;
-        $mail->unitorigen_id=$request->user()->unit_id;
+//        $mail->userorigen_id=$request->user()->id;
+//        $mail->unitorigen_id=$request->user()->unit_id;
 //        $mail->mail_id=$request->mail_id;
         $mail->save();
         $log=new Log();
         $log->mail_id=$mail->id;
         $log->user_id=null;
         $log->user_id2=$request->user()->id;
-        $log->remitente='';
-        $log->destinatario=$request->user()->name;
+//        $log->remitente='';
+//        $log->destinatario=$request->user()->name;
 //        $log->estado=$request->estado;
         $log->fecha=date('Y-m-d');
         $log->hora=date('H:i:s');
-        $log->unit_id=$request->user()->unit_id;
+//        $log->unit_id=$request->user()->unit_id;
         $log->save();
 
         return $mail;
@@ -396,7 +397,7 @@ font-size: 13px;
 
     }
     public function aceptar(Request $request){
-        $mail=Asigna::find($request->mail_id);
+        $mail=Log::find($request->mail_id);
         $mail->estado='ACEPTADO';
         $mail->save();
     }

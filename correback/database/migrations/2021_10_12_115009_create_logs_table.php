@@ -23,7 +23,8 @@ class CreateLogsTable extends Migration
 
             $table->unsignedBigInteger('user_id2')->nullable()->default(null);
             $table->foreign('user_id2')->references('id')->on('users');
-
+            $table->unsignedBigInteger('log_id')->nullable()->default(null);
+            $table->foreign('log_id')->references('id')->on('logs');
             $table->string('estado')->default('EN PROCESO');
             $table->string('accion')->nullable()->default('');;
             $table->date('fecha');

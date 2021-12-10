@@ -2,6 +2,47 @@
   <q-page class="q-pa-xs">
     <div class="row">
       <div class="col-12">
+        <q-btn label="Crear" icon="mail" color="primary" @click="crear = true" />
+
+
+        <q-dialog full-width v-model="crear">
+          <q-card>
+            <q-card-section>
+              <div class="text-h6">Crear Hoja de ruta</div>
+            </q-card-section>
+
+            <q-card-section class="q-pt-none">
+              <q-form @submit.prevent="guardar">
+                <div class="row" style="border: 1px solid rgba(128,128,128,0.50)">
+                  <div class="col-6 flex flex-center"><q-radio dense v-model="dato.tipo" val="INTERNO" label="INTERNO"/></div>
+                  <div class="col-6 flex flex-center"><q-radio dense v-model="dato.tipo" val="EXTERNO" label="EXTERNO"/></div>
+                  <div class="col-sm-2 col-12 q-pa-xs"><q-input style="text-transform: uppercase" dense autofocus label="Referencia" v-model="dato.ref" outlined/></div>
+                  <div class="col-sm-6 col-12 q-pa-xs">
+                    <q-input  @keyup="cambio" style="text-transform: uppercase" outlined dense label="remitente" list="browsers" name="myBrowser" v-model="remitente" />
+                    <datalist id="browsers">
+                      <option v-for="r in remitentes" :key="r.id">{{r.remitente}}</option>
+                    </datalist>
+                  </div>
+                  <div class="col-sm-2 col-12 q-pa-xs"><q-input style="text-transform: uppercase" dense label="Cargo" v-model="cargo" outlined/></div>
+                  <div class="col-sm-2 col-12 q-pa-xs"><q-input style="text-transform: uppercase" dense label="Institucion" v-model="institucion" outlined/></div>
+                  <div class="col-sm-2 col-12 q-pa-xs"><q-input dense label="Fecha de correspondencia" v-model="dato.fecha" type="date" outlined/></div>
+                  <div class="col-sm-2 col-12 q-pa-xs"><q-select dense label="Folio" v-model="dato.folio" :options="folios" outlined /></div>
+                  <div class="col-sm-2 col-12 q-pa-xs"><q-input dense label="Cod externo" v-model="dato.codexterno" outlined /></div>
+                  <div class="col-sm-2 col-12 q-pa-xs flex flex-center"><q-btn type="submit" color="primary" icon="add_circle" label="Registrar" v-if="dato.id==undefined || dato.id==''"/>
+                    <q-btn type="submit" color="amber" icon="edit" label="Modificar" v-else /></div>
+                </div>
+              </q-form>
+
+            </q-card-section>
+
+            <q-card-actions align="right">
+              <q-btn flat label="Cerrar" icon="delete" color="primary" v-close-popup />
+            </q-card-actions>
+          </q-card>
+        </q-dialog>
+
+      </div>
+      <div class="col-12">
         <q-table dense title="Correspondencia " :rows="mails" :columns="columns" :filter="filter"
                :rows-per-page-options="[50,100,150,200,0]"
                row-key="name"
@@ -14,7 +55,6 @@
             </q-input>
           </template>
           <template v-slot:body-cell-ref="props">
-            <q-tr :props="props">
               <q-td key="ref" :props="props">
                 <!--            <q-badge color="orange">-->
                 <q-badge color="info" v-if="props.row.ref!=''" @click="mostrar(props.row.ref)">
@@ -22,7 +62,6 @@
                 </q-badge>
                 <!--            </q-badge>-->
               </q-td>
-                          </q-tr>
           </template>
           <template v-slot:body-cell-logs="props">
               <q-td key="logs" :props="props">
@@ -83,6 +122,12 @@
                     </q-item>
                   </template>
                 </q-select>
+                <q-btn color="secondary" label="Agregar Dest" @click="tabdest"/>
+                <table>
+                  <tbody>
+                  <tr v-for="(row,index) in dest" :key="index"><td>{{row.name}}</td></tr>
+                  </tbody>
+                </table>
                 <q-btn label="Remitir" color="teal" icon="send" class="full-width" type="submit"/>
               </q-form>
             </q-card-section>
@@ -121,6 +166,7 @@ import {date} from 'quasar'
 export default {
   data(){
     return {
+      crear:false,
       miaccion:'',
       filter:'',
       usuario:'',
@@ -138,16 +184,18 @@ export default {
       remitente:'',
       cargo:'',
       institucion:'',
+      dest:[],
       columns:[
         {name:'codigo',field:'codigo',label:'codigo',align:'right'},
-        {name:'codexterno',field:'codexterno',label:'codexterno',align:'right'},
+        {name:'fecha',field:'fecha',label:'fecha',align:'right'},
+        {name:'hora',field:'hora',label:'hora',align:'right'},
         // {field:'codinterno',name:'codinterno',label:'codinterno',align:'right'},
         {name:'ref',field:'ref',label:'ref',align:'right'},
         {name:'remitente',field:'remitente',label:'remitente',align:'right'},
         // {field:'cargo',name:'cargo',label:'cargo',align:'right'},
         // {field:'institucion',name:'institucion',label:'institucion',align:'right'},
         // {field:'fecha',name:'fecha',label:'fecha',align:'right'},
-        {name:'logs',field:row=>'logs',label:'logs',align:'left'},
+        // {name:'logs',field:row=>'logs',label:'logs',align:'left'},
         {name:'dias',field:'dias',label:'dias',align:'right'},
         // {field:'estado',name:'estado',label:'estado',align:'right'},
         {name:'folio',field:'folio',label:'folio',align:'right'},
@@ -177,6 +225,15 @@ export default {
     })
   },
   methods:{
+    tabdest(){
+      let verif=false;
+      this.dest.forEach(element => {
+        if(element.id==this.usuario.id)
+          verif=true;
+      });
+      if(!verif)
+        this.dest.push(this.usuario);
+    },
     filterFn (val, update) {
       if (val === '') {
         update(() => {
@@ -228,12 +285,22 @@ export default {
       //   accion:this.miaccion
       // })
       // return false
+      console.log(this.dest);
+      if(this.dest.length==0){
+        this.$q.notify({
+          message:'Debe seleccionar al menos 1 Dest',
+          color:'red',
+          icon:'error'
+        })
+        return false;
+      }
       this.$q.loading.show()
       this.$axios.post(process.env.API+'/log',{
         mail_id:this.mail.id,
-        user_id2:this.usuario.id,
-        destinatario:this.usuario.name,
-        unit_id:this.usuario.unit_id,
+        list_user:this.dest,
+        //user_id2:this.usuario.id,
+        //destinatario:this.usuario.name,
+        //unit_id:this.usuario.unit_id,
         accion:this.miaccion
       }).then(res=>{
         // console.log(res.data)
@@ -279,6 +346,8 @@ export default {
     },
     // remitir(){},
     aceptar(mail){
+      // console.log(mail)
+      // return false
       this.$q.dialog({
         title:'Seguro de Aceptar?',
         message:'Seguro de aceptar',
@@ -437,9 +506,9 @@ export default {
           const date1 = new Date()
           const date2 = date.extractDate(r.mail.fecha, 'YYYY-MM-DD')
           const dias = date.getDateDiff(date1, date2, 'days')
-
           this.mails.push({
             id:r.id,
+            hora:r.hora,
             codigo:r.mail.codigo,
             tipo:r.mail.tipo,
             tipo2:r.mail.tipo2,
@@ -447,7 +516,7 @@ export default {
             remitente:r.mail.remitente,
             cargo:r.mail.cargo,
             institucion:r.mail.institucion,
-            fecha:r.mail.fecha,
+            fecha:r.fecha,
             fechacarta:r.mail.fechacarta,
             estado:r.estado,
             folio:r.mail.folio,
@@ -504,6 +573,7 @@ export default {
           this.institucion=''
           this.misdatos()
           this.misremitentes()
+          this.crear=false
 
           // this.$q.loading.hide()
         }).catch(err=>{
