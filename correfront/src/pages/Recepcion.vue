@@ -77,7 +77,7 @@
           </q-td>
           <q-td key="opciones" :props="props">
             <q-btn-group v-if="props.row.estado!='ARCHIVADO' && props.row.estado!='ANULADO'">
-              <q-btn type="a"  target="__blank" dense :href="url+'/mail/'+props.row.id+'/'+$store.getters['login/user'].id" color="primary" label="Imprimir" icon="timeline" size="xs" />
+              <q-btn dense @click="impresion(props.row.id)" color="primary" label="ImprimirHR" icon="timeline" size="xs" />
               <q-btn dense @click="editar(props)" color="teal" label="Editar" icon="edit" size="xs" />
               <q-btn dense @click="diaglosasiganacion=true;mail=props.row;miaccion='';usuario='',dest=[]" color="positive" label="Remitir" icon="code" size="xs" />
               <q-btn dense @click="archivar(props.row)" color="accent" label="Terminar" icon="list" size="xs" />
@@ -510,6 +510,20 @@ export default {
           });
         })
       })
+    },
+    impresion(id){
+      this.$axios.post(process.env.API+'/impruta/'+id).then(res=>{
+        console.log(res.data);
+              let myWindow = window.open("", "Imprimir", "width=200,height=100");
+              myWindow.document.write(res.data);
+              myWindow.document.close();
+              myWindow.focus();
+              setTimeout(function(){
+                myWindow.print();
+                myWindow.close();
+              },500);
+      })
+
     },
     guardar(){
       if (!confirm("seguro de continuar?")){

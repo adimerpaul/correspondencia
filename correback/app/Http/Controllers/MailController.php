@@ -401,4 +401,103 @@ font-size: 13px;
         $mail->estado='ACEPTADO';
         $mail->save();
     }
+
+    public function impruta($id){
+        $dato=Mail::find($id);
+        $cadena="<html>
+        <style>
+        table, th, td {
+            border: 1px solid black;
+          }
+          table{width:100%;
+            border-collapse: collapse;}
+            .titulo{
+                text-align:center;
+                font-weight: bold;
+            }
+            .subt{
+                font-weight: bold;
+            }
+            .imagen{width:100px;
+                height:100px;}
+        </style>
+
+        <body>
+        <table>
+        <tr><td rowspan=2><img class='imagen' src='img/escudo.png'></td><td class='titulo'>GOBIERNO AUTONOMO MUNICIPAL DE ORURO</td><td class='titulo'>Codigo Ruta</td></tr>
+        <tr><td  class='titulo'>HOJA DE RUTA</td><td style='text-align:center'>".$dato->codigo."</td></tr>
+        </table>
+        <table>
+        <tr><td class='subt'>DATOS DE RECEPCION:</td><td colspan='3'><b>Fecha y Hora:</b> ".date('Y-m-d H:i:s')."</td></tr>
+        <tr><td class='subt'>DATOS DEL CITE:</td><td><b>Fecha:</b> ".$dato->fecha."</td><td><b>Cite:</b> ".$dato->codexterno."</td><td><b>Folio:</b> ".$dato->folio."</td></tr>
+        <tr><td class='subt'>DATOS DEL REMITENTE:</td><td colspan=2><b>Nombre y apellido:</b> ".$dato->remitente."</td><td><b>Cargo/Institucion:</b> ".$dato->institucion."</td></tr>
+        <tr><td class='subt'>DESCRIPCION DEL CONTENIDO:</td><td colspan=3><b>Referencias:</b> ".$dato->ref."</td></tr>
+        </table>
+            <p class='titulo' style='margin:0'>CORRESPONDENCIA : ".$dato->tipo."</p>
+        <table><tr><td>
+
+        <table>
+            <tr ><td colspan='2' style=' font-weight: bold;'>Para:</td></tr>
+
+            <tr><td style='font-weight: bold;'>Fecha Entrega:</td><td style='font-weight: bold;'>Firma:</td></tr>
+            <tr><td class='titulo' colspan=2>INSTRUCCIONES / OBSERVACIONES</td><tr>
+        <tr><td colspan=2 style='height:30px'> <br><hr><br><hr><br><hr><br><hr><br></td></tr>
+        <tr><td style='font-weight: bold;'>Fecha Recibido:</td><td style='font-weight: bold;'>Firma:</td></tr>
+        </table>
+        </td><td>
+        <table>
+        <tr ><td colspan='2' style=' font-weight: bold;'>Para:</td></tr>
+
+        <tr><td style='font-weight: bold;'>Fecha Entrega:</td><td style='font-weight: bold;'>Firma:</td></tr>
+        <tr><td class='titulo' colspan=2>INSTRUCCIONES / OBSERVACIONES</td><tr>
+        <tr><td colspan=2 style='height:30px'> <br><hr><br><hr><br><hr><br><hr><br></td></tr>
+        <tr><td style='font-weight: bold;'>Fecha Recibido:</td><td style='font-weight: bold;'>Firma:</td></tr>
+
+        </table>
+        </td></tr></table>
+        <br>
+        <table><tr><td>
+
+        <table>
+            <tr ><td colspan='2' style=' font-weight: bold;'>Para:</td></tr>
+            <tr><td style='font-weight: bold;'>Fecha Entrega:</td><td style='font-weight: bold;'>Firma:</td></tr>
+            <tr><td class='titulo' colspan=2>INSTRUCCIONES / OBSERVACIONES</td><tr>
+        <tr><td colspan=2 style='height:30px'> <br><hr><br><hr><br><hr><br><hr><br></td></tr>
+        <tr><td style='font-weight: bold;'>Fecha Recibido:</td><td style='font-weight: bold;'>Firma:</td></tr>
+        </table>
+        </td><td>
+        <table>
+        <tr ><td colspan='2' style=' font-weight: bold;'>Para:</td></tr>
+        <tr><td style='font-weight: bold;'>Fecha Entrega:</td><td style='font-weight: bold;'>Firma:</td></tr>
+        <tr><td class='titulo' colspan=2>INSTRUCCIONES / OBSERVACIONES</td><tr>
+        <tr><td colspan=2 style='height:30px'> <br><hr><br><hr><br><hr><br><hr><br></td></tr>
+        <tr><td style='font-weight: bold;'>Fecha Recibido:</td><td style='font-weight: bold;'>Firma:</td></tr>
+
+        </table>
+        </td></tr></table>
+
+        <br>
+        <table><tr><td>
+
+        <table>
+            <tr ><td colspan='2' style=' font-weight: bold;'>Para:</td></tr>
+            <tr><td style='font-weight: bold;'>Fecha Entrega:</td><td style='font-weight: bold;'>Firma:</td></tr>
+            <tr><td class='titulo' colspan=2>INSTRUCCIONES / OBSERVACIONES</td><tr>
+        <tr><td colspan=2 style='height:30px'> <br><hr><br><hr><br><hr><br><hr><br></td></tr>
+        <tr><td style='font-weight: bold;'>Fecha Recibido:</td><td style='font-weight: bold;'>Firma:</td></tr>
+        </table>
+        </td><td>
+        <table>
+        <tr ><td colspan='2' style=' font-weight: bold;'>Para:</td></tr>
+        <tr><td style='font-weight: bold;'>Fecha Entrega:</td><td style='font-weight: bold;'>Firma:</td></tr>
+        <tr><td class='titulo' colspan=2>INSTRUCCIONES / OBSERVACIONES</td><tr>
+        <tr><td colspan=2 style='height:30px'> <br><hr><br><hr><br><hr><br><hr><br></td></tr>
+        <tr><td style='font-weight: bold;'>Fecha Recibido:</td><td style='font-weight: bold;'>Firma:</td></tr>
+
+        </table>
+        </td></tr></table>
+        </body>
+        </html>";
+        return $cadena;
+    }
 }
