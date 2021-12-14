@@ -15,7 +15,7 @@
                 <div class="row" style="border: 1px solid rgba(128,128,128,0.50)">
                   <div class="col-6 flex flex-center"><q-radio dense v-model="dato.tipo" val="INTERNO" label="INTERNO"/></div>
                   <div class="col-6 flex flex-center"><q-radio dense v-model="dato.tipo" val="EXTERNO" label="EXTERNO"/></div>
-                  <div class="col-sm-2 col-12 q-pa-xs"><q-input style="text-transform: uppercase" dense autofocus label="Referencia" v-model="dato.ref" outlined/></div>
+                  <div class="col-sm-6 col-12 q-pa-xs"><q-input style="text-transform: uppercase" dense autofocus label="Referencia" v-model="dato.ref" outlined/></div>
                   <div class="col-sm-6 col-12 q-pa-xs">
                     <q-input  @keyup="cambio" style="text-transform: uppercase" outlined dense label="remitente" list="browsers" name="myBrowser" v-model="remitente" />
                     <datalist id="browsers">
@@ -418,11 +418,11 @@ export default {
     archivar(mail){
       this.$q.dialog({
         title:'Seguro de archivar?',
-        // message:'Motivo de archivar',
-        // prompt:{
-        //   model:'',
-        //   type:'text'
-        // },
+         message:'Motivo de archivar',
+         prompt:{
+           model:'',
+           type:'text'
+         },
         cancel:true,
       }).onOk(data=>{
         // console.log(data)
