@@ -82,7 +82,6 @@
               <q-btn dense @click="diaglosasiganacion=true;mail=props.row;miaccion='';usuario='',dest=[]" color="positive" label="Remitir" icon="code" size="xs" />
               <q-btn dense @click="archivar(props.row)" color="accent" label="Terminar" icon="list" size="xs" />
               <q-btn dense @click="archivo(props.row)" color="amber" label="Subir " icon="upload" size="xs" />
-              <q-btn dense @click="dividir(props.row)" color="red" label="Dividir" icon="content_cut" size="xs" />
             </q-btn-group>
           </q-td>
         </q-tr>

@@ -104,6 +104,7 @@
                   <small style="color: darkgreen;font-weight: bold">Remitido</small>
                 </template >
                   <template v-if="props.row.estado=='ACEPTADO'">
+                    <q-btn dense @click="modificar(props.row)" color="warning" label="Modifica" icon="edit" size="xs" />
                     <q-btn dense @click="diaglosasiganacion=true;mail=props.row" color="positive" label="Remitir" icon="code" size="xs" />
                     <q-btn dense @click="impresion(props.row.mail_id)" color="info" label="ImprimirHR" icon="timeline" size="xs" />
                     <q-btn dense @click="archivo(props.row)" color="amber" label="Subir " icon="upload" size="xs" />
@@ -146,6 +147,7 @@
             </q-card-section>
           </q-card>
         </q-dialog>
+
         <q-dialog v-model="dialogarchivo">
           <q-card style="width: 300px;min-width: 40vh">
             <q-card-section>
@@ -164,6 +166,7 @@
             </q-card-section>
           </q-card>
         </q-dialog>
+
       </div>
     </div>
   </q-page>
@@ -236,6 +239,10 @@ export default {
     })
   },
   methods:{
+    modificar(prop){
+      this.crear=true;
+      this.dato=prop;
+    },
     tabdest(){
       let verif=false;
       this.dest.forEach(element => {
@@ -625,6 +632,7 @@ export default {
           // console.log(res.data)
           this.misdatos()
           this.misremitentes()
+          this.crear=false
 
           // this.$q.loading.hide()
         }).catch(err=>{
