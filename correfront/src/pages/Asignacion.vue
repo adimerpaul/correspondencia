@@ -3,8 +3,7 @@
     <div class="row">
       <div class="col-12">
         <q-btn label="Crear" icon="mail" color="primary" @click="crear = true" />
-
-
+        <q-btn label="Actualizar" icon="refresh" color="teal" @click="misdatos" />
         <q-dialog full-width v-model="crear">
           <q-card>
             <q-card-section>
@@ -27,7 +26,7 @@
                   <div class="col-sm-2 col-12 q-pa-xs"><q-input style="text-transform: uppercase" dense label="Institucion" v-model="institucion" outlined/></div>
                   <div class="col-sm-2 col-12 q-pa-xs"><q-input dense label="Fecha de correspondencia" v-model="dato.fecha" type="date" outlined/></div>
                   <div class="col-sm-2 col-12 q-pa-xs"><q-select dense label="Folio" v-model="dato.folio" :options="folios" outlined /></div>
-                  <div class="col-sm-2 col-12 q-pa-xs"><q-input dense label="Cod externo" v-model="dato.codexterno" outlined /></div>
+<!--                  <div class="col-sm-2 col-12 q-pa-xs"><q-input dense label="Cod externo" v-model="dato.codexterno" outlined /></div>-->
                   <div class="col-sm-2 col-12 q-pa-xs flex flex-center"><q-btn type="submit" color="primary" icon="add_circle" label="Registrar" v-if="dato.id==undefined || dato.id==''"/>
                     <q-btn type="submit" color="amber" icon="edit" label="Modificar" v-else /></div>
                 </div>
@@ -48,7 +47,7 @@
                row-key="name"
         >
           <template v-slot:top-right>
-            <q-input borderless dense debounce="300" v-model="filter" placeholder="Buscar">
+            <q-input outlined dense debounce="300" v-model="filter" placeholder="Buscar">
               <template v-slot:append>
                 <q-icon name="search" />
               </template>
@@ -94,13 +93,23 @@
           </template>
           <template v-slot:body-cell-opciones="props">
               <q-td key="opciones" :props="props">
-                <q-btn-group v-if="props.row.estado=='EN PROCESO'">
-                  <q-btn dense @click="aceptar(props.row)" color="info" label="Aceptar" icon="code" size="xs" />
-                </q-btn-group >
-                <q-btn-group v-if="props.row.estado=='ACEPTADO'">
-                  <q-btn dense @click="diaglosasiganacion=true;mail=props.row" color="positive" label="Remitir" icon="code" size="xs" />
-                  <q-btn dense @click="archivar(props.row)" color="accent" label="Terminar" icon="list" size="xs" />
-                </q-btn-group>
+<!--                <q-btn-group>-->
+                  <template v-if="props.row.estado=='EN PROCESO'">
+                    <q-btn dense @click="aceptar(props.row)" color="info" label="Aceptar" icon="code" size="xs" />
+                  </template >
+                  <template v-if="props.row.estado=='ARCHIVADO'">
+                    <small style="color: darkred;font-weight: bold">Archivado</small>
+                  </template >
+                <template v-if="props.row.estado=='REMITIDO'">
+                  <small style="color: darkgreen;font-weight: bold">Remitido</small>
+                </template >
+                  <template v-if="props.row.estado=='ACEPTADO'">
+                    <q-btn dense @click="diaglosasiganacion=true;mail=props.row" color="positive" label="Remitir" icon="code" size="xs" />
+                    <q-btn dense @click="impresion(props.row.mail_id)" color="info" label="ImprimirHR" icon="timeline" size="xs" />
+                    <q-btn dense @click="archivo(props.row)" color="amber" label="Subir " icon="upload" size="xs" />
+                    <q-btn dense @click="archivar(props.row)" color="negative" label="Archivar" icon="list" size="xs" />
+                  </template>
+<!--                </q-btn-group>-->
               </q-td>
           </template>
         </q-table>
@@ -122,12 +131,13 @@
                     </q-item>
                   </template>
                 </q-select>
-                <q-btn color="secondary" label="Agregar Dest" @click="tabdest"/>
+                <q-btn color="positive" size="xs" label="Agregar Destinatario" icon="add_circle" @click="tabdest"/>
                 <table>
                   <tbody>
-                  <tr v-for="(row,index) in dest" :key="index"><td>{{row.name}}</td></tr>
+                  <tr v-for="(row,index) in dest" :key="index"><td>{{index+1}}- {{row.label}} </td></tr>
                   </tbody>
                 </table>
+<!--                {{mail}}-->
                 <q-btn label="Remitir" color="teal" icon="send" class="full-width" type="submit"/>
               </q-form>
             </q-card-section>
@@ -179,6 +189,7 @@ export default {
       usuarios2:[],
       mails:[],
       mail:{},
+      // log:{},
       remitentes:[],
       remitentes2:[],
       remitente:'',
@@ -209,7 +220,7 @@ export default {
     for (let i=1;i<=1000;i++){
       this.folios.push(i)
     }
-    // this.misremitentes()
+    this.misremitentes()
 
     this.$axios.post(process.env.API+'/misremetentes').then(res=>{
       res.data.forEach(r=>{
@@ -285,7 +296,7 @@ export default {
       //   accion:this.miaccion
       // })
       // return false
-      console.log(this.dest);
+      // console.log(this.dest);
       if(this.dest.length==0){
         this.$q.notify({
           message:'Debe seleccionar al menos 1 Dest',
@@ -296,22 +307,24 @@ export default {
       }
       this.$q.loading.show()
       this.$axios.post(process.env.API+'/log',{
-        mail_id:this.mail.id,
+        log_id:this.mail.id,
         list_user:this.dest,
         //user_id2:this.usuario.id,
         //destinatario:this.usuario.name,
         //unit_id:this.usuario.unit_id,
         accion:this.miaccion
       }).then(res=>{
-        // console.log(res.data)
+        console.log(res.data)
         this.misdatos()
         this.$q.loading.hide()
         this.diaglosasiganacion=false
         this.$q.notify({
-          message:'Renviado correctamente!!',
+          message:'Remitido correctamente!!',
           color:'green',
           icon:'done'
         })
+        this.miaccion=''
+        this.dest=[]
       }).catch(err=>{
         this.$q.notify({
           message:err.response.data.message,
@@ -376,19 +389,36 @@ export default {
         message:ref
       })
     },
+    impresion(id){
+      // console.log(id)
+      // return false
+      this.$axios.post(process.env.API+'/impruta/'+id).then(res=>{
+        console.log(res.data);
+        let myWindow = window.open("", "Imprimir", "width=200,height=100");
+        myWindow.document.write(res.data);
+        myWindow.document.close();
+        myWindow.focus();
+        setTimeout(function(){
+          myWindow.print();
+          myWindow.close();
+        },500);
+      })
+
+    },
     archivar(mail){
       this.$q.dialog({
         title:'Seguro de archivar?',
-        message:'Motivo de archivar',
-        prompt:{
-          model:'',
-          type:'text'
-        },
+        // message:'Motivo de archivar',
+        // prompt:{
+        //   model:'',
+        //   type:'text'
+        // },
         cancel:true,
       }).onOk(data=>{
         // console.log(data)
         this.$q.loading.show()
         this.$axios.post(process.env.API+'/anulado',{mail_id:mail.id,accion:data,estado:'ARCHIVAR'}).then(res=>{
+          console.log(res.data)
           this.misdatos();
           this.$q.notify({
             message: 'Archivado',
@@ -499,7 +529,7 @@ export default {
     misdatos(){
       this.$q.loading.show()
       this.$axios.post(process.env.API+'/micorre').then(res=>{
-         console.log(res.data)
+         // console.log(res.data)
         // this.mails=res.data
         this.mails=[]
         res.data.forEach(r=>{
@@ -508,6 +538,7 @@ export default {
           const dias = date.getDateDiff(date1, date2, 'days')
           this.mails.push({
             id:r.id,
+            mail_id:r.mail_id,
             hora:r.hora,
             codigo:r.mail.codigo,
             tipo:r.mail.tipo,

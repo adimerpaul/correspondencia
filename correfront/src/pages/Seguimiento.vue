@@ -38,8 +38,8 @@
       </q-banner>
         <div class="row" v-for="l in email.logs" :key="l.id">
 <!--          <div class="col-4 q-pa-xs"><q-chip dense color="primary" icon="alarm" :label="'DE '+l.remitente"  /></div>-->
-          <div class="col-6 q-pa-xs"><q-chip dense color="secondary" icon="directions" :label="'A '+l.destinatario"/></div>
-          <div class="col-6 q-pa-xs"><q-chip dense color="info" icon="home" :label="'U '+l.unit.nombre"/></div>
+          <div class="col-6 q-pa-xs"><q-chip dense color="secondary" icon="directions" :label="'A '+l.destinatario"/>{{l}}</div>
+<!--          <div class="col-6 q-pa-xs"><q-chip dense color="info" icon="home" :label="'U '+l.unit.nombre"/></div>-->
         </div>
 <!--      <pre>{{email.logs}}</pre>-->
     </div>
@@ -64,7 +64,7 @@ export default {
       this.mails=[]
       res.data.forEach(r=>{
         // console.log(r)
-        r.label=r.remitente+' '+r.ref+' '+r.codexterno+' '+r.codinterno
+        r.label=r.codigo+''+r.remitente+' '+r.ref
         this.mails.push(r)
         this.mails2.push(r)
       })
@@ -83,9 +83,9 @@ export default {
     buscar(){
       this.$q.loading.show()
       this.email={}
-      console.log(this.codigo.codinterno)
+      // console.log(this.codigo)
       this.$axios.post(process.env.API+'/buscar',{codigo:this.codigo.codigo}).then(res=>{
-        // console.log(res.data)
+        console.log(res.data)
         if (res.data.length>0)
         this.email=res.data[0]
         this.$q.loading.hide()

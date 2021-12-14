@@ -37,33 +37,36 @@ class LogController extends Controller
      */
     public function store(Request $request)
     {
-//        return $request;
+//        return $request->list_user;
+        $loga=Log::where('id',$request->log_id)->with('mail')->firstOrFail();
+        $loga->estado='REMITIDO';
+        $loga->save();
+//        return $log->mail->id;
         foreach ($request->list_user as $list) {
         $log= new Log();
-        $log->mail_id=$request->mail_id;
+        $log->mail_id=$loga->mail->id;
+        $log->log_id=$loga->id;
         $log->user_id=$request->user()->id;
         $log->user_id2=$list['id'];
-        $log->remitente=$request->user()->name;
-        $log->destinatario=$list['name'];
+//        $log->remitente=$request->user()->name;
+//        $log->destinatario=$list['name'];
         $log->accion=$request->accion;
         $log->estado='EN PROCESO';
         $log->fecha=date('Y-m-d');
         $log->hora=date('H:i:s');
-        $log->unit_id=$list['unit_id'];
+//        $log->unit_id=$list['unit_id'];
         $log->save();
 
-        $mail=Mail::find($request->mail_id);
-        $mail->estado='ENVIADO';
-        $mail->save();
 
-        $asigna =new Asigna;
-        $asigna->mail_id=$request->mail_id;
-        $asigna->user_id=$list['id'];
-        $asigna->unit_id=$list['unit_id'];
-        $asigna->fecha_reg=date('Y-m-d H:i:s');
-        $asigna->estado='EN PROCESO';
-        $asigna->save();
-    }
+
+//        $asigna =new Asigna;
+//        $asigna->mail_id=$request->mail_id;
+//        $asigna->user_id=$list['id'];
+//        $asigna->unit_id=$list['unit_id'];
+//        $asigna->fecha_reg=date('Y-m-d H:i:s');
+//        $asigna->estado='EN PROCESO';
+//        $asigna->save();
+        }
 
     }
 

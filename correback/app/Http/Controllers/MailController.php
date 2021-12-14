@@ -55,7 +55,8 @@ class MailController extends Controller
 //        ->whereRaw("estado in ('EN PROCESO','ACEPTADO')  AND user_id=".$request->user()->id)
 //        ->orderBy('id','DESC')
 //        ->get();
-        return Log::where('user_id2',$request->user()->id)->with('mail')->with('user')->with('user2')->get();
+//        return Log::where('user_id2',$request->user()->id)->with('mail')->with('user')->with('user2')->get();
+        return Log::where('user_id2',$request->user()->id)->with('mail')->with('user')->with('user2')->orderBy('id','desc')->get();
     }
 
 
@@ -370,22 +371,26 @@ font-size: 13px;
     }
 
     public function anulado(Request $request){
-        $mail=Mail::find($request->mail_id);
-        $mail->estado='ANULADO';
+        $mail=Log::find($request->mail_id);
+        $mail->estado='ARCHIVADO';
         $mail->save();
 
-        $log=new Log();
-        $log->mail_id=$request->mail_id;
-        $log->user_id=null;
-        $log->user_id2=$request->user()->id;
-        $log->remitente='';
-        $log->accion=$request->accion;
-        $log->destinatario=$request->user()->name;
-        $log->estado='ANULADO';
-        $log->fecha=date('Y-m-d');
-        $log->hora=date('H:i:s');
-        $log->unit_id=$request->user()->unit_id;
-        $log->save();
+//        $mail=Mail::find($request->mail_id);
+//        $mail->estado='ANULADO';
+//        $mail->save();
+//
+//        $log=new Log();
+//        $log->mail_id=$request->mail_id;
+//        $log->user_id=null;
+//        $log->user_id2=$request->user()->id;
+//        $log->remitente='';
+//        $log->accion=$request->accion;
+//        $log->destinatario=$request->user()->name;
+//        $log->estado='ANULADO';
+//        $log->fecha=date('Y-m-d');
+//        $log->hora=date('H:i:s');
+//        $log->unit_id=$request->user()->unit_id;
+//        $log->save();
 
     }
 
