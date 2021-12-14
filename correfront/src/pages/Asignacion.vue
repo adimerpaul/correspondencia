@@ -2,7 +2,7 @@
   <q-page class="q-pa-xs">
     <div class="row">
       <div class="col-12">
-        <q-btn label="Crear" icon="mail" color="primary" @click="crear = true" />
+        <q-btn label="Crear" icon="mail" color="primary" @click="crear = true,  dato={tipo:'INTERNO',fecha:date.formatDate(Date.now(),'YYYY-MM-DD'),folio:1},remitente='',cargo='',institucion=''" />
         <q-btn label="Actualizar" icon="refresh" color="teal" @click="misdatos" />
         <q-dialog full-width v-model="crear">
           <q-card>
@@ -242,6 +242,9 @@ export default {
     modificar(prop){
       this.crear=true;
       this.dato=prop;
+      this.remitente=this.dato.remitente
+      this.cargo=this.dato.cargo;
+      this.institucion=this.dato.institucion;
     },
     tabdest(){
       let verif=false;

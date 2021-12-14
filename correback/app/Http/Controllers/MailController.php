@@ -425,6 +425,10 @@ font-size: 13px;
             }
             .imagen{width:100px;
                 height:100px;}
+                *{
+                    padding: 0px;
+                    margin: 0px;
+                    border: 0px;}
         </style>
 
         <body>
