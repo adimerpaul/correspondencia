@@ -38,9 +38,28 @@
       </q-banner>
         <div class="row" v-for="l in email.logs" :key="l.id">
 <!--          <div class="col-4 q-pa-xs"><q-chip dense color="primary" icon="alarm" :label="'DE '+l.remitente"  /></div>-->
-          <div class="col-6 q-pa-xs"><q-chip dense color="secondary" icon="directions" :label="'A '+l.destinatario"/>{{l}}</div>
+
+<!--          <div class="col-4 q-pa-xs"><q-chip dense class="text-white" color="primary" icon="directions" :label="l.user2.name"/></div>-->
+<!--          <div class="col-6 q-pa-xs"><q-chip dense class="text-white" color="teal" icon="home" :label="l.user2.unit.nombre"/></div>-->
+<!--          <div class="col-2 q-pa-xs"><q-chip dense class="text-white" color="positive" icon="directions" :label="l.estado"/></div>-->
+
 <!--          <div class="col-6 q-pa-xs"><q-chip dense color="info" icon="home" :label="'U '+l.unit.nombre"/></div>-->
         </div>
+
+      <table class="full-width">
+        <tr>
+          <th>#</th>
+          <th>A</th>
+          <th>Unidad</th>
+          <th>Estado</th>
+        </tr>
+        <tr v-for="(l,index) in email.logs" :key="l.id">
+          <td>{{index+1}}</td>
+          <td>{{l.user2.name}}</td>
+          <td>{{l.user2.unit.nombre}}</td>
+          <td><q-badge :color="l.estado=='REMITIDO'||l.estado=='ARCHIVADO'?'positive':'negative'">{{l.estado}}</q-badge></td>
+        </tr>
+      </table>
 <!--      <pre>{{email.logs}}</pre>-->
     </div>
   </div>
@@ -85,7 +104,7 @@ export default {
       this.email={}
       // console.log(this.codigo)
       this.$axios.post(process.env.API+'/buscar',{codigo:this.codigo.codigo}).then(res=>{
-        console.log(res.data)
+        // console.log(res.data)
         if (res.data.length>0)
         this.email=res.data[0]
         this.$q.loading.hide()
@@ -111,5 +130,10 @@ export default {
 </script>
 
 <style scoped>
-
+table, th, td {
+  border: 1px solid black;
+}
+table{
+  border-collapse: collapse;
+}
 </style>
