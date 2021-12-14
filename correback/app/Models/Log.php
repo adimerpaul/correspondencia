@@ -24,7 +24,7 @@ class Log extends Model
         return $this->belongsTo(User::class);
     }
     public function user2(){
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class,'user_id2')->with('unit');
     }
     public function unit(){
         return $this->belongsTo(Unit::class);

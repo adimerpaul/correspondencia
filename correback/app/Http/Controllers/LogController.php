@@ -16,7 +16,7 @@ class LogController extends Controller
      */
     public function index()
     {
-        //
+        return Log::with('user')->with('user2')->get();
     }
 
     /**
