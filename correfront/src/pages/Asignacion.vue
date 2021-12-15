@@ -274,17 +274,13 @@ export default {
     },
     uploadFile(files) {
       this.file_path = files[0]
-      const fileData = new FormData()
-      fileData.append('imagen', this.file_path)
-      fileData.append('mail_id', this.mail.id)
-       console.log(fileData);
+      const data = new FormData()
+      data.append('imagen', this.file_path)
+      data.append('mail_id', this.mail.id)
+       console.log(data);
       //Replace http://localhost:8000 with your API URL
       this.$q.loading.show()
-      const uploadFile = this.$axios.post(process.env.API+'/upload', fileData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      }).then((response) => {
+      this.$axios.post(process.env.API+'/upload', data).then((response) => {
         this.misdatos()
         this.$q.loading.hide()
         // console.log(response.data);
