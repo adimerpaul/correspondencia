@@ -111,7 +111,7 @@ class MailController extends Controller
             $nombreArchivo = time().".".$file->getClientOriginalExtension();
             $file->move(\public_path('imagenes'), $nombreArchivo);
             $mail=Mail::find($request->mail_id);
-            $mail->archivo=$nombreArchivo;
+            $mail->archivo=$nombreArchivo.'';
             return $mail->save();
 
         }
