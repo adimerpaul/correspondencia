@@ -104,6 +104,7 @@ class MailController extends Controller
             'imagen'=>'required',
             'mail_id'=>'required'
         ]);
+        $nombreArchivo='';
         if ($request->hasFile('imagen')) {
             $file=$request->file('imagen');
             $nombreArchivo = time().".".$file->getClientOriginalExtension();
