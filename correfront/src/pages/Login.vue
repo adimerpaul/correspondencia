@@ -19,7 +19,7 @@
           <q-separator />
           <q-tab-panels v-model="tab" animated>
             <q-tab-panel name="login">
-              <div class="text-h6">Ingresar al sistemas</div>
+              <div class="text-h6">Ingresar al Sistema </div>
               Por favor colocar email y contraseña
               <q-form @submit.prevent="login">
                 <div class="row">
