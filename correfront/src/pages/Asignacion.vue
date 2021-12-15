@@ -277,7 +277,7 @@ export default {
       const data = new FormData()
       data.append('imagen', this.file_path)
       data.append('mail_id', this.mail.id)
-       console.log(data);
+       console.log(this.mail.id);
       //Replace http://localhost:8000 with your API URL
       this.$q.loading.show()
       this.$axios.post(process.env.API+'/upload', data).then((response) => {
