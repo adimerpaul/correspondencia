@@ -407,7 +407,7 @@ export default {
         setTimeout(function(){
           myWindow.print();
           myWindow.close();
-        },500);
+        },700);
       })
     },
         impresion2(id){
@@ -422,7 +422,7 @@ export default {
         setTimeout(function(){
           myWindow.print();
           myWindow.close();
-        },500);
+        },700);
       })
     },
     archivar(mail){
