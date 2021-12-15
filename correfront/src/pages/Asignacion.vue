@@ -451,6 +451,7 @@ export default {
       })
     },
     archivo(mail){
+      console.log(mail)
       this.mail=mail
       this.dialogarchivo=true
     },

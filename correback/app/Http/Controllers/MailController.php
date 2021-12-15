@@ -104,6 +104,7 @@ class MailController extends Controller
             'imagen'=>'required',
             'mail_id'=>'required'
         ]);
+
         $nombreArchivo='';
         if ($request->hasFile('imagen')) {
             $file=$request->file('imagen');
@@ -111,8 +112,8 @@ class MailController extends Controller
             $file->move(\public_path('imagenes'), $nombreArchivo);
             $mail=Mail::find($request->mail_id);
             $mail->archivo=$nombreArchivo;
-            $mail->save();
-            return $nombreArchivo;
+            return $mail->save();
+
         }
         return true;
 
