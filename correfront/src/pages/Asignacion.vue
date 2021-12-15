@@ -106,7 +106,8 @@
                   <template v-if="props.row.estado=='ACEPTADO'">
                     <q-btn dense @click="modificar(props.row)" color="warning" label="Modifica" icon="edit" size="xs" />
                     <q-btn dense @click="diaglosasiganacion=true;mail=props.row" color="positive" label="Remitir" icon="code" size="xs" />
-                    <q-btn dense @click="impresion(props.row.mail_id)" color="info" label="ImprimirHR" icon="timeline" size="xs" />
+                    <q-btn dense @click="impresion(props.row.mail_id)" color="info" label="IMPHR" icon="timeline" size="xs" />
+                    <q-btn dense @click="impresion2(props.row.mail_id)" color="info" label="IMP" icon="print" size="xs" />
                     <q-btn dense @click="archivo(props.row)" color="amber" label="Subir " icon="upload" size="xs" />
                     <q-btn dense @click="archivar(props.row)" color="negative" label="Archivar" icon="list" size="xs" />
                   </template>
@@ -413,7 +414,21 @@ export default {
           myWindow.close();
         },500);
       })
-
+    },
+        impresion2(id){
+      // console.log(id)
+      // return false
+      this.$axios.post(process.env.API+'/impblanco/'+id).then(res=>{
+        console.log(res.data);
+        let myWindow = window.open("", "Imprimir", "width=200,height=100");
+        myWindow.document.write(res.data);
+        myWindow.document.close();
+        myWindow.focus();
+        setTimeout(function(){
+          myWindow.print();
+          myWindow.close();
+        },500);
+      })
     },
     archivar(mail){
       this.$q.dialog({
