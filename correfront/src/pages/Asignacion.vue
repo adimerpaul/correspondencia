@@ -25,7 +25,7 @@
                   <div class="col-sm-2 col-12 q-pa-xs"><q-input style="text-transform: uppercase" dense label="Cargo" v-model="cargo" outlined/></div>
                   <div class="col-sm-2 col-12 q-pa-xs"><q-input style="text-transform: uppercase" dense label="Institucion" v-model="institucion" outlined/></div>
                   <div class="col-sm-2 col-12 q-pa-xs"><q-input dense label="Fecha de correspondencia" v-model="dato.fecha" type="date" outlined/></div>
-                  <div class="col-sm-2 col-12 q-pa-xs"><q-select dense label="Folio" v-model="dato.folio" :options="folios" outlined /></div>
+                  <div class="col-sm-2 col-12 q-pa-xs"><q-select dense label="Fojas" v-model="dato.folio" :options="folios" outlined /></div>
 <!--                  <div class="col-sm-2 col-12 q-pa-xs"><q-input dense label="Cod externo" v-model="dato.codexterno" outlined /></div>-->
                   <div class="col-sm-2 col-12 q-pa-xs flex flex-center"><q-btn type="submit" color="primary" icon="add_circle" label="Registrar" v-if="dato.id==undefined || dato.id==''"/>
                     <q-btn type="submit" color="amber" icon="edit" label="Modificar" v-else /></div>
