@@ -100,10 +100,10 @@ class MailController extends Controller
     }
 
     public function upload(Request $request){
-        $this->validate($request, [
-            'imagen'=>'required',
-            'mail_id'=>'required'
-        ]);
+        // $this->validate($request, [
+        //     'imagen'=>'required',
+        //     'mail_id'=>'required'
+        // ]);
         if ($request->hasFile('imagen')) {
             $file=$request->file('imagen');
             $nombreArchivo = time().".".$file->getClientOriginalExtension();
