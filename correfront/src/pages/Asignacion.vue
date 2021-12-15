@@ -281,6 +281,8 @@ export default {
       //Replace http://localhost:8000 with your API URL
       this.$q.loading.show()
       this.$axios.post(process.env.API+'/upload', data).then((response) => {
+        console.log(response.data)
+        return false;
         this.misdatos()
         this.$q.loading.hide()
         // console.log(response.data);
