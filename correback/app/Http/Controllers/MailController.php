@@ -113,6 +113,7 @@ class MailController extends Controller
             $mail->save();
             return $nombreArchivo;
         }
+        return true;
 
     }
 
