@@ -108,7 +108,7 @@
                     <q-btn dense @click="diaglosasiganacion=true;mail=props.row" color="positive" label="Remitir" icon="code" size="xs" />
                     <q-btn dense @click="impresion(props.row.mail_id)" color="info" label="IMPHR" icon="timeline" size="xs" />
                     <q-btn dense @click="impresion2(props.row.mail_id)" color="info" label="IMP" icon="print" size="xs" />
-                    <q-btn dense @click="archivo(props.row)" color="amber" label="Subir " icon="upload" size="xs" />
+                    <q-btn dense @click="archivo(props.row)" color="amber" label="Adjuntar " icon="upload" size="xs" />
                     <q-btn dense @click="archivar(props.row)" color="negative" label="Archivar" icon="list" size="xs" />
                   </template>
 <!--                </q-btn-group>-->
