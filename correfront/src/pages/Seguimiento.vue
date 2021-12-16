@@ -25,7 +25,7 @@
           <div class="col-6 q-pa-xs"><q-input dense label="cargo" v-model="email.cargo" outlined/></div>
           <div class="col-6 q-pa-xs"><q-input dense label="institucion" v-model="email.institucion" outlined/></div>
           <div class="col-6 q-pa-xs"><q-input dense label="fecha" v-model="email.fecha" outlined/></div>
-          <div class="col-6 q-pa-xs"><q-input dense label="folio" v-model="email.folio" outlined/></div>
+          <div class="col-6 q-pa-xs"><q-input dense label="Fojas" v-model="email.folio" outlined/></div>
           <div class="col-6 q-pa-xs"><q-input dense label="estado" v-model="email.estado" outlined/></div>
           <div class="col-12 q-pa-xs"><q-btn type="a" :href="url+'/../imagenes/'+email.archivo" target="__blank" v-if="email.archivo!='' && email.archivo!=undefined" class="full-width" color="primary" icon="file_download"  :label="email.archivo" outlined/></div>
         </div>

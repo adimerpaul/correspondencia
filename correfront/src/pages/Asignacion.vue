@@ -213,7 +213,7 @@ export default {
         // {name:'logs',field:row=>'logs',label:'logs',align:'left'},
         {name:'dias',field:'dias',label:'dias',align:'right'},
         // {field:'estado',name:'estado',label:'estado',align:'right'},
-        {name:'folio',field:'folio',label:'folio',align:'right'},
+        {name:'folio',field:'folio',label:'Fojas',align:'right'},
         {name:'archivo',field:'archivo',label:'archivo',align:'right'},
         {name:'opciones',field:'opciones',label:'opciones',align:'right'},
       ]
