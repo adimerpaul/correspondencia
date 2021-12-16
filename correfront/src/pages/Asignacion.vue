@@ -105,10 +105,10 @@
                 </template >
                   <template v-if="props.row.estado=='ACEPTADO'">
                     <q-btn dense @click="modificar(props.row)" color="warning" label="Modifica" icon="edit" size="xs" />
-                    <q-btn dense @click="diaglosasiganacion=true;mail=props.row" color="positive" label="Remitir" icon="code" size="xs" />
+                    <q-btn dense @click="diaglosasiganacion=true;mail=props.row; dest=[]" color="positive" label="Remitir" icon="code" size="xs" />
                     <q-btn dense @click="impresion(props.row.mail_id)" color="info" label="IMPHR" icon="timeline" size="xs" />
                     <q-btn dense @click="impresion2(props.row.mail_id)" color="info" label="IMP" icon="print" size="xs" />
-                    <q-btn dense @click="archivo(props.row)" color="amber" label="Adjuntar " icon="upload" size="xs" />
+                    <q-btn dense @click="archivo(props.row)" color="amber" label="Subir " icon="upload" size="xs" />
                     <q-btn dense @click="archivar(props.row)" color="negative" label="Archivar" icon="list" size="xs" />
                   </template>
 <!--                </q-btn-group>-->
@@ -122,7 +122,7 @@
             </q-card-section>
             <q-card-section class="q-pt-none">
               <q-form @submit.prevent="registrarlog">
-                <q-input type="textarea" outlined label="Mi acccion" v-model="miaccion" required/>
+                <q-input type="textarea" outlined label="Instruccion / Observacion" v-model="miaccion" required/>
 <!--                <q-select :options="usuarios" label="Seleccionar personal" v-model="usuario" outlined required/>-->
                 <q-select use-input :options="usuarios" label="Seleccionar personal" v-model="usuario" @filter="filterFn" outlined >
                   <template v-slot:no-option>
@@ -253,7 +253,7 @@ export default {
         if(element.id==this.usuario.id)
           verif=true;
       });
-      if(!verif)
+      if(!verif && this.usuario!='')
         this.dest.push(this.usuario);
     },
     filterFn (val, update) {
