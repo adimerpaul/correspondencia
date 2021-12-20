@@ -50,6 +50,7 @@
         <tr>
           <th>#</th>
           <th>A</th>
+          <th>DE</th>
           <th>Unidad</th>
           <th>Accion</th>
           <th>Estado</th>
@@ -57,6 +58,8 @@
         <tr v-for="(l,index) in email.logs" :key="l.id">
           <td>{{index+1}}</td>
           <td>{{l.user2.name}}</td>
+          <td v-if="l.user!=undefined">{{l.user.name}}</td>
+          <td v-else></td>
           <td>{{l.user2.unit.nombre}}</td>
           <td>{{l.accion}}</td>
           <td><q-badge :color="l.estado=='REMITIDO'||l.estado=='ARCHIVADO'?'positive':'negative'">{{l.estado}}</q-badge></td>
