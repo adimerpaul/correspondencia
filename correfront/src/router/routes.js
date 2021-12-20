@@ -4,11 +4,14 @@ import User from "pages/User";
 import Seguimiento from "pages/Seguimiento";
 import Asignacion from "pages/Asignacion";
 import Misrecepciones from "pages/Misrecepciones";
+import MainLayout from "layouts/MainLayout";
+import Consulta from "pages/Consulta";
+import MainLayoutPublico from "layouts/MainLayoutPublico";
 
 const routes = [
   {
     path: '/',
-    component: () => import('layouts/MainLayout.vue'),
+    component: MainLayout,
     children: [
       { path: '', component: Login },
       { path: '/recepcion', component: Recepcion,meta: {requiresAuth: true,} },
@@ -18,7 +21,13 @@ const routes = [
       { path: '/misrecepciones', component: Misrecepciones,meta: {requiresAuth: true,} },
     ]
   },
-
+  {
+    path: '/consulta',
+    component: MainLayoutPublico,
+    children: [
+      { path: '', component: Consulta },
+    ]
+  },
   // Always leave this as last one,
   // but you can also remove it
   {

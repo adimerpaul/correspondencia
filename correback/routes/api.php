@@ -50,3 +50,4 @@ Route::group(['middleware'=>'auth:sanctum'],function (){
     Route::post('/impblanco/{id}',[\App\Http\Controllers\MailController::class,'impblanco']);
 });
 Route::get('/mail/{mail}/{user}',[\App\Http\Controllers\MailController::class,'show']);
+Route::post('/con',[\App\Http\Controllers\MailController::class,'con']);

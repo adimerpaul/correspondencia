@@ -19,6 +19,7 @@ class MailController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
     public function index(Request $request)
     {
 //        return Mail::where('unit_id',$request->user()->unit_id)->get();
@@ -135,6 +136,10 @@ class MailController extends Controller
             ->whereRaw('fecha>=? AND fecha<=? ',[$request->fecha1,$request->fecha2])
             ->with('logs')
             ->get();
+    }
+    public function con(Request $request){
+//        return $request;
+        return Mail::where('codigo',$request->codigo)->with('logs')->get();
     }
 
     /**
