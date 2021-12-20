@@ -373,15 +373,16 @@ font-size: 13px;
     }
 
     public function anulado(Request $request){
-        $mail=Log::find($request->mail_id);
+        $log=Log::where('mail_id',$request->mail_id)->get()->last();
+
+        $log->estado='ARCHIVADO';
+        $log->archivado=$request->accion;
+        $log->save();
+
+        $mail=Mail::find($request->mail_id);
         $mail->estado='ARCHIVADO';
-        $mail->accion=$request->accion;
         $mail->save();
 
-//        $mail=Mail::find($request->mail_id);
-//        $mail->estado='ANULADO';
-//        $mail->save();
-//
 //        $log=new Log();
 //        $log->mail_id=$request->mail_id;
 //        $log->user_id=null;

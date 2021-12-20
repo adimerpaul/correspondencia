@@ -18,6 +18,7 @@ class Log extends Model
         'fecha',
         'hora',
         'accion',
+        'archivado',
         'unid_id',
     ];
     public function user(){
