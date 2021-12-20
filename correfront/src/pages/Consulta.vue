@@ -108,7 +108,7 @@ export default {
       this.email={}
       // console.log(this.codigo)
       this.$axios.post(process.env.API+'/con',{codigo:this.codigo}).then(res=>{
-         console.log(res.data)
+         // console.log(res.data)
         if (res.data.length>0)
         this.email=res.data[0]
         this.$q.loading.hide()
