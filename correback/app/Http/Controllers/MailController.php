@@ -212,7 +212,7 @@ class MailController extends Controller
         $mail=Mail::find($request->mail_id);
         $mail->tipo = $request->tipo;
         $mail->ref=$request->ref;
-        $mail->fechacarta= $request->fechacarta;
+        $mail->fecha= $request->fecha;
         $mail->folio= $request->folio;
         $mail->remitente= strtoupper( $request->remitente);
         $mail->cargo=strtoupper($request->cargo);
