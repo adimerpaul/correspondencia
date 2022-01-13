@@ -575,7 +575,7 @@ export default {
             remitente:r.mail.remitente,
             cargo:r.mail.cargo,
             institucion:r.mail.institucion,
-            fecha:r.fecha,
+            fecha:r.mail.fecha,
             fechacarta:r.mail.fechacarta,
             estado:r.estado,
             folio:r.mail.folio,
