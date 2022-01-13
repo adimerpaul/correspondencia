@@ -208,10 +208,10 @@ class MailController extends Controller
         return $mail;
     }
     public function updatemail(Request $request){
-        return $request;
-        $mail=Mail::find($request->id);
-//        $mail->tipo = $request->tipo;
-        $mail->ref = $request->ref;
+        //return $request;
+        $mail=Mail::find($request->mail_id);
+        $mail->tipo = $request->tipo;
+        $mail->ref=$request->ref;
         $mail->fechacarta= $request->fechacarta;
         $mail->folio= $request->folio;
         $mail->remitente= strtoupper( $request->remitente);
