@@ -407,7 +407,7 @@ export default {
       // return false
       this.$axios.post(process.env.API+'/impruta/'+id).then(res=>{
         console.log(res.data);
-        let myWindow = window.open("", "Imprimir", "width=200,height=100");
+        let myWindow = window.open("", "Imprimir", "width=1000,height=1000");
         myWindow.document.write(res.data);
         myWindow.document.close();
         myWindow.focus();
@@ -422,7 +422,7 @@ export default {
       // return false
       this.$axios.post(process.env.API+'/impblanco/'+id).then(res=>{
         console.log(res.data);
-        let myWindow = window.open("", "Imprimir", "width=200,height=100");
+        let myWindow = window.open("", "Imprimir", "width=1000,height=1000");
         myWindow.document.write(res.data);
         myWindow.document.close();
         myWindow.focus();
