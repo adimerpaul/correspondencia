@@ -646,8 +646,8 @@ export default {
       else{
         this.$q.loading.show()
         this.$axios.post(process.env.API+'/updatemail',this.dato).then(res=>{
-          console.log(res.data)
-          return false
+          //console.log(res.data)
+          //return false
           this.dato={tipo:'INTERNO',fecha:date.formatDate(Date.now(),'YYYY-MM-DD'),folio:1};
           this.remitente=''
           this.cargo=''
