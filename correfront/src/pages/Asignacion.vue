@@ -2,7 +2,7 @@
   <q-page class="q-pa-xs">
     <div class="row">
       <div class="col-12">
-        <q-btn label="Crear" icon="mail" color="primary" @click="crear = true,  dato={tipo:'INTERNO',fecha:date.formatDate(Date.now(),'YYYY-MM-DD'),folio:1},remitente='',cargo='',institucion=''" />
+        <q-btn label="Crear" icon="mail" color="primary" @click="fromcrear" />
         <q-btn label="Actualizar" icon="refresh" color="teal" @click="misdatos" />
         <q-dialog full-width v-model="crear">
           <q-card>
@@ -25,7 +25,7 @@
                   <div class="col-sm-2 col-12 q-pa-xs"><q-input style="text-transform: uppercase" dense label="Cargo" v-model="cargo" outlined/></div>
                   <div class="col-sm-2 col-12 q-pa-xs"><q-input style="text-transform: uppercase" dense label="Institucion" v-model="institucion" outlined/></div>
                   <div class="col-sm-2 col-12 q-pa-xs"><q-input dense label="Fecha de correspondencia" v-model="dato.fecha" type="date" outlined/></div>
-                  <div class="col-sm-2 col-12 q-pa-xs"><q-select dense label="Fojas" v-model="dato.folio" :options="folios" outlined /></div>
+                  <div class="col-sm-2 col-12 q-pa-xs"><q-input dense label="Fojas" v-model="dato.folio"  outlined /></div>
 <!--                  <div class="col-sm-2 col-12 q-pa-xs"><q-input dense label="Cod externo" v-model="dato.codexterno" outlined /></div>-->
                   <div class="col-sm-2 col-12 q-pa-xs flex flex-center"><q-btn type="submit" color="primary" icon="add_circle" label="Registrar" v-if="dato.id==undefined || dato.id==''"/>
                     <q-btn type="submit" color="amber" icon="edit" label="Modificar" v-else /></div>
@@ -188,7 +188,7 @@ export default {
       dialogarchivo:false,
       url:process.env.API,
       dato:{tipo:'INTERNO',fecha:date.formatDate(Date.now(),'YYYY-MM-DD'),folio:1},
-      folios:[],
+      //folios:[],
       usuarios:[],
       usuarios2:[],
       mails:[],
@@ -221,9 +221,9 @@ export default {
   },
   created() {
     this.misdatos()
-    for (let i=1;i<=1000;i++){
-      this.folios.push(i)
-    }
+    // for (let i=1;i<=1000;i++){
+    //   this.folios.push(i)
+    // }
     this.misremitentes()
 
     this.$axios.post(process.env.API+'/misremetentes').then(res=>{
@@ -240,6 +240,13 @@ export default {
     })
   },
   methods:{
+    fromcrear(){
+      this.crear = true;
+      this.dato={tipo:'INTERNO',fecha:date.formatDate(Date.now(),'YYYY-MM-DD'),folio:1}
+      this.remitente=''
+      this.cargo=''
+      this.institucion=''
+    },
     modificar(prop){
       this.crear=true;
       this.dato=prop;
