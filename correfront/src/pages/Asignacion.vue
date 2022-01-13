@@ -202,7 +202,7 @@ export default {
       dest:[],
       columns:[
         {name:'codigo',field:'codigo',label:'codigo',align:'right'},
-        {name:'fecha',field:'fecha',label:'fecha',align:'right'},
+        {name:'fechacarta',field:'fechacarta',label:'fechacarta',align:'right'},
         {name:'hora',field:'hora',label:'hora',align:'right'},
         // {field:'codinterno',name:'codinterno',label:'codinterno',align:'right'},
         {name:'ref',field:'ref',label:'ref',align:'right'},
