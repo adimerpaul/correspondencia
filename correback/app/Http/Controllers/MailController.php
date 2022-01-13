@@ -210,7 +210,7 @@ class MailController extends Controller
     public function updatemail(Request $request){
         //return $request;
         $mail=Mail::find($request->id);
-        $mail->tipo = $request->tipo;
+//        $mail->tipo = $request->tipo;
         $mail->ref = $request->ref;
         $mail->fechacarta= $request->fechacarta;
         $mail->folio= $request->folio;
