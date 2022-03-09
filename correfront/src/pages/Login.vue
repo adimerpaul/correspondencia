@@ -14,7 +14,7 @@
             narrow-indicator
           >
             <q-tab name="login" label="Ingresar" />
-            <q-tab name="registro" label="Registrarse" />
+<!--            <q-tab name="registro" label="Registrarse" />-->
           </q-tabs>
           <q-separator />
           <q-tab-panels v-model="tab" animated>
@@ -55,71 +55,71 @@
                 </div>
               </q-form>
             </q-tab-panel>
-            <q-tab-panel name="registro">
-              <div class="text-h6">Registrate </div>
-              Registro unico para usuarios de la Gamo
-              <q-form @submit.prevent="registrar">
-                <div class="row">
-                  <div class="col-12">
-                    <!--                    color="purple-12"-->
-                    <q-input outlined type="email" v-model="user.email" label="Email*" hint="Porfavor ingresar email" :rules="rule" required>
-                      <template v-slot:prepend>
-                        <q-icon name="email" />
-                      </template>
-                    </q-input>
-                  </div>
-                  <div class="col-12 q-pt-md">
-                    <q-input outlined v-model="user.carnet" label="Carnet o NIT*" hint="Porfavor ingresar carnet o nit" :rules="rule">
-                      <template v-slot:prepend>
-                        <q-icon name="credit_card" />
-                      </template>
-                    </q-input>
-                  </div>
-                  <div class="col-12 q-pt-md">
-                    <q-input outlined v-model="user.name" label="Nombre completo*" hint="Porfavor ingresar nombre completo" :rules="rule">
-                      <template v-slot:prepend>
-                        <q-icon name="people" />
-                      </template>
-                    </q-input>
-                  </div>
-                  <div class="col-12 q-pt-md">
-                    <q-input outlined v-model="user.password" label="password*" :type="isPwd ? 'password' : 'text'" hint="Porfavor ingresar carnet de identidad" :rules="rule">
-                      <template v-slot:prepend>
-                        <q-icon name="lock" />
-                      </template>
-                      <template v-slot:append>
-                        <q-icon
-                          :name="isPwd ? 'visibility_off' : 'visibility'"
-                          class="cursor-pointer"
-                          @click="isPwd = !isPwd"
-                        />
-                      </template>
-                    </q-input>
-                  </div>
-                  <div class="col-12 q-pt-md">
-                    <q-select use-input @filter="filterFn" outlined v-model="user.unit" label="Unidad*" :options="units" option-label="nombre"  hint="Porfavor ingresar unidad"  >
-                      <template v-slot:prepend>
-                        <q-icon name="home" />
-                      </template>
-                    </q-select>
-                  </div>
+<!--            <q-tab-panel name="registro">-->
+<!--              <div class="text-h6">Registrate </div>-->
+<!--              Registro unico para usuarios de la Gamo-->
+<!--              <q-form @submit.prevent="registrar">-->
+<!--                <div class="row">-->
 <!--                  <div class="col-12">-->
-<!--                    <q-input outlined v-model="user.direccion" label="Direccion*" hint="Direccion de donde vives" :rules="rule">-->
+<!--                    &lt;!&ndash;                    color="purple-12"&ndash;&gt;-->
+<!--                    <q-input outlined type="email" v-model="user.email" label="Email*" hint="Porfavor ingresar email" :rules="rule" required>-->
 <!--                      <template v-slot:prepend>-->
-<!--                        <q-icon name="home" />-->
+<!--                        <q-icon name="email" />-->
 <!--                      </template>-->
 <!--                    </q-input>-->
 <!--                  </div>-->
-                  <div class="col-12 q-py-md">
-                    <q-btn label="Crea tu cuenta" color="primary" icon="login" class="full-width" type="submit"/>
-                    <q-btn label="Ingresa" color="secondary" icon="how_to_reg" @click="tab='login'" class="full-width q-mt-xs" />
-                    <div class="text-caption q-py-xs">
-                      <a target="_blank" href="https://api.whatsapp.com/send?phone=59169603027&text=olvide mi contraseña gamo">Olvidate tu contraseña?</a>
-                    </div>
-                  </div>
-                </div>
-              </q-form>
-            </q-tab-panel>
+<!--                  <div class="col-12 q-pt-md">-->
+<!--                    <q-input outlined v-model="user.carnet" label="Carnet o NIT*" hint="Porfavor ingresar carnet o nit" :rules="rule">-->
+<!--                      <template v-slot:prepend>-->
+<!--                        <q-icon name="credit_card" />-->
+<!--                      </template>-->
+<!--                    </q-input>-->
+<!--                  </div>-->
+<!--                  <div class="col-12 q-pt-md">-->
+<!--                    <q-input outlined v-model="user.name" label="Nombre completo*" hint="Porfavor ingresar nombre completo" :rules="rule">-->
+<!--                      <template v-slot:prepend>-->
+<!--                        <q-icon name="people" />-->
+<!--                      </template>-->
+<!--                    </q-input>-->
+<!--                  </div>-->
+<!--                  <div class="col-12 q-pt-md">-->
+<!--                    <q-input outlined v-model="user.password" label="password*" :type="isPwd ? 'password' : 'text'" hint="Porfavor ingresar carnet de identidad" :rules="rule">-->
+<!--                      <template v-slot:prepend>-->
+<!--                        <q-icon name="lock" />-->
+<!--                      </template>-->
+<!--                      <template v-slot:append>-->
+<!--                        <q-icon-->
+<!--                          :name="isPwd ? 'visibility_off' : 'visibility'"-->
+<!--                          class="cursor-pointer"-->
+<!--                          @click="isPwd = !isPwd"-->
+<!--                        />-->
+<!--                      </template>-->
+<!--                    </q-input>-->
+<!--                  </div>-->
+<!--                  <div class="col-12 q-pt-md">-->
+<!--                    <q-select use-input @filter="filterFn" outlined v-model="user.unit" label="Unidad*" :options="units" option-label="nombre"  hint="Porfavor ingresar unidad"  >-->
+<!--                      <template v-slot:prepend>-->
+<!--                        <q-icon name="home" />-->
+<!--                      </template>-->
+<!--                    </q-select>-->
+<!--                  </div>-->
+<!--&lt;!&ndash;                  <div class="col-12">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <q-input outlined v-model="user.direccion" label="Direccion*" hint="Direccion de donde vives" :rules="rule">&ndash;&gt;-->
+<!--&lt;!&ndash;                      <template v-slot:prepend>&ndash;&gt;-->
+<!--&lt;!&ndash;                        <q-icon name="home" />&ndash;&gt;-->
+<!--&lt;!&ndash;                      </template>&ndash;&gt;-->
+<!--&lt;!&ndash;                    </q-input>&ndash;&gt;-->
+<!--&lt;!&ndash;                  </div>&ndash;&gt;-->
+<!--                  <div class="col-12 q-py-md">-->
+<!--                    <q-btn label="Crea tu cuenta" color="primary" icon="login" class="full-width" type="submit"/>-->
+<!--                    <q-btn label="Ingresa" color="secondary" icon="how_to_reg" @click="tab='login'" class="full-width q-mt-xs" />-->
+<!--                    <div class="text-caption q-py-xs">-->
+<!--                      <a target="_blank" href="https://api.whatsapp.com/send?phone=59169603027&text=olvide mi contraseña gamo">Olvidate tu contraseña?</a>-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--              </q-form>-->
+<!--            </q-tab-panel>-->
           </q-tab-panels>
         </q-card>
       </div>
