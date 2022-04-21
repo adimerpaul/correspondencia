@@ -31,6 +31,6 @@ class Log extends Model
         return $this->belongsTo(Unit::class);
     }
     public function mail(){
-        return $this->belongsTo(Mail::class);
+        return $this->belongsTo(Mail::class)->with('logs');
     }
 }

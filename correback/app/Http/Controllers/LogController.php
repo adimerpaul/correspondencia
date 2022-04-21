@@ -48,6 +48,7 @@ class LogController extends Controller
         $log->log_id=$loga->id;
         $log->user_id=$request->user()->id;
         $log->user_id2=$list['id'];
+        $log->unit_id=$list['unit_id'];
 //        $log->remitente=$request->user()->name;
 //        $log->destinatario=$list['name'];
         $log->accion=$request->accion;

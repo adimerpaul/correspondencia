@@ -49,5 +49,5 @@ Route::group(['middleware'=>'auth:sanctum'],function (){
     Route::post('/impruta/{id}',[\App\Http\Controllers\MailController::class,'impruta']);
     Route::post('/impblanco/{id}',[\App\Http\Controllers\MailController::class,'impblanco']);
 });
-Route::get('/mail/{mail}/{user}',[\App\Http\Controllers\MailController::class,'show']);
+Route::get('/mail/{mail}/{user}',[\App\Http\Controllers\MailController::class,'show2']);
 Route::post('/con',[\App\Http\Controllers\MailController::class,'con']);

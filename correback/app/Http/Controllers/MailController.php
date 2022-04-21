@@ -57,7 +57,12 @@ class MailController extends Controller
 //        ->orderBy('id','DESC')
 //        ->get();
 //        return Log::where('user_id2',$request->user()->id)->with('mail')->with('user')->with('user2')->get();
-        return Log::where('user_id2',$request->user()->id)->with('mail')->with('user')->with('user2')->orderBy('id','desc')->get();
+        return Log::where('unit_id',$request->user()->unit_id)
+            ->with('mail')
+            ->with('user')
+            ->with('user2')
+            ->orderBy('id','desc')
+            ->get();
     }
 
 
@@ -150,29 +155,29 @@ class MailController extends Controller
      */
     public function store(Request $request)
     {
-        if (Mail::whereYear('created_at',date('Y'))->where('unit_id',$request->user()->unit_id)->max("codinterno")==''){
-            $codigointerno=1;
-        }else{
-
-            $codigointerno=intval(Mail::whereYear('created_at',date('Y'))->where('unit_id',$request->user()->unit_id)->max("codinterno"))+1;
-            //return $codigointerno;
-        }
-//        return Mail::max("codinterno");
-        $user=User::where('id',$request->user()->id)->with('unit')->get();
-//        return $user[0]->unit->codigo;
+//        if (Mail::whereYear('created_at',date('Y'))->where('unit_id',$request->user()->unit_id)->max("codinterno")==''){
+//            $codigointerno=1;
+//        }else{
+//
+//            $codigointerno=intval(Mail::whereYear('created_at',date('Y'))->where('unit_id',$request->user()->unit_id)->max("codinterno"))+1;
+//            //return $codigointerno;
+//        }
+////        return Mail::max("codinterno");
+//        $user=User::where('id',$request->user()->id)->with('unit')->get();
+////        return $user[0]->unit->codigo;
+////        return $request;
+//        $query=Mail::where('remitente',strtoupper( $request->remitente));
+////        return  $query->count();
+//        if ($query->count()>0){
+//         DB::table('mails')->where('remitente',strtoupper( $request->remitente))->update([
+//             'cargo'=>strtoupper($request->cargo),
+//             'institucion'=>strtoupper($request->institucion),
+//         ]);
+//        }
 //        return $request;
-        $query=Mail::where('remitente',strtoupper( $request->remitente));
-//        return  $query->count();
-        if ($query->count()>0){
-         DB::table('mails')->where('remitente',strtoupper( $request->remitente))->update([
-             'cargo'=>strtoupper($request->cargo),
-             'institucion'=>strtoupper($request->institucion),
-         ]);
-        }
-//        return 'a';
 
         $mail=new Mail();
-        $mail->codigo=$user[0]->unit->codigo.str_pad($codigointerno, 4, '0', STR_PAD_LEFT).'/'.date('y');
+        $mail->codigo=$request->codigo;
         $mail->tipo=$request->tipo;
 //        $mail->tipo2=$request->tipo2;
         $mail->remitente= strtoupper( $request->remitente);
@@ -182,10 +187,10 @@ class MailController extends Controller
         $mail->fecha=date('Y-m-d');
         $mail->hora=date('H:i:s');
         $mail->fechacarta=$request->fecha;
-//        $mail->estado=$request->estado;
+//        $mail->estado='ACEPTADO';
         $mail->folio=$request->folio;
 //        $mail->archivo=$request->archivo;
-        $mail->codinterno=$codigointerno;
+//        $mail->codinterno=$codigointerno;
         $mail->codexterno=$request->codexterno;
         $mail->user_id=$request->user()->id;
         $mail->unit_id=$request->user()->unit_id;
@@ -196,7 +201,9 @@ class MailController extends Controller
         $log=new Log();
         $log->mail_id=$mail->id;
         $log->user_id=null;
+        $log->estado='ACEPTADO';
         $log->user_id2=$request->user()->id;
+        $log->unit_id=$request->user()->unit_id;
 //        $log->remitente='';
 //        $log->destinatario=$request->user()->name;
 //        $log->estado=$request->estado;
@@ -227,7 +234,10 @@ class MailController extends Controller
      * @param  \App\Models\Mail  $mail
      * @return \Illuminate\Http\Response
      */
-    public function show(Mail $mail,User $user)
+    public function show(Mail $mail){
+        return $mail;
+    }
+    public function show2(Mail $mail,User $user)
     {
 //        return $user;
         $pdf = App::make('dompdf.wrapper');

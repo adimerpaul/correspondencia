@@ -2,6 +2,9 @@
   <q-page class="q-pa-xs">
     <div class="row">
       <div class="col-12">
+<!--        <div class="col-12">-->
+<!--          <iframe id="docpdf" src="" frameborder="0" style="width: 100%;height: 100vh"></iframe>-->
+<!--        </div>-->
         <q-btn label="Crear" icon="mail" color="primary" @click="fromcrear" />
         <q-btn label="Actualizar" icon="refresh" color="teal" @click="misdatos" />
         <q-dialog full-width v-model="crear">
@@ -9,13 +12,12 @@
             <q-card-section>
               <div class="text-h6">Crear Hoja de ruta</div>
             </q-card-section>
-
             <q-card-section class="q-pt-none">
               <q-form @submit.prevent="guardar">
                 <div class="row" style="border: 1px solid rgba(128,128,128,0.50)">
                   <div class="col-6 flex flex-center"><q-radio dense v-model="dato.tipo" val="INTERNO" label="INTERNO"/></div>
                   <div class="col-6 flex flex-center"><q-radio dense v-model="dato.tipo" val="EXTERNO" label="EXTERNO"/></div>
-                  <div class="col-sm-6 col-12 q-pa-xs"><q-input style="text-transform: uppercase" dense autofocus label="Referencia" v-model="dato.ref" outlined/></div>
+                  <div class="col-sm-2 col-12 q-pa-xs"><q-input required dense label="CITE" autofocus v-model="dato.codigo"  outlined /></div>
                   <div class="col-sm-6 col-12 q-pa-xs">
                     <q-input  @keyup="cambio" style="text-transform: uppercase" outlined dense label="remitente" list="browsers" name="myBrowser" v-model="remitente" />
                     <datalist id="browsers">
@@ -24,6 +26,7 @@
                   </div>
                   <div class="col-sm-2 col-12 q-pa-xs"><q-input style="text-transform: uppercase" dense label="Cargo" v-model="cargo" outlined/></div>
                   <div class="col-sm-2 col-12 q-pa-xs"><q-input style="text-transform: uppercase" dense label="Institucion" v-model="institucion" outlined/></div>
+                  <div class="col-sm-6 col-12 q-pa-xs"><q-input style="text-transform: uppercase" dense  label="Referencia" v-model="dato.ref" outlined/></div>
                   <div class="col-sm-2 col-12 q-pa-xs"><q-input dense label="Fecha de correspondencia" v-model="dato.fecha" type="date" outlined/></div>
                   <div class="col-sm-2 col-12 q-pa-xs"><q-input dense label="Fojas" v-model="dato.folio"  outlined /></div>
 <!--                  <div class="col-sm-2 col-12 q-pa-xs"><q-input dense label="Cod externo" v-model="dato.codexterno" outlined /></div>-->
@@ -56,32 +59,34 @@
           <template v-slot:body-cell-ref="props">
               <q-td key="ref" :props="props">
                 <!--            <q-badge color="orange">-->
-                <q-badge color="info" v-if="props.row.ref!=''" @click="mostrar(props.row.ref)">
-                  {{ props.row.ref.substring(0,10) }}...
-                </q-badge>
+<!--                <q-badge color="info" v-if="props.row.ref!=''" @click="mostrar(props.row.ref)">-->
+                  {{ props.row.ref.substring(0,10) }}
+<!--                </q-badge>-->
                 <!--            </q-badge>-->
               </q-td>
           </template>
           <template v-slot:body-cell-logs="props">
               <q-td key="logs" :props="props">
-                <ul style="font-size: 0.6em;padding: 0px;margin: 0px;border: 0px;    list-style: none;">
-                  <li v-for="l in props.row.logs" :key="l.id">de {{l.remitente}} a {{l.destinatario}}</li>
+                <ul style="font-size: 0.8em;padding: 0px;margin: 0px;border: 0px;    list-style: none;">
+                  <li v-for="l in props.row.logs" :key="l.id">
+                    <q-btn @click="impresion(l)" v-if="l.estado=='EN PROCESO'" size="xs" icon="print" color="info" flat round/>
+                    {{l.unit.nombre}}
+                    <q-badge :color="l.estado=='REMITIDO'||l.estado=='ARCHIVADO'?'positive':'negative'" :label="l.estado" />
+                  </li>
                 </ul>
                 <!--            </q-badge>-->
               </q-td>
           </template>
-          <template v-slot:body-cell-dias="props">
-              <q-td key="dias" :props="props">
-                <q-badge :color="props.row.dias==0?'positive':props.row.dias==1?'amber':'negative'">
-                  {{ props.row.dias }} d
-                </q-badge>
-              </q-td>
-          </template>
-          <template v-slot:body-cell-estado="props">
-              <q-td key="estado" :props="props">
-                <q-badge :color="props.row.estado=='EN PROCESO'?'amber':'negative'">
-                  {{ props.row.estado }}
-                </q-badge>
+<!--          <template v-slot:body-cell-dias="props">-->
+<!--              <q-td key="dias" :props="props">-->
+<!--                <q-badge :color="props.row.dias==0?'positive':props.row.dias==1?'amber':'negative'">-->
+<!--                  {{ props.row.dias }} d-->
+<!--                </q-badge>-->
+<!--              </q-td>-->
+<!--          </template>-->
+          <template v-slot:body-cell-fecha="props">
+              <q-td  :props="props">
+<!--                 <div class="text-h6"> {{props.row.fecha}}<br>{{props.row.hora}}</div>-->
               </q-td>
           </template>
           <template v-slot:body-cell-archivo="props">
@@ -91,8 +96,8 @@
                 </template>
               </q-td>
           </template>
-          <template v-slot:body-cell-opciones="props">
-              <q-td key="opciones" :props="props">
+          <template  v-slot:body-cell-opciones="props">
+              <q-td auto-width key="opciones" :props="props">
 <!--                <q-btn-group>-->
                   <template v-if="props.row.estado=='EN PROCESO'">
                     <q-btn dense @click="aceptar(props.row)" color="info" label="Aceptar" icon="code" size="xs" />
@@ -104,12 +109,43 @@
                   <small style="color: darkgreen;font-weight: bold">Remitido</small>
                 </template >
                   <template v-if="props.row.estado=='ACEPTADO'">
-                    <q-btn dense @click="modificar(props.row)" color="warning" label="Modifica" icon="edit" size="xs" />
-                    <q-btn dense @click="diaglosasiganacion=true;mail=props.row; dest=[]" color="positive" label="Remitir" icon="code" size="xs" />
-                    <q-btn dense @click="impresion(props.row.mail_id)" color="info" label="IMPHR" icon="timeline" size="xs" />
-                    <q-btn dense @click="impresion2(props.row.mail_id)" color="info" label="IMP" icon="print" size="xs" />
-                    <q-btn dense @click="archivo(props.row)" color="amber" label="Subir " icon="upload" size="xs" />
-                    <q-btn dense @click="archivar(props.row)" color="negative" label="Archivar" icon="list" size="xs" />
+                    <q-btn-dropdown color="primary" label="Opciones">
+                      <q-list>
+                        <q-item clickable v-close-popup @click="modificar(props.row)">
+                          <q-item-section>
+                            <q-item-label>Modificar Correspodencia</q-item-label>
+                          </q-item-section>
+                        </q-item>
+
+                        <q-item clickable v-close-popup @click="diaglosasiganacion=true;mail=props.row; dest=[]">
+                          <q-item-section>
+                            <q-item-label>Remitir correspodencia</q-item-label>
+                          </q-item-section>
+                        </q-item>
+
+                        <q-item clickable v-close-popup @click="impresion(props.row)">
+                          <q-item-section>
+                            <q-item-label>Imprimir HR</q-item-label>
+                          </q-item-section>
+                        </q-item>
+                        <q-item clickable v-close-popup @click="archivo(props.row)">
+                          <q-item-section>
+                            <q-item-label>Subir Archivo</q-item-label>
+                          </q-item-section>
+                        </q-item>
+                        <q-item clickable v-close-popup @click="archivar(props.row)">
+                          <q-item-section>
+                            <q-item-label>Archivar</q-item-label>
+                          </q-item-section>
+                        </q-item>
+                      </q-list>
+                    </q-btn-dropdown>
+<!--                    <q-btn dense @click="modificar(props.row)" color="warning" label="Modifica Correspondencia" icon="edit" size="xs" /><br>-->
+<!--                    <q-btn dense @click="diaglosasiganacion=true;mail=props.row; dest=[]" color="positive" label="Remitir Correspodencia" icon="code" size="xs" /><br>-->
+<!--                    <q-btn dense @click="impresion(props.row.mail_id)" color="info" label="Imprimir Hoja Ruta" icon="picture_as_pdf" size="xs" /><br>-->
+<!--&lt;!&ndash;                    <q-btn dense @click="impresion2(props.row.mail_id)" color="info" label="IMP" icon="print" size="xs" /><br>&ndash;&gt;-->
+<!--                    <q-btn dense @click="archivo(props.row)" color="amber" label="Subir Archivo a nube" icon="upload" size="xs" /><br>-->
+<!--                    <q-btn dense @click="archivar(props.row)" color="negative" label="Archivar Correspondencia" icon="list" size="xs" /><br>-->
                   </template>
 <!--                </q-btn-group>-->
               </q-td>
@@ -175,7 +211,9 @@
 
 <script>
 // import $ from 'jquery'
-// import { jsPDF } from "jspdf";
+import { jsPDF } from "jspdf";
+import { format, render, cancel, register } from 'timeago.js';
+import $ from 'jquery'
 import {date} from 'quasar'
 export default {
   data(){
@@ -201,25 +239,33 @@ export default {
       institucion:'',
       dest:[],
       columns:[
-        {name:'codigo',field:'codigo',label:'codigo',align:'right'},
-        {name:'fecha',field:'fecha',label:'fecha',align:'right'},
-        {name:'hora',field:'hora',label:'hora',align:'right'},
+
+        {name:'opciones',field:'opciones',label:'opciones',align:'right'},
+        {name:'codigo',field:'codigo',label:'CITE',align:'left'},
+        {name:'logs',field:'logs',label:'HISTORIAL',align:'left'},
+        {name:'remitente',field:'remitente',label:'Remitente',align:'left'},
+        {name:'ref',field:'ref',label:'Referencia',align:'left'},
+        // {name:'fecha',field:'fecha',label:'fecha',align:'right'},
+        // {name:'hora',field:'hora',label:'hora',align:'right'},
         // {field:'codinterno',name:'codinterno',label:'codinterno',align:'right'},
-        {name:'ref',field:'ref',label:'ref',align:'right'},
-        {name:'remitente',field:'remitente',label:'remitente',align:'right'},
+        // {name:'ref',field:'ref',label:'ref',align:'right'},
         // {field:'cargo',name:'cargo',label:'cargo',align:'right'},
         // {field:'institucion',name:'institucion',label:'institucion',align:'right'},
         // {field:'fecha',name:'fecha',label:'fecha',align:'right'},
         // {name:'logs',field:row=>'logs',label:'logs',align:'left'},
         {name:'dias',field:'dias',label:'dias',align:'right'},
         // {field:'estado',name:'estado',label:'estado',align:'right'},
-        {name:'folio',field:'folio',label:'Fojas',align:'right'},
-        {name:'archivo',field:'archivo',label:'archivo',align:'right'},
-        {name:'opciones',field:'opciones',label:'opciones',align:'right'},
+        // {name:'folio',field:'folio',label:'Fojas',align:'right'},
+        // {name:'archivo',field:'archivo',label:'archivo',align:'right'},
+
       ]
     }
   },
+  mounted() {
+
+  },
   created() {
+
     this.misdatos()
     // for (let i=1;i<=1000;i++){
     //   this.folios.push(i)
@@ -327,7 +373,7 @@ export default {
         //unit_id:this.usuario.unit_id,
         accion:this.miaccion
       }).then(res=>{
-        console.log(res.data)
+        // console.log(res.data)
         this.misdatos()
         this.$q.loading.hide()
         this.diaglosasiganacion=false
@@ -402,20 +448,248 @@ export default {
         message:ref
       })
     },
-    impresion(id){
-      // console.log(id)
-      // return false
-      this.$axios.post(process.env.API+'/impruta/'+id).then(res=>{
-        console.log(res.data);
-        let myWindow = window.open("", "Imprimir", "width=1000,height=1000");
-        myWindow.document.write(res.data);
-        myWindow.document.close();
-        myWindow.focus();
-        setTimeout(function(){
-          myWindow.print();
-          myWindow.close();
-        },700);
+    impresion(l){
+      // console.log(l)
+      this.$q.loading.show()
+      this.$axios.get(process.env.API+'/mail/'+l.mail_id).then(res=>{
+        // console.log(res.data)
+        let m=res.data
+        this.$q.loading.hide()
+        var doc = new jsPDF()
+        // doc.setFont("arial");
+
+        // doc.setFont('Arial');
+        // var img = new Image()
+        // img.src = 'logo.jpg'
+        // doc.addImage(img, 'jpg', 190, 3, 70, 20)
+        let x=0
+        let y=0
+        //INICIO CABEZERA
+        doc.setDrawColor(122);
+        doc.roundedRect(5, 10, 200, 282, 2, 2, 'S')//principal
+        doc.roundedRect(8, 22, 194, 30, 2, 2, 'S')//destinatario 1
+        doc.roundedRect(58, 22, 20, 30, 2, 2, 'S')//el logo HR
+        doc.roundedRect(183, 11, 20, 8, 1, 1, 'S')//hoja1 hoja de ruta
+        doc.setFillColor(158,158,158)
+        doc.line(8, 28, 58, 28)//line n
+        doc.line(8, 36, 58, 36)//line fecha recepcion
+        doc.line(8, 46, 58, 46)//line hora repeccion
+        doc.line(78, 26, 202, 26)//line remitente
+        doc.line(78, 31, 202, 31)//line entidad
+        doc.line(78, 36, 202, 36)//line CITE
+        doc.line(78, 41, 202, 41)//line referecnia
+        doc.line(78, 46, 202, 46)//line hojas
+        doc.roundedRect(70, 5, 70, 10, 2, 2, 'F') // fondo gamo
+        doc.setFontSize(35);
+        doc.setFont('times', 'bold');
+        doc.setTextColor(255,255,255)
+        doc.text('GAMO',85,14)
+        doc.setTextColor(0,0,0)
+        doc.setFontSize(37);
+        doc.text('HR',58,38)
+        doc.setFontSize(7);
+        doc.text('HOJA DE RUTA',59,42)
+        doc.setTextColor(158,158,158)
+        doc.setFontSize(10);
+        doc.text('HOJA 1',187,14)
+        doc.setFontSize(7);
+        doc.text('HOJA DE RUTA',184,17)
+        doc.setTextColor(0,0,0)
+        doc.setFontSize(11)
+        doc.text('REGISTRO DE CORRESPONDENCIA - HOJA DE RUTA',58,20)
+        doc.setFontSize(15)
+        doc.text('Nº',10,27)
+        doc.setFont(undefined, 'normal');
+        doc.text(l.id.toString(),45,27,'center')
+        doc.setFont('times', 'bold');
+        doc.setFontSize(10)
+        doc.text(['FECHA DE','RECEPCION:'],10,31)
+        doc.setFont(undefined, 'normal');
+        doc.text(l.fecha.toString(),45,33,'center')
+        doc.setFont('times', 'bold');
+        doc.text(['HORA DE','RECEPCION:'],10,40)
+        doc.setFont(undefined, 'normal');
+        doc.text(l.hora.toString(),45,42,'center')
+        doc.setFont('times', 'bold');
+        doc.text(['OBS:'],10,49)
+        doc.text('REMITENTE:',80,25)
+        doc.setFont('times', 'normal');
+        doc.text(m.remitente,152,25,'center')
+        doc.setFont('times', 'bold');
+        doc.text('ENTIDAD:',80,30)
+        doc.setFont('times', 'normal');
+        doc.text(m.institucion,152,30,'center')
+        doc.setFont('times', 'bold');
+        doc.text('CITE:',80,35)
+        doc.setFont('times', 'normal');
+        doc.text(m.codigo,152,35,'center')
+        doc.setFont('times', 'bold');
+        doc.text('REF:',80,40)
+        doc.setFont('times', 'normal');
+        doc.text(m.ref,152,40,'center')
+        doc.setFont('times', 'bold');
+        doc.text('HOJAS:',80,45)
+        doc.setFont('times', 'normal');
+        doc.text(m.folio,152,45,'center')
+        doc.setFont('times', 'bold');
+        doc.text('DESTINATARIO 1:',80,50)
+        doc.setFont(undefined, 'normal');
+        doc.text(l.user2.name,152,50,'center')
+        doc.setFont('times', 'bold');
+        //FIN CABEZERA
+        //INICIO CORRESPONDENCIA
+        let con=2
+        for (let i=0;i<3;i++){
+          doc.roundedRect(8, 52+i*80, 194, 80, 2, 2, 'S')
+
+          doc.setFontSize(6)
+          doc.text(['ATENDRE TRAMITE DE','A CUERDO','A PROCEDIMIENTO','VIGENTE Y NORMATIVA'],21,54+i*80,{align:'center'})
+          doc.setFontSize(10)
+          doc.text('RESPONDER',21,69+i*80,{align:'center'})
+          doc.text('INFORME',21,79+i*80,{align:'center'})
+          doc.text('TOME ACCION',21,89+i*80,{align:'center'})
+          doc.text('NOTIFICAR',21,99+i*80,{align:'center'})
+          doc.setFontSize(6)
+          doc.text(['PROCESAR CONFORME','EL PROVEIDO QUE','ANTECEDE'],21,106+i*80,{align:'center'})
+          doc.setFontSize(9)
+          doc.text(['PROYECTAR','NOTA'],21,117+i*80,{align:'center'})
+          doc.text('ARCHIVAR',21,129+i*80,{align:'center'})
+          doc.roundedRect(35, 52+i*80, 5, 10, 1, 1, 'S')
+          doc.line(8, 62+i*80, 40, 62+i*80)//line1
+          doc.roundedRect(35, 62+i*80, 5, 10, 1, 1, 'S')
+          doc.line(8, 72+i*80, 40, 72+i*80)//line2
+          doc.roundedRect(35, 72+i*80, 5, 10, 1, 1, 'S')
+          doc.line(8, 82+i*80, 40, 82+i*80)//line3
+          doc.roundedRect(35, 82+i*80, 5, 10, 1, 1, 'S')
+          doc.line(8, 92+i*80, 40, 92+i*80)//line4
+          doc.roundedRect(35, 92+i*80, 5, 10, 1, 1, 'S')
+          doc.line(8, 102+i*80, 40, 102+i*80)//line5
+          doc.roundedRect(35, 102+i*80, 5, 10, 1, 1, 'S')
+          doc.line(8, 112+i*80, 40, 112+i*80)//line5
+          doc.roundedRect(35, 112+i*80, 5, 10, 1, 1, 'S')
+          doc.line(8, 122+i*80, 40, 122+i*80)//line6
+          doc.roundedRect(35, 122+i*80, 5, 10, 1, 1, 'S')
+
+          doc.text('INSTRUCCIONES:',85,55+i*80,{align:'center'})
+          doc.text('_________________',85,55+i*80,{align:'center'})
+          doc.text('.................................................................................................................',40,62+i*80)
+          doc.text('.................................................................................................................',40,67+i*80)
+          doc.text('.................................................................................................................',40,72+i*80)
+          doc.text('.................................................................................................................',40,77+i*80)
+          doc.text('.................................................................................................................',40,82+i*80)
+          doc.text('.................................................................................................................',40,87+i*80)
+          doc.text('.................................................................................................................',40,92+i*80)
+          doc.text('.................................................................................................................',40,97+i*80)
+          doc.text('.................................................................................................................',40,102+i*80)
+          doc.text('.................................................................................................................',40,107+i*80)
+          doc.text('.................................................................................................................',40,112+i*80)
+          doc.text('.................................................................................................................',40,117+i*80)
+          doc.text('.................................................................................................................',40,122+i*80)
+          doc.text('.................................................................................................................',40,127+i*80)
+          doc.text('FIRMAR',115,130+i*80)
+
+          doc.roundedRect(130, 52+i*80, 72, 80, 1, 1, 'S')
+          doc.line(130, 59+i*80, 202, 59+i*80)//line1
+          doc.line(130, 126+i*80, 202, 126+i*80)//line2
+          doc.text('DESTINATARIO '+con+':',132,57+i*80)
+          doc.text('SELLO DE RECEPCION '+con+':',150,125+i*80)
+          doc.text('FECHA:',132,130+i*80)
+          doc.text('HORA:',172,130+i*80)
+          con++
+        }
+
+        doc.addPage();
+        doc.setFont('times', 'bold');
+        doc.setDrawColor(122);
+        doc.roundedRect(5, 10, 200, 282, 2, 2, 'S')//principal
+        doc.roundedRect(183, 11, 20, 8, 1, 1, 'S')//hoja1 hoja de ruta
+        doc.setTextColor(158,158,158)
+        doc.setFontSize(10);
+        doc.text('HOJA 2',187,14)
+        doc.setFontSize(7);
+        doc.text('HOJA DE RUTA',184,17)
+        doc.setTextColor(0,0,0)
+
+
+        con=5
+
+        for (let i=0;i<4;i++){
+          // doc.roundedRect(8, 52+i*80, 194, 80, 2, 2, 'S')
+          doc.roundedRect(8, 20+i*68, 194, 68, 2, 2, 'S')
+
+          doc.setFontSize(5)
+          doc.text(['ATENDRE TRAMITE DE','A CUERDO','A PROCEDIMIENTO','VIGENTE Y NORMATIVA'],21,22+i*68,{align:'center'})
+          doc.setFontSize(9)
+          doc.text('RESPONDER',21,34+i*68,{align:'center'})
+          doc.text('INFORME',21,43+i*68,{align:'center'})
+          doc.text('TOME ACCION',21,51+i*68,{align:'center'})
+          doc.text('NOTIFICAR',21,60+i*68,{align:'center'})
+          doc.setFontSize(6)
+          doc.text(['PROCESAR CONFORME','EL PROVEIDO QUE','ANTECEDE'],21,65+i*68,{align:'center'})
+          doc.setFontSize(9)
+          doc.text(['PROYECTAR','NOTA'],21,75+i*68,{align:'center'})
+          doc.text('ARCHIVAR',21,85+i*68,{align:'center'})
+          doc.roundedRect(35, 20+i*68, 5, 8.5, 1, 1, 'S')
+          doc.roundedRect(35, 28.5+i*68, 5, 8.5, 1, 1, 'S')
+          doc.roundedRect(35, 37+i*68, 5, 8.5, 1, 1, 'S')
+          doc.roundedRect(35, 45.5+i*68, 5, 8.5, 1, 1, 'S')
+          doc.roundedRect(35, 54+i*68, 5, 8.5, 1, 1, 'S')
+          doc.roundedRect(35, 62.5+i*68, 5, 8.5, 1, 1, 'S')
+          doc.roundedRect(35, 71+i*68, 5, 8.5, 1, 1, 'S')
+          doc.roundedRect(35, 79.5+i*68, 5, 8.5, 1, 1, 'S')
+          doc.line(8, 28.5+i*68, 40, 28.5+i*68)//line1
+          doc.line(8, 37+i*68, 40, 37+i*68)//line2
+          doc.line(8, 45.5+i*68, 40, 45.5+i*68)//line3
+          doc.line(8, 54+i*68, 40, 54+i*68)//line4
+          doc.line(8, 62.5+i*68, 40, 62.5+i*68)//line5
+          doc.line(8, 71+i*68, 40, 71+i*68)//line5
+          doc.line(8, 79.5+i*68, 40, 79.5+i*68)//line6
+
+          doc.text('INSTRUCCIONES:',85,23+i*68,{align:'center'})
+          doc.text('_________________',85,23+i*68,{align:'center'})
+          doc.text('.................................................................................................................',40,28.5+i*68)
+          doc.text('.................................................................................................................',40,33+i*68)
+          doc.text('.................................................................................................................',40,37+i*68)
+          doc.text('.................................................................................................................',40,41.5+i*68)
+          doc.text('.................................................................................................................',40,45.5+i*68)
+          doc.text('.................................................................................................................',40,50+i*68)
+          doc.text('.................................................................................................................',40,54+i*68)
+          doc.text('.................................................................................................................',40,58.5+i*68)
+          doc.text('.................................................................................................................',40,62.5+i*68)
+          doc.text('.................................................................................................................',40,67+i*68)
+          doc.text('.................................................................................................................',40,71+i*68)
+          doc.text('.................................................................................................................',40,75.5+i*68)
+          doc.text('.................................................................................................................',40,79.5+i*68)
+          doc.text('.................................................................................................................',40,84+i*68)
+          doc.text('FIRMAR',115,87+i*68)
+
+          doc.roundedRect(130, 20+i*68, 72, 68, 1, 1, 'S')
+          doc.line(130, 24+i*68, 202, 24+i*68)//line1
+          doc.line(130, 84+i*68, 202, 84+i*68)//line2
+          doc.text('DESTINATARIO '+con+':',132,23+i*68)
+          doc.text('SELLO DE RECEPCION '+con+':',150,83+i*68)
+          doc.text('FECHA:',132,87+i*68)
+          doc.text('HORA:',172,87+i*68)
+          con++
+        }
+        // $( '#docpdf' ).attr('src', doc.output('datauristring'));
+        // // doc.save("Pago"+date.formatDate(Date.now(),'DD-MM-YYYY')+".pdf");
+        window.open(doc.output('bloburl'), '_blank');
       })
+      // console.log(c)
+
+      // return false
+      // this.$axios.post(process.env.API+'/impruta/'+id).then(res=>{
+      //   console.log(res.data);
+      //   let myWindow = window.open("", "Imprimir", "width=1000,height=1000");
+      //   myWindow.document.write(res.data);
+      //   myWindow.document.close();
+      //   myWindow.focus();
+      //   setTimeout(function(){
+      //     myWindow.print();
+      //     myWindow.close();
+      //   },700);
+      // })
     },
         impresion2(id){
       // console.log(id)
@@ -560,10 +834,31 @@ export default {
          // console.log(res.data)
         // this.mails=res.data
         this.mails=[]
+        register('es_ES', (number, index, total_sec) => [
+          ['justo ahora', 'ahora mismo'],
+          ['hace %s segundos', 'en %s segundos'],
+          ['hace 1 minuto', 'en 1 minuto'],
+          ['hace %s minutos', 'en %s minutos'],
+          ['hace 1 hora', 'en 1 hora'],
+          ['hace %s horas', 'in %s horas'],
+          ['hace 1 dia', 'en 1 dia'],
+          ['hace %s dias', 'en %s dias'],
+          ['hace 1 semana', 'en 1 semana'],
+          ['hace %s semanas', 'en %s semanas'],
+          ['1 mes', 'en 1 mes'],
+          ['hace %s meses', 'en %s meses'],
+          ['hace 1 año', 'en 1 año'],
+          ['hace %s años', 'en %s años']
+        ][index]);
+
+        // console.log( format(Date.now() - 11 * 1000 * 60 * 60,'es_ES'))
+
         res.data.forEach(r=>{
-          const date1 = new Date()
-          const date2 = date.extractDate(r.mail.fecha, 'YYYY-MM-DD')
-          const dias = date.getDateDiff(date1, date2, 'days')
+
+          // const date1 = new Date()
+          // const date2 = date.extractDate(r.mail.fecha, 'YYYY-MM-DD')
+          // const dias = date.getDateDiff(date1, date2, 'days')
+          const dias=format(r.mail.fecha+' '+r.mail.hora,'es_ES')
           this.mails.push({
             id:r.id,
             mail_id:r.mail_id,

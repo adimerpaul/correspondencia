@@ -25,6 +25,8 @@ class CreateLogsTable extends Migration
             $table->foreign('user_id2')->references('id')->on('users');
             $table->unsignedBigInteger('log_id')->nullable()->default(null);
             $table->foreign('log_id')->references('id')->on('logs');
+            $table->unsignedBigInteger('unit_id')->nullable()->default(null);
+            $table->foreign('unit_id')->references('id')->on('units');
             $table->string('estado')->default('EN PROCESO');
             $table->string('accion')->nullable()->default('');
             $table->string('archivado')->nullable()->default('');
