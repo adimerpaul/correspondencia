@@ -114,9 +114,9 @@
       </q-card>
     </q-dialog>
 
-    <q-table :filter="filter" title="REGISTRO DE USUARIOS" :rows="data" :columns="columns" row-key="name" :rows-per-page-options="[50,100]">
+    <q-table :filter="filter" title="REGISTRO DE USUARIOS" :rows="data" dense :columns="columns" row-key="name" :rows-per-page-options="[10,100,200,0]">
       <template v-slot:top-right>
-        <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
+        <q-input outlined dense debounce="300" v-model="filter" placeholder="Buscar">
           <template v-slot:append>
             <q-icon name="search" />
           </template>
