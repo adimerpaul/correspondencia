@@ -76,7 +76,7 @@ export default {
   data(){
     return{
       url:process.env.API,
-      codigo:'',
+      codigo:{},
       email:{},
       mails:[],
       mails2:[],
@@ -85,14 +85,15 @@ export default {
   created() {
     this.$q.loading.show()
     this.$axios.get(process.env.API+'/todos').then(res=>{
-      this.mails=[]
+      this.mails=[{label:''}]
       res.data.forEach(r=>{
         // console.log(r)
         r.label=r.codigo+''+r.remitente+' '+r.ref
         this.mails.push(r)
-        this.mails2.push(r)
+        // this.mails2.push(r)
       })
-      // this.mails=res.data
+      this.mails2=this.mails
+      this.codigo=this.mails[0]
       this.$q.loading.hide()
     }).catch(err=>{
       this.$q.loading.hide()

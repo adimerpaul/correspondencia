@@ -10,14 +10,16 @@
         <q-dialog full-width v-model="crear">
           <q-card>
             <q-card-section>
-              <div class="text-h6">Crear Hoja de ruta</div>
+              <div class="text-h6" v-if="dato.id==undefined">Crear Hoja de ruta</div>
+              <div class="text-h6" v-else>Modificar Hoja de ruta</div>
+<!--              <pre>{{dato}}</pre>-->
             </q-card-section>
             <q-card-section class="q-pt-none">
               <q-form @submit.prevent="guardar">
                 <div class="row" style="border: 1px solid rgba(128,128,128,0.50)">
                   <div class="col-6 flex flex-center"><q-radio dense v-model="dato.tipo" val="INTERNO" label="INTERNO"/></div>
                   <div class="col-6 flex flex-center"><q-radio dense v-model="dato.tipo" val="EXTERNO" label="EXTERNO"/></div>
-                  <div class="col-sm-2 col-12 q-pa-xs"><q-input required dense label="CITE" autofocus v-model="dato.codigo"  outlined /></div>
+                  <div class="col-sm-2 col-12 q-pa-xs"><q-input required dense label="CITE" autofocus v-model="dato.cite"  outlined /></div>
                   <div class="col-sm-6 col-12 q-pa-xs">
                     <q-input  @keyup="cambio" style="text-transform: uppercase" outlined dense label="remitente" list="browsers" name="myBrowser" v-model="remitente" />
                     <datalist id="browsers">
@@ -46,7 +48,7 @@
       </div>
       <div class="col-12">
         <q-table dense title="Correspondencia " :rows="mails" :columns="columns" :filter="filter"
-               :rows-per-page-options="[50,100,150,200,0]"
+               :rows-per-page-options="[10,100,150,200,0]"
                row-key="name"
         >
           <template v-slot:top-right>
@@ -122,12 +124,11 @@
                             <q-item-label>Remitir correspodencia</q-item-label>
                           </q-item-section>
                         </q-item>
-
-                        <q-item clickable v-close-popup @click="impresion(props.row)">
-                          <q-item-section>
-                            <q-item-label>Imprimir HR</q-item-label>
-                          </q-item-section>
-                        </q-item>
+<!--                        <q-item clickable v-close-popup @click="impresion(props.row)">-->
+<!--                          <q-item-section>-->
+<!--                            <q-item-label>Imprimir HR</q-item-label>-->
+<!--                          </q-item-section>-->
+<!--                        </q-item>-->
                         <q-item clickable v-close-popup @click="archivo(props.row)">
                           <q-item-section>
                             <q-item-label>Subir Archivo</q-item-label>
@@ -294,6 +295,7 @@ export default {
       this.institucion=''
     },
     modificar(prop){
+      console.log(prop)
       this.crear=true;
       this.dato=prop;
       this.remitente=this.dato.remitente
@@ -500,7 +502,7 @@ export default {
         doc.setFontSize(15)
         doc.text('Nº',10,27)
         doc.setFont(undefined, 'normal');
-        doc.text(l.id.toString(),45,27,'center')
+        doc.text(m.codigo.toString(),40,27,'center')
         doc.setFont('times', 'bold');
         doc.setFontSize(10)
         doc.text(['FECHA DE','RECEPCION:'],10,31)
@@ -522,15 +524,15 @@ export default {
         doc.setFont('times', 'bold');
         doc.text('CITE:',80,35)
         doc.setFont('times', 'normal');
-        doc.text(m.codigo,152,35,'center')
+        doc.text(m.cite,110,35,'center')
+        doc.setFont('times', 'bold');
+        doc.text('HOJAS:',150,35)
+        doc.setFont('times', 'normal');
+        doc.text(m.folio,170,35,'center')
         doc.setFont('times', 'bold');
         doc.text('REF:',80,40)
         doc.setFont('times', 'normal');
-        doc.text(m.ref,152,40,'center')
-        doc.setFont('times', 'bold');
-        doc.text('HOJAS:',80,45)
-        doc.setFont('times', 'normal');
-        doc.text(m.folio,152,45,'center')
+        doc.text([m.ref.substring(0,50),m.ref.substring(50,100)],148,40,'center')
         doc.setFont('times', 'bold');
         doc.text('DESTINATARIO 1:',80,50)
         doc.setFont(undefined, 'normal');
@@ -716,10 +718,10 @@ export default {
          },
         cancel:true,
       }).onOk(data=>{
-        // console.log(data)
+        // console.log(mail)
         this.$q.loading.show()
-        this.$axios.post(process.env.API+'/anulado',{mail_id:mail.id,accion:data,estado:'ARCHIVAR'}).then(res=>{
-          console.log(res.data)
+        this.$axios.post(process.env.API+'/anulado',{id:mail.id,archivado:data}).then(res=>{
+          // console.log(res.data)
           this.misdatos();
           this.$q.notify({
             message: 'Archivado',
@@ -863,6 +865,7 @@ export default {
             id:r.id,
             mail_id:r.mail_id,
             hora:r.hora,
+            cite:r.mail.cite,
             codigo:r.mail.codigo,
             tipo:r.mail.tipo,
             tipo2:r.mail.tipo2,

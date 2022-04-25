@@ -27,6 +27,7 @@ class CreateMailsTable extends Migration
             $table->date("fechacarta");
             $table->string("estado")->default('EN PROCESO');
             $table->string("folio");
+            $table->string("cite");
             $table->string("archivo")->nullable()->default('');
             $table->string("codinterno")->nullable();
             $table->string("codexterno")->nullable();

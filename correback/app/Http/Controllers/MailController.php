@@ -155,29 +155,30 @@ class MailController extends Controller
      */
     public function store(Request $request)
     {
-//        if (Mail::whereYear('created_at',date('Y'))->where('unit_id',$request->user()->unit_id)->max("codinterno")==''){
-//            $codigointerno=1;
-//        }else{
-//
-//            $codigointerno=intval(Mail::whereYear('created_at',date('Y'))->where('unit_id',$request->user()->unit_id)->max("codinterno"))+1;
-//            //return $codigointerno;
-//        }
+        if (Mail::whereYear('created_at',date('Y'))->where('unit_id',$request->user()->unit_id)->max("codinterno")==''){
+            $codigointerno=1;
+        }else{
+
+            $codigointerno=intval(Mail::whereYear('created_at',date('Y'))->where('unit_id',$request->user()->unit_id)->max("codinterno"))+1;
+            //return $codigointerno;
+        }
 ////        return Mail::max("codinterno");
-//        $user=User::where('id',$request->user()->id)->with('unit')->get();
+        $user=User::where('id',$request->user()->id)->with('unit')->get();
 ////        return $user[0]->unit->codigo;
 ////        return $request;
-//        $query=Mail::where('remitente',strtoupper( $request->remitente));
+        $query=Mail::where('remitente',strtoupper( $request->remitente));
 ////        return  $query->count();
-//        if ($query->count()>0){
-//         DB::table('mails')->where('remitente',strtoupper( $request->remitente))->update([
-//             'cargo'=>strtoupper($request->cargo),
-//             'institucion'=>strtoupper($request->institucion),
-//         ]);
-//        }
+        if ($query->count()>0){
+         DB::table('mails')->where('remitente',strtoupper( $request->remitente))->update([
+             'cargo'=>strtoupper($request->cargo),
+             'institucion'=>strtoupper($request->institucion),
+         ]);
+        }
 //        return $request;
 
         $mail=new Mail();
-        $mail->codigo=$request->codigo;
+        $mail->codigo=$user[0]->unit->codigo.str_pad($codigointerno, 4, '0', STR_PAD_LEFT).'/'.date('y');
+        $mail->cite=$request->cite;
         $mail->tipo=$request->tipo;
 //        $mail->tipo2=$request->tipo2;
         $mail->remitente= strtoupper( $request->remitente);
@@ -190,7 +191,7 @@ class MailController extends Controller
 //        $mail->estado='ACEPTADO';
         $mail->folio=$request->folio;
 //        $mail->archivo=$request->archivo;
-//        $mail->codinterno=$codigointerno;
+        $mail->codinterno=$codigointerno;
         $mail->codexterno=$request->codexterno;
         $mail->user_id=$request->user()->id;
         $mail->unit_id=$request->user()->unit_id;
@@ -219,6 +220,7 @@ class MailController extends Controller
         $mail=Mail::find($request->mail_id);
         $mail->tipo = $request->tipo;
         $mail->ref=$request->ref;
+        $mail->cite=$request->cite;
         $mail->fecha= $request->fecha;
         $mail->folio= $request->folio;
         $mail->remitente= strtoupper( $request->remitente);
@@ -391,15 +393,15 @@ font-size: 13px;
     }
 
     public function anulado(Request $request){
-        $log=Log::where('mail_id',$request->mail_id)->get()->last();
-
+        $log=Log::find($request->id);
+//
         $log->estado='ARCHIVADO';
-        $log->archivado=$request->accion;
+        $log->archivado=$request->archivado;
         $log->save();
 
-        $mail=Mail::find($request->mail_id);
-        $mail->estado='ARCHIVADO';
-        $mail->save();
+//        $mail=Mail::find($request->mail_id);
+//        $mail->estado='ARCHIVADO';
+//        $mail->save();
 
 //        $log=new Log();
 //        $log->mail_id=$request->mail_id;
