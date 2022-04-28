@@ -58,6 +58,7 @@ class MailController extends Controller
 //        ->get();
 //        return Log::where('user_id2',$request->user()->id)->with('mail')->with('user')->with('user2')->get();
         return Log::where('unit_id',$request->user()->unit_id)
+            ->where('user_id2',$request->user()->id)
             ->with('mail')
             ->with('user')
             ->with('user2')
