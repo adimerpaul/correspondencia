@@ -28,6 +28,7 @@ class CreateMailsTable extends Migration
             $table->string("estado")->default('EN PROCESO');
             $table->string("folio");
             $table->string("cite");
+            $table->string("citecontrol");
             $table->string("archivo")->nullable()->default('');
             $table->string("codinterno")->nullable();
             $table->string("codexterno")->nullable();
@@ -35,7 +36,6 @@ class CreateMailsTable extends Migration
             $table->foreign('user_id')->references('id')->on('users');
             $table->unsignedBigInteger('unit_id')->nullable();;
             $table->foreign('unit_id')->references('id')->on('units');
-
             //$table->unsignedBigInteger('mail_id')->nullable()->default(null);
             //$table->foreign('mail_id')->references('id')->on('mails');
             $table->timestamps();

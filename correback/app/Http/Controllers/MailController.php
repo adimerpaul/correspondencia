@@ -179,6 +179,7 @@ class MailController extends Controller
         $mail=new Mail();
         $mail->codigo=$user[0]->unit->codigo.str_pad($codigointerno, 4, '0', STR_PAD_LEFT).'/'.date('y');
         $mail->cite=$request->cite;
+        $mail->citecontrol=$request->citecontrol;
         $mail->tipo=$request->tipo;
 //        $mail->tipo2=$request->tipo2;
         $mail->remitente= strtoupper( $request->remitente);
@@ -221,6 +222,7 @@ class MailController extends Controller
         $mail->tipo = $request->tipo;
         $mail->ref=$request->ref;
         $mail->cite=$request->cite;
+        $mail->citecontrol=$request->citecontrol;
         $mail->fecha= $request->fecha;
         $mail->folio= $request->folio;
         $mail->remitente= strtoupper( $request->remitente);

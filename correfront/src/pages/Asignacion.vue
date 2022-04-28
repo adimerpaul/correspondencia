@@ -19,8 +19,9 @@
                 <div class="row" style="border: 1px solid rgba(128,128,128,0.50)">
                   <div class="col-6 flex flex-center"><q-radio dense v-model="dato.tipo" val="INTERNO" label="INTERNO"/></div>
                   <div class="col-6 flex flex-center"><q-radio dense v-model="dato.tipo" val="EXTERNO" label="EXTERNO"/></div>
-                  <div class="col-sm-2 col-12 q-pa-xs"><q-input required dense label="CITE" autofocus v-model="dato.cite"  outlined /></div>
-                  <div class="col-sm-6 col-12 q-pa-xs">
+                  <div class="col-sm-2 col-12 q-pa-xs"><q-input required dense label="CITE" autofocus v-model="dato.citecontrol"  outlined /></div>
+                  <div class="col-sm-2 col-12 q-pa-xs"><q-input required dense label="CITE ENTRANTE" autofocus v-model="dato.cite"  outlined /></div>
+                  <div class="col-sm-4 col-12 q-pa-xs">
                     <q-input  @keyup="cambio" style="text-transform: uppercase" outlined dense label="remitente" list="browsers" name="myBrowser" v-model="remitente" />
                     <datalist id="browsers">
                       <option v-for="r in remitentes" :key="r.id">{{r.remitente}}</option>
@@ -152,8 +153,8 @@
               </q-td>
           </template>
         </q-table>
-        <q-dialog v-model="diaglosasiganacion">
-          <q-card style="width: 700px;min-width: 80vh">
+        <q-dialog full-width full-height v-model="diaglosasiganacion">
+          <q-card >
             <q-card-section>
               <div class="text-h6"> <q-icon name="code"/> {{mail.ref}} Remitir</div>
             </q-card-section>
@@ -161,7 +162,7 @@
               <q-form @submit.prevent="registrarlog">
                 <q-input type="textarea" outlined label="Instruccion / Observacion" v-model="miaccion" required/>
 <!--                <q-select :options="usuarios" label="Seleccionar personal" v-model="usuario" outlined required/>-->
-                <q-select use-input :options="usuarios" label="Seleccionar personal" v-model="usuario" @filter="filterFn" outlined >
+                <q-select dense use-input :options="usuarios" label="Seleccionar personal" v-model="usuario" @filter="filterFn" outlined >
                   <template v-slot:no-option>
                     <q-item>
                       <q-item-section class="text-grey">
@@ -170,12 +171,23 @@
                     </q-item>
                   </template>
                 </q-select>
-                <q-btn color="positive" size="xs" label="Agregar Destinatario" icon="add_circle" @click="tabdest"/>
-                <table>
-                  <tbody>
-                  <tr v-for="(row,index) in dest" :key="index"><td>{{index+1}}- {{row.label}} </td></tr>
-                  </tbody>
-                </table>
+                <q-btn color="positive"  label="Agregar Destinatario" icon="add_circle" @click="tabdest"/>
+<!--                <table>-->
+<!--                  <tbody>-->
+<!--                  <tr v-for="(row,index) in dest" :key="index"><td>{{index+1}}- {{row.label}} </td></tr>-->
+<!--                  </tbody>-->
+<!--                </table>-->
+                <q-list dense bordered padding class="rounded-borders">
+                  <q-item clickable v-ripple v-for="(row,index) in dest" :key="index">
+                    <q-item-section class="q-pa-none text-subtitle2" >
+                      {{index+1}} {{row.name}}
+<!--                      <pre>{{row}}</pre>-->
+                    </q-item-section >
+                    <q-item-section class="q-pa-none text-subtitle2">
+                      {{row.unit.nombre}}
+                    </q-item-section>
+                  </q-item>
+                </q-list>
 <!--                {{mail}}-->
                 <q-btn label="Remitir" color="teal" icon="send" class="full-width" type="submit"/>
               </q-form>
@@ -242,7 +254,8 @@ export default {
       columns:[
 
         {name:'opciones',field:'opciones',label:'opciones',align:'right'},
-        {name:'codigo',field:'codigo',label:'CITE',align:'left'},
+        {name:'codigo',field:'codigo',label:'codigo',align:'left'},
+        {name:'citecontrol',field:'citecontrol',label:'CITE',align:'left'},
         {name:'logs',field:'logs',label:'HISTORIAL',align:'left'},
         {name:'remitente',field:'remitente',label:'Remitente',align:'left'},
         {name:'ref',field:'ref',label:'Referencia',align:'left'},
@@ -276,14 +289,10 @@ export default {
     this.$axios.post(process.env.API+'/misremetentes').then(res=>{
       res.data.forEach(r=>{
         // console.log(r)
-        this.usuarios.push({
-          id:r.id,
-          name:r.name,
-          unit_id:r.unit_id,
-          label:r.unit.nombre+'-'+r.name
-        })
-        this.usuarios2=this.usuarios
+        r.label=r.unit.nombre+'-'+r.name
+        this.usuarios.push(r)
       })
+      this.usuarios2=this.usuarios
     })
   },
   methods:{
@@ -513,7 +522,12 @@ export default {
         doc.setFont(undefined, 'normal');
         doc.text(l.hora.toString(),45,42,'center')
         doc.setFont('times', 'bold');
-        doc.text(['OBS:'],10,49)
+        doc.text('CITE:',10,49)
+        doc.setFont('times', 'normal');
+        doc.setFontSize(14)
+        doc.text(m.citecontrol.toString(),45,50,'center')
+        doc.setFontSize(10)
+        doc.setFont('times', 'bold');
         doc.text('REMITENTE:',80,25)
         doc.setFont('times', 'normal');
         doc.text(m.remitente,152,25,'center')
@@ -522,9 +536,9 @@ export default {
         doc.setFont('times', 'normal');
         doc.text(m.institucion,152,30,'center')
         doc.setFont('times', 'bold');
-        doc.text('CITE:',80,35)
+        doc.text('CITE ENTRANTE:',80,35)
         doc.setFont('times', 'normal');
-        doc.text(m.cite,110,35,'center')
+        doc.text(m.cite,130,35,'center')
         doc.setFont('times', 'bold');
         doc.text('HOJAS:',150,35)
         doc.setFont('times', 'normal');
@@ -856,7 +870,7 @@ export default {
         // console.log( format(Date.now() - 11 * 1000 * 60 * 60,'es_ES'))
 
         res.data.forEach(r=>{
-
+          console.log(r)
           // const date1 = new Date()
           // const date2 = date.extractDate(r.mail.fecha, 'YYYY-MM-DD')
           // const dias = date.getDateDiff(date1, date2, 'days')
@@ -865,6 +879,7 @@ export default {
             id:r.id,
             mail_id:r.mail_id,
             hora:r.hora,
+            citecontrol:r.mail.citecontrol,
             cite:r.mail.cite,
             codigo:r.mail.codigo,
             tipo:r.mail.tipo,
@@ -911,60 +926,68 @@ export default {
       })
     },
     guardar(){
-      if (!confirm("seguro de registrar?")){
-        return false
-      }
-      // console.log(this.remitente)
-      // return false
-      this.dato.remitente=this.remitente
-      this.dato.cargo=this.cargo
-      this.dato.institucion=this.institucion
-      if(this.dato.id==undefined || this.dato.id==''){
-        // console.log('new')
-        this.$q.loading.show()
-        this.$axios.post(process.env.API+'/mail',this.dato).then(res=>{
-          console.log(res.data)
-          this.dato={tipo:'INTERNO',fecha:date.formatDate(Date.now(),'YYYY-MM-DD'),folio:1};
-          this.remitente=''
-          this.cargo=''
-          this.institucion=''
-          this.misdatos()
-          this.misremitentes()
-          this.crear=false
+      this.$q.dialog({
+        title:"Seguro de registrar?",
+        // message:"",
+        cancel:true,
+        persistent:true
+      }).onOk(()=>{
+        // if (!confirm("seguro de registrar?")){
+        //   return false
+        // }
+        // console.log(this.remitente)
+        // return false
+        this.dato.remitente=this.remitente
+        this.dato.cargo=this.cargo
+        this.dato.institucion=this.institucion
+        if(this.dato.id==undefined || this.dato.id==''){
+          // console.log('new')
+          this.$q.loading.show()
+          this.$axios.post(process.env.API+'/mail',this.dato).then(res=>{
+            console.log(res.data)
+            this.dato={tipo:'INTERNO',fecha:date.formatDate(Date.now(),'YYYY-MM-DD'),folio:1};
+            this.remitente=''
+            this.cargo=''
+            this.institucion=''
+            this.misdatos()
+            this.misremitentes()
+            this.crear=false
 
-          // this.$q.loading.hide()
-        }).catch(err=>{
-          this.$q.loading.hide()
-          this.$q.notify({
-            message:err.response.data.message,
-            color:'red',
-            icon:'error'
-          })
-        })}
-      else{
-        this.$q.loading.show()
-        this.$axios.post(process.env.API+'/updatemail',this.dato).then(res=>{
-          console.log(res.data)
-          //return false
-          this.dato={tipo:'INTERNO',fecha:date.formatDate(Date.now(),'YYYY-MM-DD'),folio:1};
-          this.remitente=''
-          this.cargo=''
-          this.institucion=''
-          // console.log(res.data)
-          this.misdatos()
-          this.misremitentes()
-          this.crear=false
+            // this.$q.loading.hide()
+          }).catch(err=>{
+            this.$q.loading.hide()
+            this.$q.notify({
+              message:err.response.data.message,
+              color:'red',
+              icon:'error'
+            })
+          })}
+        else{
+          this.$q.loading.show()
+          this.$axios.post(process.env.API+'/updatemail',this.dato).then(res=>{
+            console.log(res.data)
+            //return false
+            this.dato={tipo:'INTERNO',fecha:date.formatDate(Date.now(),'YYYY-MM-DD'),folio:1};
+            this.remitente=''
+            this.cargo=''
+            this.institucion=''
+            // console.log(res.data)
+            this.misdatos()
+            this.misremitentes()
+            this.crear=false
 
-          // this.$q.loading.hide()
-        }).catch(err=>{
-          this.$q.loading.hide()
-          this.$q.notify({
-            message:err.response.data.message,
-            color:'red',
-            icon:'error'
+            // this.$q.loading.hide()
+          }).catch(err=>{
+            this.$q.loading.hide()
+            this.$q.notify({
+              message:err.response.data.message,
+              color:'red',
+              icon:'error'
+            })
           })
-        })
-      }
+        }
+      })
+
     }
   }
 

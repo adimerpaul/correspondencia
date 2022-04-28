@@ -5,7 +5,7 @@
       <q-form @submit.prevent="buscar">
         <div class="row">
           <div class="col-12 col-md-10 q-pa-xs">
-            <q-select use-input label="Ingresar codigo" v-model="codigo" :options="mails" outlined @filter="filterFn"/>
+            <q-select use-input label="Ingresar cite/codigo" v-model="codigo" :options="mails" outlined @filter="filterFn"/>
           </div>
           <div class="col-12 col-md-2 q-pa-xs flex flex-center">
             <q-btn label="Buscar" color="primary" icon="send" type="submit" />
@@ -13,58 +13,83 @@
         </div>
       </q-form>
     </div>
-    <div class="col-12 col-md-4">
+    <div class="col-12 col-md-12">
       <q-banner dense class="bg-primary text-white">
         Datos de correspondencia
       </q-banner>
       <q-form>
         <div class="row">
-          <div class="col-6 q-pa-xs"><q-input dense label="tipo" v-model="email.tipo" outlined/></div>
-          <div class="col-6 q-pa-xs"><q-input dense label="ref" v-model="email.ref" outlined/></div>
-          <div class="col-6 q-pa-xs"><q-input dense label="remitente" v-model="email.remitente" outlined/></div>
-          <div class="col-6 q-pa-xs"><q-input dense label="cargo" v-model="email.cargo" outlined/></div>
-          <div class="col-6 q-pa-xs"><q-input dense label="institucion" v-model="email.institucion" outlined/></div>
-          <div class="col-6 q-pa-xs"><q-input dense label="fecha" v-model="email.fecha" outlined/></div>
-          <div class="col-6 q-pa-xs"><q-input dense label="Fojas" v-model="email.folio" outlined/></div>
-          <div class="col-6 q-pa-xs"><q-input dense label="estado" v-model="email.estado" outlined/></div>
+          <div class="col-3 q-pa-xs"><q-input dense label="tipo" v-model="email.tipo" outlined/></div>
+          <div class="col-3 q-pa-xs"><q-input dense label="ref" v-model="email.ref" outlined/></div>
+          <div class="col-3 q-pa-xs"><q-input dense label="remitente" v-model="email.remitente" outlined/></div>
+          <div class="col-3 q-pa-xs"><q-input dense label="cargo" v-model="email.cargo" outlined/></div>
+          <div class="col-3 q-pa-xs"><q-input dense label="institucion" v-model="email.institucion" outlined/></div>
+          <div class="col-3 q-pa-xs"><q-input dense label="fecha" v-model="email.fecha" outlined/></div>
+          <div class="col-3 q-pa-xs"><q-input dense label="Fojas" v-model="email.folio" outlined/></div>
+          <div class="col-3 q-pa-xs"><q-input dense label="estado" v-model="email.estado" outlined/></div>
           <div class="col-12 q-pa-xs"><q-btn type="a" :href="url+'/../imagenes/'+email.archivo" target="__blank" v-if="email.archivo!='' && email.archivo!=undefined" class="full-width" color="primary" icon="file_download"  :label="email.archivo" outlined/></div>
         </div>
       </q-form>
 
     </div>
-    <div class="col-12 col-md-8">
+    <div class="col-12 col-md-12">
       <q-banner dense class="bg-amber text-white">
         Datos de historial
       </q-banner>
-        <div class="row" v-for="l in email.logs" :key="l.id">
-<!--          <div class="col-4 q-pa-xs"><q-chip dense color="primary" icon="alarm" :label="'DE '+l.remitente"  /></div>-->
-
-<!--          <div class="col-4 q-pa-xs"><q-chip dense class="text-white" color="primary" icon="directions" :label="l.user2.name"/></div>-->
-<!--          <div class="col-6 q-pa-xs"><q-chip dense class="text-white" color="teal" icon="home" :label="l.user2.unit.nombre"/></div>-->
-<!--          <div class="col-2 q-pa-xs"><q-chip dense class="text-white" color="positive" icon="directions" :label="l.estado"/></div>-->
-
-<!--          <div class="col-6 q-pa-xs"><q-chip dense color="info" icon="home" :label="'U '+l.unit.nombre"/></div>-->
-        </div>
-
-      <table class="full-width">
-        <tr>
-          <th>#</th>
-          <th>A</th>
-          <th>DE</th>
-          <th>Unidad</th>
-          <th>Accion</th>
-          <th>Estado</th>
-        </tr>
-        <tr v-for="(l,index) in email.logs" :key="l.id">
-          <td>{{index+1}}</td>
-          <td>{{l.user2.name}}</td>
-          <td v-if="l.user!=undefined">{{l.user.name}}</td>
-          <td v-else></td>
-          <td>{{l.user2.unit.nombre}}</td>
-          <td>{{l.accion}}</td>
-          <td><q-badge :color="l.estado=='REMITIDO'||l.estado=='ARCHIVADO'?'positive':'negative'">{{l.estado}}</q-badge></td>
-        </tr>
-      </table>
+      <q-table dense :columns="columns" :rows="email.logs">
+        <template v-slot:body-cell-de="props">
+          <q-td :props="props">
+            <div class="text-caption"  v-if="props.row.user!=undefined">{{ props.row.user.name}}</div >
+          </q-td>
+        </template>
+        <template v-slot:body-cell-a="props">
+          <q-td :props="props">
+            <div class="text-caption" >{{ props.row.user2.name}}</div >
+          </q-td>
+        </template>
+        <template v-slot:body-cell-unidad="props">
+          <q-td :props="props" >
+            <div class="row">
+              <div class="col-12">
+                <q-input dense autogrow outlined type="textarea" :model-value="props.row.user2.unit.nombre" />
+              </div>
+            </div>
+          </q-td>
+        </template>
+        <template v-slot:body-cell-accion="props">
+          <q-td :props="props" >
+            <div class="row">
+              <div class="col-12">
+                <q-input dense autogrow outlined type="textarea" :model-value="props.row.accion" />
+              </div>
+            </div>
+          </q-td>
+        </template>
+        <template v-slot:body-cell-estado="props">
+          <q-td :props="props" >
+            <q-badge :color="props.row.estado=='REMITIDO'||props.row.estado=='ARCHIVADO'?'positive':'negative'">{{props.row.estado}}</q-badge>
+          </q-td>
+        </template>
+      </q-table>
+<!--      <table class="full-width">-->
+<!--        <tr>-->
+<!--          <th>#</th>-->
+<!--          <th>A</th>-->
+<!--          <th>DE</th>-->
+<!--          <th>Unidad</th>-->
+<!--          <th>Accion</th>-->
+<!--          <th>Estado</th>-->
+<!--        </tr>-->
+<!--        <tr v-for="(l,index) in email.logs" :key="l.id">-->
+<!--          <td>{{index+1}}</td>-->
+<!--          <td>{{l.user2.name}}</td>-->
+<!--          <td v-if="l.user!=undefined">{{l.user.name}}</td>-->
+<!--          <td v-else></td>-->
+<!--          <td>{{l.user2.unit.nombre}}</td>-->
+<!--          <td>{{l.accion}}</td>-->
+<!--          <td><q-badge :color="l.estado=='REMITIDO'||l.estado=='ARCHIVADO'?'positive':'negative'">{{l.estado}}</q-badge></td>-->
+<!--        </tr>-->
+<!--      </table>-->
 <!--      <pre>{{email.logs}}</pre>-->
     </div>
   </div>
@@ -75,6 +100,13 @@
 export default {
   data(){
     return{
+      columns:[
+        {label:'de',field:'de',name:'de',align:'left'},
+        {label:'a',field:'a',name:'a',align:'left'},
+        {label:'unidad',field:'unidad',name:'unidad',align:'left'},
+        {label:'accion',field:'accion',name:'accion'},
+        {label:'estado',field:'estado',name:'estado'},
+      ],
       url:process.env.API,
       codigo:{},
       email:{},
@@ -88,7 +120,7 @@ export default {
       this.mails=[{label:''}]
       res.data.forEach(r=>{
         // console.log(r)
-        r.label=r.codigo+''+r.remitente+' '+r.ref
+        r.label=r.codigo+' '+r.citecontrol+' '+r.remitente+' '+r.ref
         this.mails.push(r)
         // this.mails2.push(r)
       })
@@ -136,10 +168,10 @@ export default {
 </script>
 
 <style scoped>
-table, th, td {
-  border: 1px solid black;
-}
-table{
-  border-collapse: collapse;
-}
+/*table, th, td {*/
+/*  border: 1px solid black;*/
+/*}*/
+/*table{*/
+/*  border-collapse: collapse;*/
+/*}*/
 </style>
