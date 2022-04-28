@@ -64,7 +64,6 @@
                   @filter="filterFn"
                   use-input
                   hint="Selecionar unidad"
-                  option-label="nombre"
                 />
 
                 <!--                <q-input-->
@@ -413,7 +412,8 @@ export default {
         { name: "opcion", label: "OPCIÓN", field: "action", sortable: false },
       ],
       data: [],
-      units:[]
+      units:[],
+      units2:[]
     };
   },
   created() {
@@ -422,8 +422,13 @@ export default {
     // }
     this.misdatos();
     this.$axios.get(process.env.API+'/unit').then(res=>{
-      this.units=res.data
-      this.units2=res.data
+      this.units=[]
+      res.data(r=>{
+        r.label=r.nombre
+        this.units.push(r)
+      })
+      // this.units=res.data
+      this.units2=this.units
     })
     this.$axios.get(process.env.API+'/permiso').then(res=>{
       res.data.forEach(r=>{
