@@ -413,6 +413,7 @@ export default {
       ],
       data: [],
       units:[],
+      unit:[],
       units2:[]
     };
   },
@@ -423,7 +424,7 @@ export default {
     this.misdatos();
     this.$axios.get(process.env.API+'/unit').then(res=>{
       this.units=[]
-      res.data(r=>{
+      res.data.forEach(r=>{
         r.label=r.nombre
         this.units.push(r)
       })
