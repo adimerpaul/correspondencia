@@ -61,6 +61,8 @@
                   v-model="dato.unit"
                   label="Unidad"
                   :options="units"
+                  @filter="filterFn"
+                  use-input
                   hint="Selecionar unidad"
                   option-label="nombre"
                 />
@@ -421,6 +423,7 @@ export default {
     this.misdatos();
     this.$axios.get(process.env.API+'/unit').then(res=>{
       this.units=res.data
+      this.units2=res.data
     })
     this.$axios.get(process.env.API+'/permiso').then(res=>{
       res.data.forEach(r=>{
@@ -608,7 +611,23 @@ export default {
       }).onDismiss(() => {
         // console.log('I am triggered on both OK and Cancel')
       })
-    }
+    },
+    filterFn (val, update) {
+      if (val === '') {
+        update(() => {
+          this.units = this.units2
+
+          // here you have access to "ref" which
+          // is the Vue reference of the QSelect
+        })
+        return
+      }
+
+      update(() => {
+        const needle = val.toLowerCase()
+        this.units = this.units2.filter(v => v.label.toLowerCase().indexOf(needle) > -1)
+      })
+    },
   },
 };
 </script>
