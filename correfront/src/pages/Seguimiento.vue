@@ -30,7 +30,6 @@
           <div class="col-12 q-pa-xs"><q-btn type="a" :href="url+'/../imagenes/'+email.archivo" target="__blank" v-if="email.archivo!='' && email.archivo!=undefined" class="full-width" color="primary" icon="file_download"  :label="email.archivo" outlined/></div>
         </div>
       </q-form>
-
     </div>
     <div class="col-12 col-md-12">
       <q-banner dense class="bg-amber text-white">
