@@ -94,7 +94,6 @@
   </div>
 </q-page>
 </template>
-
 <script>
 export default {
   data(){
