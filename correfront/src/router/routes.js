@@ -7,6 +7,7 @@ import Misrecepciones from "pages/Misrecepciones";
 import MainLayout from "layouts/MainLayout";
 import Consulta from "pages/Consulta";
 import MainLayoutPublico from "layouts/MainLayoutPublico";
+import Reportecorrespondencia from "pages/Reportecorrespondencia";
 
 const routes = [
   {
@@ -19,6 +20,7 @@ const routes = [
       { path: '/seguimiento', component: Seguimiento,meta: {requiresAuth: true,} },
       { path: '/asiganacion', component: Asignacion,meta: {requiresAuth: true,} },
       { path: '/misrecepciones', component: Misrecepciones,meta: {requiresAuth: true,} },
+      { path: '/reportecorrespondencia', component: Reportecorrespondencia,meta: {requiresAuth: true,} },
     ]
   },
   {

@@ -116,21 +116,25 @@
             </q-item-section>
           </q-item>
 
-          <q-item
-            v-if="$store.state.login.boolseguimiento"
-            clickable
-            to="/seguimiento"
-          >
-            <q-item-section
-              avatar
-            >
+          <q-item v-if="$store.state.login.boolseguimiento" clickable to="/seguimiento">
+            <q-item-section avatar>
               <q-icon name="list" />
             </q-item-section>
-
             <q-item-section>
               <q-item-label>Seguimiento</q-item-label>
               <q-item-label caption>
                 Seguimiento de archivos
+              </q-item-label>
+            </q-item-section>
+          </q-item>
+          <q-item v-if="$store.state.login.boolseguimiento" clickable to="/reportecorrespondencia">
+            <q-item-section avatar>
+              <q-icon name="history" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Reporte</q-item-label>
+              <q-item-label caption>
+                Reporte de correspondencia
               </q-item-label>
             </q-item-section>
           </q-item>

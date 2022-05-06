@@ -207,6 +207,7 @@ class MailController extends Controller
         $log->estado='ACEPTADO';
         $log->user_id2=$request->user()->id;
         $log->unit_id=$request->user()->unit_id;
+        $log->accion='CREADO';
 //        $log->remitente='';
 //        $log->destinatario=$request->user()->name;
 //        $log->estado=$request->estado;
