@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Log;
+use App\Models\Mail;
 use Illuminate\Http\Request;
 
 class ReportecorrespondenciaController extends Controller
@@ -35,7 +36,11 @@ class ReportecorrespondenciaController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        return Mail::with('logs')
+            ->whereDate('fecha','>=',$request->fecha1)
+            ->whereDate('fecha','<=',$request->fecha2)
+            ->where('unit_id',$request->user()->unit_id)
+            ->get();
     }
 
     /**

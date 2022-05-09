@@ -22,11 +22,12 @@
           <div class="col-3 q-pa-xs"><q-input dense label="tipo" v-model="email.tipo" outlined/></div>
           <div class="col-3 q-pa-xs"><q-input dense label="ref" v-model="email.ref" outlined/></div>
           <div class="col-3 q-pa-xs"><q-input dense label="remitente" v-model="email.remitente" outlined/></div>
+          <div class="col-3 q-pa-xs"><q-input dense label="destinatario" v-model="email.destinatario" outlined/></div>
           <div class="col-3 q-pa-xs"><q-input dense label="cargo" v-model="email.cargo" outlined/></div>
           <div class="col-3 q-pa-xs"><q-input dense label="institucion" v-model="email.institucion" outlined/></div>
           <div class="col-3 q-pa-xs"><q-input dense label="fecha" v-model="email.fecha" outlined/></div>
           <div class="col-3 q-pa-xs"><q-input dense label="Fojas" v-model="email.folio" outlined/></div>
-          <div class="col-3 q-pa-xs"><q-input dense label="estado" v-model="email.estado" outlined/></div>
+<!--          <div class="col-3 q-pa-xs"><q-input dense label="estado" v-model="email.estado" outlined/></div>-->
           <div class="col-12 q-pa-xs"><q-btn type="a" :href="url+'/../imagenes/'+email.archivo" target="__blank" v-if="email.archivo!='' && email.archivo!=undefined" class="full-width" color="primary" icon="file_download"  :label="email.archivo" outlined/></div>
         </div>
       </q-form>

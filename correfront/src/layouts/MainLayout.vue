@@ -129,7 +129,7 @@
           </q-item>
           <q-item v-if="$store.state.login.boolseguimiento" clickable to="/reportecorrespondencia">
             <q-item-section avatar>
-              <q-icon name="history" />
+              <q-icon name="print" />
             </q-item-section>
             <q-item-section>
               <q-item-label>Reporte</q-item-label>
@@ -139,14 +139,8 @@
             </q-item-section>
           </q-item>
 
-          <q-item
-            v-if="$store.state.login.boolmisrecepciones"
-            clickable
-            to="/misrecepciones"
-          >
-            <q-item-section
-              avatar
-            >
+          <q-item v-if="$store.state.login.boolmisrecepciones" clickable to="/misrecepciones">
+            <q-item-section avatar>
               <q-icon name="picture_as_pdf" />
             </q-item-section>
 
@@ -159,14 +153,8 @@
           </q-item>
 
 
-          <q-item
-            v-if="$store.getters['login/isLoggedIn']"
-            clickable
-            @click="logout"
-          >
-            <q-item-section
-              avatar
-            >
+          <q-item v-if="$store.getters['login/isLoggedIn']" clickable @click="logout">
+            <q-item-section avatar>
               <q-icon name="logout" />
             </q-item-section>
 

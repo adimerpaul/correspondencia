@@ -19,17 +19,21 @@
                 <div class="row" style="border: 1px solid rgba(128,128,128,0.50)">
                   <div class="col-6 flex flex-center"><q-radio dense v-model="dato.tipo" val="INTERNO" label="INTERNO"/></div>
                   <div class="col-6 flex flex-center"><q-radio dense v-model="dato.tipo" val="EXTERNO" label="EXTERNO"/></div>
-                  <div class="col-sm-2 col-12 q-pa-xs"><q-input required dense label="CITE" autofocus v-model="dato.citecontrol"  outlined /></div>
-                  <div class="col-sm-2 col-12 q-pa-xs"><q-input required dense label="CITE ENTRANTE" autofocus v-model="dato.cite"  outlined /></div>
+                  <div class="col-sm-2 col-12 q-pa-xs"><q-input required dense label="Cite/Codigo/Tramite" autofocus v-model="dato.citecontrol"  outlined /></div>
+                  <div class="col-sm-2 col-12 q-pa-xs"><q-input required dense label="Cite entrante" autofocus v-model="dato.cite"  outlined /></div>
+                  <div class="col-sm-4 col-12 q-pa-xs">
+                    <q-input style="text-transform: uppercase" outlined dense label="Destinatario" v-model="destinatario"/>
+                  </div>
                   <div class="col-sm-4 col-12 q-pa-xs">
                     <q-input  @keyup="cambio" style="text-transform: uppercase" outlined dense label="remitente" list="browsers" name="myBrowser" v-model="remitente" />
                     <datalist id="browsers">
                       <option v-for="r in remitentes" :key="r.id">{{r.remitente}}</option>
                     </datalist>
                   </div>
+
                   <div class="col-sm-2 col-12 q-pa-xs"><q-input style="text-transform: uppercase" dense label="Cargo" v-model="cargo" outlined/></div>
                   <div class="col-sm-2 col-12 q-pa-xs"><q-input style="text-transform: uppercase" dense label="Institucion" v-model="institucion" outlined/></div>
-                  <div class="col-sm-6 col-12 q-pa-xs"><q-input style="text-transform: uppercase" dense  label="Referencia" v-model="dato.ref" outlined/></div>
+                  <div class="col-sm-8 col-12 q-pa-xs"><q-input style="text-transform: uppercase" dense  label="Referencia" v-model="dato.ref" outlined/></div>
                   <div class="col-sm-2 col-12 q-pa-xs"><q-input dense label="Fecha de correspondencia" v-model="dato.fecha" type="date" outlined/></div>
                   <div class="col-sm-2 col-12 q-pa-xs"><q-input dense label="Fojas" v-model="dato.folio"  outlined /></div>
 <!--                  <div class="col-sm-2 col-12 q-pa-xs"><q-input dense label="Cod externo" v-model="dato.codexterno" outlined /></div>-->
@@ -231,6 +235,7 @@ import {date} from 'quasar'
 export default {
   data(){
     return {
+      destinatario:'',
       crear:false,
       miaccion:'',
       filter:'',
@@ -308,6 +313,7 @@ export default {
       this.crear=true;
       this.dato=prop;
       this.remitente=this.dato.remitente
+      this.destinatario=this.dato.destinatario
       this.cargo=this.dato.cargo;
       this.institucion=this.dato.institucion;
     },
@@ -886,6 +892,7 @@ export default {
             tipo2:r.mail.tipo2,
             ref:r.mail.ref,
             remitente:r.mail.remitente,
+            destinatario:r.mail.destinatario,
             cargo:r.mail.cargo,
             institucion:r.mail.institucion,
             fecha:r.mail.fecha,
@@ -938,6 +945,7 @@ export default {
         // console.log(this.remitente)
         // return false
         this.dato.remitente=this.remitente
+        this.dato.destinatario=this.destinatario
         this.dato.cargo=this.cargo
         this.dato.institucion=this.institucion
         if(this.dato.id==undefined || this.dato.id==''){
@@ -947,6 +955,7 @@ export default {
             console.log(res.data)
             this.dato={tipo:'INTERNO',fecha:date.formatDate(Date.now(),'YYYY-MM-DD'),folio:1};
             this.remitente=''
+            this.destinatario=''
             this.cargo=''
             this.institucion=''
             this.misdatos()
@@ -969,6 +978,7 @@ export default {
             //return false
             this.dato={tipo:'INTERNO',fecha:date.formatDate(Date.now(),'YYYY-MM-DD'),folio:1};
             this.remitente=''
+            this.destinatario=''
             this.cargo=''
             this.institucion=''
             // console.log(res.data)

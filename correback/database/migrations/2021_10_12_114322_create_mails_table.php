@@ -20,6 +20,7 @@ class CreateMailsTable extends Migration
             //$table->string("tipo2")->default('ARCHIVO');
             $table->string("ref");
             $table->string("remitente");
+            $table->string("destinatario");
             $table->string("cargo");
             $table->string("institucion");
             $table->date("fecha");

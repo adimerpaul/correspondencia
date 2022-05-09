@@ -156,6 +156,7 @@ class MailController extends Controller
      */
     public function store(Request $request)
     {
+//        return $request;
         if (Mail::whereYear('created_at',date('Y'))->where('unit_id',$request->user()->unit_id)->max("codinterno")==''){
             $codigointerno=1;
         }else{
@@ -184,6 +185,7 @@ class MailController extends Controller
         $mail->tipo=$request->tipo;
 //        $mail->tipo2=$request->tipo2;
         $mail->remitente= strtoupper( $request->remitente);
+        $mail->destinatario= strtoupper( $request->destinatario);
         $mail->cargo=strtoupper($request->cargo);
         $mail->institucion=strtoupper($request->institucion);
         $mail->ref=strtoupper($request->ref);
