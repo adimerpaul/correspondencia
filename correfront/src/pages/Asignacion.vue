@@ -192,6 +192,9 @@
                     <q-item-section class="q-pa-none text-subtitle2">
                       {{row.unit.nombre}}
                     </q-item-section>
+                    <q-item-section class="q-pa-none text-subtitle2">
+                      <q-btn @click="quitardestinatario(index)" icon="delete" color="negative" flat />
+                    </q-item-section>
                   </q-item>
                 </q-list>
 <!--                {{mail}}-->
@@ -319,6 +322,9 @@ export default {
       this.cargo=this.dato.cargo;
       this.institucion=this.dato.institucion;
     },
+    quitardestinatario(i){
+      this.dest.splice(i,1)
+    },
     tabdest(){
       let verif=false;
       this.dest.forEach(element => {
@@ -394,7 +400,7 @@ export default {
       }).then(res=>{
         // console.log(res.data)
         this.misdatos()
-        this.$q.loading.hide()
+        // this.$q.loading.hide()
         this.diaglosasiganacion=false
         this.$q.notify({
           message:'Remitido correctamente!!',
@@ -544,13 +550,15 @@ export default {
         doc.setFont('times', 'normal');
         doc.text(m.institucion,152,30,'center')
         doc.setFont('times', 'bold');
-        doc.text('CITE ENTRANTE:',80,35)
+        doc.text('CITE:',80,35)
         doc.setFont('times', 'normal');
-        doc.text(m.cite,130,35,'center')
+        doc.setFontSize(8)
+        doc.text(m.cite,120,35,'center')
+        doc.setFontSize(10)
         doc.setFont('times', 'bold');
-        doc.text('HOJAS:',150,35)
+        doc.text('HOJAS:',160,35)
         doc.setFont('times', 'normal');
-        doc.text(m.folio,170,35,'center')
+        doc.text(m.folio,188,35,'center')
         doc.setFont('times', 'bold');
         doc.text('REF:',80,40)
         doc.setFont('times', 'normal');
@@ -596,6 +604,19 @@ export default {
 
           doc.text('INSTRUCCIONES:',85,55+i*80,{align:'center'})
           doc.text('_________________',85,55+i*80,{align:'center'})
+          if (i==0){
+            doc.setFont(undefined, 'normal');
+            doc.text(l.accion.toString().substring(0,45),41,61+i*80)
+            doc.text(l.accion.toString().substring(45,90),41,66+i*80)
+            doc.text(l.accion.toString().substring(90,135),41,71+i*80)
+            doc.text(l.accion.toString().substring(135,180),41,76+i*80)
+            doc.text(l.accion.toString().substring(180,225),41,81+i*80)
+            doc.text(l.accion.toString().substring(225,270),41,86+i*80)
+            doc.text(l.accion.toString().substring(270,315),41,91+i*80)
+            doc.setFont(undefined, 'bold');
+          }
+
+
           doc.text('.................................................................................................................',40,62+i*80)
           doc.text('.................................................................................................................',40,67+i*80)
           doc.text('.................................................................................................................',40,72+i*80)
