@@ -17,8 +17,8 @@
             <q-card-section class="q-pt-none">
               <q-form @submit.prevent="guardar">
                 <div class="row" style="border: 1px solid rgba(128,128,128,0.50)">
-                  <div class="col-6 flex flex-center"><q-radio dense v-model="dato.tipo" val="INTERNO" label="INTERNO"/></div>
-                  <div class="col-6 flex flex-center"><q-radio dense v-model="dato.tipo" val="EXTERNO" label="EXTERNO"/></div>
+                  <div class="col-6 flex flex-center"><q-radio dense required v-model="dato.tipo" val="EXTERNO" label="EXTERNO"/></div>
+                  <div class="col-6 flex flex-center"><q-radio dense required v-model="dato.tipo" val="INTERNO" label="INTERNO"/></div>
                   <div class="col-sm-2 col-12 q-pa-xs"><q-input required dense label="Cite/Codigo/Tramite" autofocus v-model="dato.citecontrol"  outlined /></div>
                   <div class="col-sm-2 col-12 q-pa-xs"><q-input required dense label="Cite entrante" autofocus v-model="dato.cite"  outlined /></div>
                   <div class="col-sm-4 col-12 q-pa-xs">
@@ -37,8 +37,10 @@
                   <div class="col-sm-2 col-12 q-pa-xs"><q-input dense label="Fecha de correspondencia" v-model="dato.fecha" type="date" outlined/></div>
                   <div class="col-sm-2 col-12 q-pa-xs"><q-input dense label="Fojas" v-model="dato.folio"  outlined /></div>
 <!--                  <div class="col-sm-2 col-12 q-pa-xs"><q-input dense label="Cod externo" v-model="dato.codexterno" outlined /></div>-->
-                  <div class="col-sm-2 col-12 q-pa-xs flex flex-center"><q-btn type="submit" color="primary" icon="add_circle" label="Registrar" v-if="dato.id==undefined || dato.id==''"/>
-                    <q-btn type="submit" color="amber" icon="edit" label="Modificar" v-else /></div>
+                  <div class="col-sm-2 col-12 q-pa-xs flex flex-center">
+                    <q-btn type="submit" color="primary" icon="add_circle" label="Registrar" v-if="dato.id==undefined || dato.id==''"/>
+                    <q-btn type="submit" color="amber" icon="edit" label="Modificar" v-else />
+                  </div>
                 </div>
               </q-form>
 
@@ -243,7 +245,7 @@ export default {
       diaglosasiganacion:false,
       dialogarchivo:false,
       url:process.env.API,
-      dato:{tipo:'INTERNO',fecha:date.formatDate(Date.now(),'YYYY-MM-DD'),folio:1},
+      dato:{tipo:'',fecha:date.formatDate(Date.now(),'YYYY-MM-DD'),folio:1},
       //folios:[],
       usuarios:[],
       usuarios2:[],
@@ -303,7 +305,7 @@ export default {
   methods:{
     fromcrear(){
       this.crear = true;
-      this.dato={tipo:'INTERNO',fecha:date.formatDate(Date.now(),'YYYY-MM-DD'),folio:1}
+      this.dato={tipo:'',fecha:date.formatDate(Date.now(),'YYYY-MM-DD'),folio:1}
       this.remitente=''
       this.cargo=''
       this.institucion=''
@@ -933,6 +935,14 @@ export default {
       })
     },
     guardar(){
+      if (this.dato.tipo==undefined||this.dato.tipo==null||this.dato.tipo==''){
+        this.$q.notify({
+          message:'Porfavor colocar interno o externo',
+          color:'red',
+          icon:'error'
+        })
+        return false
+      }
       this.$q.dialog({
         title:"Seguro de registrar?",
         // message:"",
@@ -953,7 +963,7 @@ export default {
           this.$q.loading.show()
           this.$axios.post(process.env.API+'/mail',this.dato).then(res=>{
             console.log(res.data)
-            this.dato={tipo:'INTERNO',fecha:date.formatDate(Date.now(),'YYYY-MM-DD'),folio:1};
+            this.dato={tipo:'EXTERNO',fecha:date.formatDate(Date.now(),'YYYY-MM-DD'),folio:1};
             this.remitente=''
             this.destinatario=''
             this.cargo=''
@@ -976,7 +986,7 @@ export default {
           this.$axios.post(process.env.API+'/updatemail',this.dato).then(res=>{
             console.log(res.data)
             //return false
-            this.dato={tipo:'INTERNO',fecha:date.formatDate(Date.now(),'YYYY-MM-DD'),folio:1};
+            this.dato={tipo:'EXTERNO',fecha:date.formatDate(Date.now(),'YYYY-MM-DD'),folio:1};
             this.remitente=''
             this.destinatario=''
             this.cargo=''

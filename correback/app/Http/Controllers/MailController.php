@@ -160,10 +160,11 @@ class MailController extends Controller
         if (Mail::whereYear('created_at',date('Y'))->where('unit_id',$request->user()->unit_id)->max("codinterno")==''){
             $codigointerno=1;
         }else{
-
-            $codigointerno=intval(Mail::whereYear('created_at',date('Y'))->where('unit_id',$request->user()->unit_id)->max("codinterno"))+1;
+//            $codigointerno=intval(Mail::where('unit_id',$request->user()->unit_id)->max("codinterno"))+1;
+            $codigointerno=intval(Mail::where('unit_id',$request->user()->unit_id)->get()->count())+1;
             //return $codigointerno;
         }
+//        return intval(Mail::where('unit_id',$request->user()->unit_id)->get()->count());
 ////        return Mail::max("codinterno");
         $user=User::where('id',$request->user()->id)->with('unit')->get();
 ////        return $user[0]->unit->codigo;

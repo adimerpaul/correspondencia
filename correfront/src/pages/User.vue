@@ -143,8 +143,8 @@
           <q-td key="email" :props="props">
             {{props.row.email}}
           </q-td>
-          <q-td key="unit" :props="props">
-            {{props.row.unit.nombre}}
+          <q-td key="unidad" :props="props">
+            {{props.row.unidad}}
           </q-td>
           <q-td key="permisos" :props="props">
             <!--            {{props.row.permisos}}-->
@@ -405,7 +405,7 @@ export default {
         // {name: "unid", align: "left", label: "Unidad", field: "unid", sortable: true,},
         // {name: "codigo", align: "left", label: "Codigo", field: "codigo", sortable: true,},
         {name: "email", align: "left", label: "E-MAIL", field: "email", sortable: true,},
-        {name: "unit", align: "left", label: "UNIDAD", field: "unit", sortable: true,},
+        {name: "unidad", align: "left", label: "UNIDAD", field: "unidad", sortable: true,},
         {name: "permisos", align: "left", label: "PERMISOS", field: "permisos", sortable: true,},
         {name: "fechalimite", align: "left", label: "FECHA LÍMITE", field: "fechalimite", sortable: true,},
         {name: "tipo", align: "left", label: "TIPO", field: "tipo", sortable: true,},
@@ -477,7 +477,12 @@ export default {
       this.$q.loading.show();
       this.$axios.get(process.env.API + "/user").then((res) => {
         // console.log(res.data)
-        this.data = res.data;
+        this.data=[]
+        res.data.forEach(r=>{
+          r.unidad=r.unit.nombre
+          this.data.push(r)
+        })
+        // this.data = res.data;
         this.$q.loading.hide();
       });
     },
