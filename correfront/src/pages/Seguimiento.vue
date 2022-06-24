@@ -5,7 +5,7 @@
       <q-form @submit.prevent="buscar">
         <div class="row">
           <div class="col-12 col-md-10 q-pa-xs">
-            <q-select use-input label="Ingresar cite/codigo" v-model="codigo" @input-value="todos" :options="mails" outlined @filter="filterFn"/>
+            <q-select use-input label="Ingresar cite/codigo" v-model="codigo" :options="mails" outlined @filter="filterFn"/>
           </div>
           <div class="col-12 col-md-2 q-pa-xs flex flex-center">
             <q-btn label="Buscar" color="primary" icon="send" type="submit" />
@@ -116,14 +116,19 @@ export default {
   },
   created() {
     this.$q.loading.show()
-    this.$axios.get(process.env.API+'/todos?codigo='+this.teclas?this.teclas:' ').then(res=>{
-      this.mails=[{label:''}]
+    this.$axios.get(process.env.API+'/todos?codigo= ').then(res=>{
+      this.mails.push({label:''})
+
+      console.log(res)
+      // const label=res.data[0].codigo+' '+res.data[0].citecontrol+' '+res.data[0].remitente+' '+res.data[0].ref
+      //this.mails.push(label)
       res.data.forEach(r=>{
         // console.log(r)
         r.label=r.codigo+' '+r.citecontrol+' '+r.remitente+' '+r.ref
         this.mails.push(r)
         // this.mails2.push(r)
       })
+      console.log(this.mails)
       this.mails2=this.mails
       this.codigo=this.mails[0]
       this.$q.loading.hide()
@@ -149,9 +154,10 @@ export default {
       })
     },
     todos(val){
+      this.mails=[]
       this.$axios.get(process.env.API+'/todos?codigo='+val).then(res=>{
-      this.mails=[{label:''}]
-      this.teclas=val
+      this.mails.push({label:''})
+      
       res.data.forEach(r=>{
         // console.log(r)
         r.label=r.codigo+' '+r.citecontrol+' '+r.remitente+' '+r.ref
@@ -171,6 +177,7 @@ export default {
     })
     },
     filterFn (val, update) {
+      
       if (val === '') {
         update(() => {
           this.mails = this.mails2
@@ -178,6 +185,11 @@ export default {
           // is the Vue reference of the QSelect
         })
         return
+      }
+      else{
+        this.mails=[]
+        this.mails2=[]
+        this.todos(val)
       }
 
       update(() => {

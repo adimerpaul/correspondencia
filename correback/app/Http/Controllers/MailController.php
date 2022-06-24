@@ -34,6 +34,9 @@ class MailController extends Controller
     public function todos(Request $request)
     {
         return Mail::with('logs')->where('codigo','like','%'.$request->input('codigo').'%')
+        ->orwhere('citecontrol','like','%'.$request->input('codigo').'%')
+        ->orwhere('remitente','like','%'.$request->input('codigo').'%')
+        ->orwhere('ref','like','%'.$request->input('codigo').'%')
         ->skip(0)->take(25)->get();
     }
     public function buscar(Request $request)
