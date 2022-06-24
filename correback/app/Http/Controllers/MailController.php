@@ -31,10 +31,10 @@ class MailController extends Controller
             ->orderBy('id','DESC')
             ->get();
     }
-    public function todos()
+    public function todos(Request $request)
     {
-        return Mail::with('logs')
-            ->get();
+        return Mail::with('logs')->where('codigo','like','%'.$request->input('codigo').'%')
+        ->skip(0)->take(25)->get();
     }
     public function buscar(Request $request)
     {

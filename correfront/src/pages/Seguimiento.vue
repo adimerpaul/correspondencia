@@ -5,7 +5,7 @@
       <q-form @submit.prevent="buscar">
         <div class="row">
           <div class="col-12 col-md-10 q-pa-xs">
-            <q-select use-input label="Ingresar cite/codigo" v-model="codigo" :options="mails" outlined @filter="filterFn"/>
+            <q-select use-input label="Ingresar cite/codigo" v-model="codigo" @input-value="todos" :options="mails" outlined @filter="filterFn"/>
           </div>
           <div class="col-12 col-md-2 q-pa-xs flex flex-center">
             <q-btn label="Buscar" color="primary" icon="send" type="submit" />
@@ -111,11 +111,12 @@ export default {
       email:{},
       mails:[],
       mails2:[],
+      teclas:''
     }
   },
   created() {
     this.$q.loading.show()
-    this.$axios.get(process.env.API+'/todos').then(res=>{
+    this.$axios.get(process.env.API+'/todos?codigo='+this.teclas?this.teclas:' ').then(res=>{
       this.mails=[{label:''}]
       res.data.forEach(r=>{
         // console.log(r)
@@ -139,13 +140,35 @@ export default {
     buscar(){
       this.$q.loading.show()
       this.email={}
-      // console.log(this.codigo)
+       console.log(this.codigo)
       this.$axios.post(process.env.API+'/buscar',{codigo:this.codigo.codigo}).then(res=>{
          console.log(res.data)
         if (res.data.length>0)
         this.email=res.data[0]
         this.$q.loading.hide()
       })
+    },
+    todos(val){
+      this.$axios.get(process.env.API+'/todos?codigo='+val).then(res=>{
+      this.mails=[{label:''}]
+      this.teclas=val
+      res.data.forEach(r=>{
+        // console.log(r)
+        r.label=r.codigo+' '+r.citecontrol+' '+r.remitente+' '+r.ref
+        this.mails.push(r)
+        // this.mails2.push(r)
+      })
+      this.mails2=this.mails
+      this.codigo=this.mails[0]
+      this.$q.loading.hide()
+    }).catch(err=>{
+      this.$q.loading.hide()
+      this.$q.notify({
+        message:err.response.data.message,
+        color:'red',
+        icon:'error'
+      })
+    })
     },
     filterFn (val, update) {
       if (val === '') {
