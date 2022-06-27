@@ -65,6 +65,7 @@ class MailController extends Controller
             ->with('mail')
             ->with('user')
             ->with('user2')
+            ->skip(0)->take(80)
             ->orderBy('id','desc')
             ->get();
     }
