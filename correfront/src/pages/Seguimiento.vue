@@ -68,6 +68,8 @@
         <template v-slot:body-cell-estado="props">
           <q-td :props="props" >
             <q-badge :color="props.row.estado=='REMITIDO'||props.row.estado=='ARCHIVADO'?'positive':'negative'">{{props.row.estado}}</q-badge>
+            <br>
+            <q-badge color="blue-9">{{props.row.fecha}}</q-badge>
           </q-td>
         </template>
       </q-table>
@@ -150,6 +152,8 @@ export default {
          console.log(res.data)
         if (res.data.length>0)
         this.email=res.data[0]
+        console.log('emial')
+        console.log(this.email)
         this.$q.loading.hide()
       })
     },
@@ -157,7 +161,7 @@ export default {
       this.mails=[]
       this.$axios.get(process.env.API+'/todos?codigo='+val).then(res=>{
       this.mails.push({label:''})
-      
+
       res.data.forEach(r=>{
         // console.log(r)
         r.label=r.codigo+' '+r.citecontrol+' '+r.remitente+' '+r.ref
@@ -177,7 +181,7 @@ export default {
     })
     },
     filterFn (val, update) {
-      
+
       if (val === '') {
         update(() => {
           this.mails = this.mails2
