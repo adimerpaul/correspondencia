@@ -6,7 +6,7 @@
 <!--          <iframe id="docpdf" src="" frameborder="0" style="width: 100%;height: 100vh"></iframe>-->
 <!--        </div>-->
         <q-btn label="Crear" icon="mail" color="primary" @click="fromcrear" />
-        <q-btn label="Actualizar" icon="refresh" color="teal" @click="misdatos" />
+        <q-btn label="Actualizar" icon="refresh" color="teal" @click="actualizar" />
         <q-dialog full-width v-model="crear">
           <q-card>
             <q-card-section>
@@ -54,13 +54,22 @@
 
       </div>
       <div class="col-12">
-        <q-table dense title="Correspondencia " :rows="mails" :columns="columns" :filter="filter"
-               :rows-per-page-options="[10,100,150,200,0]"
-               row-key="name"
+        <q-table
+          dense
+          title="Correspondencia "
+          :rows="mails"
+          :columns="columns"
+          :filter="filter"
+          v-model:pagination="pagination"
+          :loading="loading"
+          :rows-per-page-options="[10,100,150,200,0]"
+           row-key="name"
+           @request="handleRequest"
         >
           <template v-slot:top-right>
-            <q-input outlined dense debounce="300" v-model="filter" placeholder="Buscar">
+            <q-input outlined bottom-slots dense debounce="300" v-model="filter" @keyup.enter="buscar" placeholder="Buscar">
               <template v-slot:append>
+                <q-icon v-if="filter !== ''" name="close" @click="actualizar" class="cursor-pointer" />
                 <q-icon name="search" />
               </template>
             </q-input>
@@ -83,7 +92,6 @@
                     <q-badge :color="l.estado=='REMITIDO'||l.estado=='ARCHIVADO'?'positive':'negative'" :label="l.estado" />
                   </li>
                 </ul>
-                <!--            </q-badge>-->
               </q-td>
           </template>
 <!--          <template v-slot:body-cell-dias="props">-->
@@ -126,7 +134,7 @@
                           </q-item-section>
                         </q-item>
 
-                        <q-item clickable v-close-popup @click="diaglosasiganacion=true;mail=props.row; dest=[]">
+                        <q-item clickable v-close-popup @click="diaglosasignacion=true;mail=props.row; dest=[]">
                           <q-item-section>
                             <q-item-label>Remitir correspodencia</q-item-label>
                           </q-item-section>
@@ -149,7 +157,7 @@
                       </q-list>
                     </q-btn-dropdown>
 <!--                    <q-btn dense @click="modificar(props.row)" color="warning" label="Modifica Correspondencia" icon="edit" size="xs" /><br>-->
-<!--                    <q-btn dense @click="diaglosasiganacion=true;mail=props.row; dest=[]" color="positive" label="Remitir Correspodencia" icon="code" size="xs" /><br>-->
+<!--                    <q-btn dense @click="diaglosasignacion=true;mail=props.row; dest=[]" color="positive" label="Remitir Correspodencia" icon="code" size="xs" /><br>-->
 <!--                    <q-btn dense @click="impresion(props.row.mail_id)" color="info" label="Imprimir Hoja Ruta" icon="picture_as_pdf" size="xs" /><br>-->
 <!--&lt;!&ndash;                    <q-btn dense @click="impresion2(props.row.mail_id)" color="info" label="IMP" icon="print" size="xs" /><br>&ndash;&gt;-->
 <!--                    <q-btn dense @click="archivo(props.row)" color="amber" label="Subir Archivo a nube" icon="upload" size="xs" /><br>-->
@@ -159,7 +167,7 @@
               </q-td>
           </template>
         </q-table>
-        <q-dialog full-width full-height v-model="diaglosasiganacion">
+        <q-dialog full-width full-height v-model="diaglosasignacion">
           <q-card >
             <q-card-section>
               <div class="text-h6"> <q-icon name="code"/> {{mail.ref}} Remitir</div>
@@ -245,7 +253,7 @@ export default {
       miaccion:'',
       filter:'',
       usuario:'',
-      diaglosasiganacion:false,
+      diaglosasignacion:false,
       dialogarchivo:false,
       url:process.env.API,
       dato:{tipo:'',fecha:date.formatDate(Date.now(),'YYYY-MM-DD'),folio:1},
@@ -262,7 +270,6 @@ export default {
       institucion:'',
       dest:[],
       columns:[
-
         {name:'opciones',field:'opciones',label:'opciones',align:'right'},
         {name:'codigo',field:'codigo',label:'codigo',align:'left'},
         {name:'citecontrol',field:'citecontrol',label:'CITE',align:'left'},
@@ -282,7 +289,15 @@ export default {
         // {name:'folio',field:'folio',label:'Fojas',align:'right'},
         // {name:'archivo',field:'archivo',label:'archivo',align:'right'},
 
-      ]
+      ],
+      pagination:{
+        // sortBy: 'name',
+      // descending: false,
+        page:1,
+        rowsPerPage: 3,
+        rowsNumber: 0
+      },
+      loading:false
     }
   },
   mounted() {
@@ -358,7 +373,7 @@ export default {
       //Replace http://localhost:8000 with your API URL
       this.$q.loading.show()
       this.$axios.post(process.env.API+'/upload', data).then((response) => {
-        this.misdatos()
+        this.misdatos(this.pagination.page,this.filter,this.pagination.rowsPerPage)
         this.$q.loading.hide()
         // console.log(response.data);
         // this.dato.imagen=response.data;
@@ -399,9 +414,10 @@ export default {
         accion:this.miaccion
       }).then(res=>{
         // console.log(res.data)
+        this.filter=''
         this.misdatos()
         // this.$q.loading.hide()
-        this.diaglosasiganacion=false
+        this.diaglosasignacion=false
         this.$q.notify({
           message:'Remitido correctamente!!',
           color:'green',
@@ -455,9 +471,10 @@ export default {
         cancel:true,
       }).onOk(()=>{
         // console.log(data)
-        this.$q.loading.show()
+       // this.$q.loading.show()
+       this.loading=true
         this.$axios.post(process.env.API+'/aceptar',{mail_id:mail.id}).then(res=>{
-          this.misdatos();
+          this.misdatos(this.pagination.page,this.filter,this.pagination.rowsPerPage)
           this.$q.notify({
             message: 'Aceptado',
             caption: 'Registro aceptado',
@@ -873,10 +890,15 @@ export default {
     //     this.remitentes = this.remitentes2.filter(v => v.remitente.toLowerCase().indexOf(needle) > -1)
     //   })
     // },
-    misdatos(){
-      this.$q.loading.show()
-      this.$axios.post(process.env.API+'/micorre').then(res=>{
-         // console.log(res.data)
+    actualizar(){
+        this.filter=''
+        this.misdatos()
+    },
+    misdatos(page = 0,filter,rowsPerPage=10){
+      //this.$q.loading.show()
+      this.loading=true
+      this.$axios.get(process.env.API+'/micorre',{params:{page: page,filter:filter,rowsPerPage: rowsPerPage }}).then(res=>{
+          console.log('micorre:',res)
         // this.mails=res.data
         this.mails=[]
         register('es_ES', (number, index, total_sec) => [
@@ -897,8 +919,11 @@ export default {
         ][index]);
 
         // console.log( format(Date.now() - 11 * 1000 * 60 * 60,'es_ES'))
-
-        res.data.forEach(r=>{
+        this.pagination.page = res.data.current_page
+        this.pagination.rowsPerPage = res.data.per_page
+        this.pagination.rowsNumber = res.data.total
+        console.log('pagination',this.pagination)
+        res.data.data.forEach(r=>{
           console.log(r)
           // const date1 = new Date()
           // const date2 = date.extractDate(r.mail.fecha, 'YYYY-MM-DD')
@@ -928,9 +953,23 @@ export default {
             logs:r.mail.logs,
             dias:dias,
           })
+
         })
+        this.loading=false
         this.$q.loading.hide()
       })
+    },
+    handleRequest(props){
+        console.log('halderesquest: ',props)
+        if(props.pagination.rowsPerPage===0){
+          props.pagination.rowsPerPage=this.pagination.rowsNumber
+        }
+        this.misdatos(props.pagination.page,props.filter,props.pagination.rowsPerPage)
+    },
+    buscar(){
+      //handleRequest()
+      console.log('filter:',this.filter)
+      this.misdatos(this.pagination.page,this.filter,this.pagination.rowsPerPage)
     },
     anular(mail){
       this.$q.dialog({
@@ -989,6 +1028,7 @@ export default {
             this.destinatario=''
             this.cargo=''
             this.institucion=''
+            this.filter=''.
             this.misdatos()
             this.misremitentes()
             this.crear=false
@@ -1013,7 +1053,7 @@ export default {
             this.cargo=''
             this.institucion=''
             // console.log(res.data)
-            this.misdatos()
+            this.misdatos(this.pagination.page,this.filter,this.pagination.rowsPerPage)
             this.misremitentes()
             this.crear=false
 

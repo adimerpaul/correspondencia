@@ -21,7 +21,7 @@
       <div class="q-px-lg q-pt-xs q-mb-md" >
         <div class="text-h5 text-bold">
           <template v-if="!$store.getters['login/isLoggedIn']">
-          SICIG <div style="font-size:14px">Sistema de Informacion de Correspondencia Interna GAMO</div>
+          SIC GAMO <div style="font-size:14px">SISTEMA DE INFORMACIÓN DE CORRESPONDENCIA GAMO</div>
 
           </template>
           <template v-else>
@@ -100,7 +100,7 @@
           <q-item
             v-if="$store.state.login.booldesignacion"
             clickable
-            to="/asiganacion"
+            to="/asignacion"
           >
             <q-item-section
               avatar

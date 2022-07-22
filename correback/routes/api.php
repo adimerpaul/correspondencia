@@ -34,7 +34,7 @@ Route::group(['middleware'=>'auth:sanctum'],function (){
     Route::resource('/asignacion',\App\Http\Controllers\AsignacionController::class);
     Route::resource('/reportecorrespondencia',\App\Http\Controllers\ReportecorrespondenciaController::class);
     Route::post('/updatemail',[\App\Http\Controllers\MailController::class,'updatemail']);
-    Route::post('/micorre',[\App\Http\Controllers\MailController::class,'micorre']);
+    Route::get('/micorre',[\App\Http\Controllers\MailController::class,'micorre']);
     Route::post('/micorre2',[\App\Http\Controllers\MailController::class,'micorre2']);
 //    Route::post('/buscar',[\App\Http\Controllers\MailController::class,'buscar']);
     Route::post('/dividir',[\App\Http\Controllers\MailController::class,'dividir']);

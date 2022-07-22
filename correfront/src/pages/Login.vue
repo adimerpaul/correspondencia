@@ -46,9 +46,8 @@
                   </div>
                   <div class="col-12 q-py-md">
                     <q-btn label="INGRESAR" color="primary" icon="login" class="full-width" type="submit"/>
-                    <q-btn label="Registrate" color="secondary" icon="how_to_reg" @click="tab='registro'" class="full-width q-mt-xs" />
                     <div class="text-caption q-py-xs">
-                      <a target="_blank" href="https://api.whatsapp.com/send?phone=59169603027&text=olvide mi contraseña">Olvidate tu contraseña?</a>
+                      <a target="_blank" href="https://api.whatsapp.com/send?phone=59172354689&text=olvide mi contraseña">Olvidate tu contraseña?</a>
                     </div>
 
                   </div>
@@ -148,7 +147,7 @@ export default {
   },
   created() {
     if (this.$store.getters["login/isLoggedIn"]){
-      this.$router.push('/asiganacion')
+      this.$router.push('/asignacion')
     }
 
     this.$q.loading.show()
@@ -191,7 +190,7 @@ export default {
       this.user.unit_id=this.user.unit.id
       this.$store.dispatch('login/register', this.user).then(() =>{
         this.$q.loading.hide()
-        this.$router.push('/asiganacion')
+        this.$router.push('/asignacion')
       })
         .catch(err => {
           this.$q.loading.hide();
@@ -212,7 +211,7 @@ export default {
       this.$q.loading.show()
       this.$store.dispatch('login/login', { email:this.email, password:this.password }).then(() =>{
         this.$q.loading.hide()
-        this.$router.push('/asiganacion')
+        this.$router.push('/asignacion')
       })
         .catch(err => {
           this.$q.loading.hide();

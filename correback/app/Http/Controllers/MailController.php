@@ -44,30 +44,61 @@ class MailController extends Controller
 //        return Mail::where('unit_id',$request->user()->unit_id)->get();
         return Mail::where('codigo',$request->codigo)->with('logs')->get();
     }
+
     public function micorre(Request $request)
     {
-//        return Mail::where('unit_id',$request->user()->unit_id)->get();
-        //return Mail::with('logs')
-//            ->where('estado','EN PROCESO')
-//            ->orWhere('estado','ACEPTADO')
-        //    ->where('user_id',$request->user()->id)
-        //    ->whereRaw("estado in ('EN PROCESO','ACEPTADO')  AND user_id=?",[$request->user()->id])
-         //   ->orderBy('id','DESC')
-          //  ->get();
-
-//        return Asigna::with('mail')
-//        ->whereRaw("estado in ('EN PROCESO','ACEPTADO')  AND user_id=".$request->user()->id)
-//        ->orderBy('id','DESC')
-//        ->get();
-//        return Log::where('user_id2',$request->user()->id)->with('mail')->with('user')->with('user2')->get();
-        return Log::where('unit_id',$request->user()->unit_id)
-            ->where('user_id2',$request->user()->id)
-            ->with('mail')
-            ->with('user')
-            ->with('user2')
-            ->skip(0)->take(100)
-            ->orderBy('id','desc')
+        //se ejecuta cuando filtramos desde el buscardor de la tabla en mis_asignaciones
+        if($request->filter){
+            $mail_id = Mail::select(['id'])
+            ->where('codigo','like','%'.$request->filter.'%')
+            ->orWhere('citecontrol','like','%'.$request->filter.'%')
+            ->orWhere('remitente','like','%'.$request->filter.'%')
+            ->orWhere('ref','like','%'.$request->filter.'%')
             ->get();
+            $resultmail=[];
+            foreach($mail_id as $mail){
+                  array_push($resultmail,$mail->id);
+            }
+             //return $resultmail;
+            return Log::where('user_id2',$request->user()->id)
+            ->where('unit_id',$request->user()->unit_id)
+            ->whereIn('id', function($query) use($resultmail,$request){
+                $query->selectRaw('max(id)')
+                ->from('logs')
+                ->whereIn('mail_id',$resultmail)
+                ->where('user_id2',$request->user()->id)
+                ->groupBy('mail_id');
+            })
+            ->with('user')
+            ->with(['mail' => function ($query){
+                $query->with('logs');
+            }])
+            ->paginate($request->rowsPerPage);
+
+            // return Log::where('user_id2',$request->user()->id)
+            // ->where('unit_id',$request->user()->unit_id)
+            // ->with(['mail' => function ($query) use ($request) {
+            //     $query->where('codigo','like','%'.$request->filter.'%');
+            // }])
+            // ->get();
+        }
+        else{
+            return Log::where('unit_id',$request->user()->unit_id)
+            ->where('user_id2',$request->user()->id)
+            ->whereIn('id', function($query) use($request){
+                $query->selectRaw('max(id)')
+                ->from('logs')
+                ->where('user_id2',$request->user()->id)
+                ->groupBy('mail_id');
+            })
+            ->with('user')
+            ->with(['mail' => function ($query) {
+                     $query->with('logs');
+                 }])
+            ->orderBy('id','desc')
+            ->paginate($request->rowsPerPage);
+        }
+
     }
 
 

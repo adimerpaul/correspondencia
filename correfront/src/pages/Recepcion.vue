@@ -79,7 +79,7 @@
             <q-btn-group v-if="props.row.estado!='ARCHIVADO' && props.row.estado!='ANULADO'">
               <q-btn dense @click="impresion(props.row.id)" color="primary" label="ImprimirHR" icon="timeline" size="xs" />
               <q-btn dense @click="editar(props)" color="teal" label="Editar" icon="edit" size="xs" />
-              <q-btn dense @click="diaglosasiganacion=true;mail=props.row;miaccion='';usuario='',dest=[]" color="positive" label="Remitir" icon="code" size="xs" />
+              <q-btn dense @click="diaglosasignacion=true;mail=props.row;miaccion='';usuario='',dest=[]" color="positive" label="Remitir" icon="code" size="xs" />
               <q-btn dense @click="archivar(props.row)" color="accent" label="Terminar" icon="list" size="xs" />
               <q-btn dense @click="archivo(props.row)" color="amber" label="Subir " icon="upload" size="xs" />
             </q-btn-group>
@@ -87,7 +87,7 @@
         </q-tr>
         </template>
       </q-table>
-      <q-dialog v-model="diaglosasiganacion">
+      <q-dialog v-model="diaglosasignacion">
         <q-card style="width: 700px;min-width: 80vh">
           <q-card-section>
             <div class="text-h6"> <q-icon name="code"/> {{mail.ref}} Remitir</div>
@@ -151,7 +151,7 @@ export default {
       miaccion:'',
       filter:'',
       usuario:'',
-      diaglosasiganacion:false,
+      diaglosasignacion:false,
       dialogarchivo:false,
       url:process.env.API,
       dato:{tipo:'INTERNO',fecha:date.formatDate(Date.now(),'YYYY-MM-DD'),folio:1},
@@ -288,7 +288,7 @@ export default {
         // console.log(res.data)
         this.misdatos()
         this.$q.loading.hide()
-        this.diaglosasiganacion=false
+        this.diaglosasignacion=false
         this.$q.notify({
           message:'Renviado correctamente!!',
           color:'green',

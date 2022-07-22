@@ -18,7 +18,7 @@ const routes = [
       { path: '/recepcion', component: Recepcion,meta: {requiresAuth: true,} },
       { path: '/user', component: User,meta: {requiresAuth: true,} },
       { path: '/seguimiento', component: Seguimiento,meta: {requiresAuth: true,} },
-      { path: '/asiganacion', component: Asignacion,meta: {requiresAuth: true,} },
+      { path: '/asignacion', component: Asignacion,meta: {requiresAuth: true,} },
       { path: '/misrecepciones', component: Misrecepciones,meta: {requiresAuth: true,} },
       { path: '/reportecorrespondencia', component: Reportecorrespondencia,meta: {requiresAuth: true,} },
     ]

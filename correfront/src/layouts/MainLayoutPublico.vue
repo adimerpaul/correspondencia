@@ -98,7 +98,7 @@
 <!--          <q-item-->
 <!--            v-if="$store.state.login.booldesignacion"-->
 <!--            clickable-->
-<!--            to="/asiganacion"-->
+<!--            to="/asignacion"-->
 <!--          >-->
 <!--            <q-item-section-->
 <!--              avatar-->
