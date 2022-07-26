@@ -169,6 +169,10 @@ class MailController extends Controller
     {
         return Mail::select('remitente','cargo','institucion')->groupBy('remitente','cargo','institucion')->get();
     }
+    public function destinatarios(){
+         return Mail::select('destinatario')->orderBy('destinatario')->distinct()->get();
+
+    }
     public function consulta(Request $request)
     {
         return Mail::

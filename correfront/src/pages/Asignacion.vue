@@ -22,7 +22,11 @@
                   <div class="col-sm-2 col-12 q-pa-xs"><q-input required dense label="Cite/Codigo/Tramite" autofocus v-model="dato.citecontrol"  outlined /></div>
                   <div class="col-sm-2 col-12 q-pa-xs"><q-input required dense label="Cite entrante" autofocus v-model="dato.cite"  outlined /></div>
                   <div class="col-sm-4 col-12 q-pa-xs">
-                    <q-input style="text-transform: uppercase" outlined dense label="Destinatario" v-model="destinatario"/>
+                    <!-- <q-input style="text-transform: uppercase" outlined dense label="Destinatario" v-model="destinatario"/> -->
+                     <q-input style="text-transform: uppercase" outlined dense label="Destinatario" list="destinatario" name="midestinatario" v-model="destinatario" />
+                    <datalist id="destinatario">
+                      <option v-for="r in destinatarios" :key="r.id">{{r.destinatario}}</option>
+                    </datalist>
                   </div>
                   <div class="col-sm-4 col-12 q-pa-xs">
                     <q-input  @keyup="cambio" style="text-transform: uppercase" outlined dense label="remitente" list="browsers" name="myBrowser" v-model="remitente" />
@@ -170,7 +174,7 @@
         <q-dialog full-width full-height v-model="diaglosasignacion">
           <q-card >
             <q-card-section>
-              <div class="text-h6"> <q-icon name="code"/> {{mail.ref}} Remitir</div>
+              <div class="text-h6"> <q-icon name="code"/> {{mail.ref}} | Remitir</div>
             </q-card-section>
             <q-card-section class="q-pt-none">
               <q-form @submit.prevent="registrarlog">
@@ -249,6 +253,7 @@ export default {
   data(){
     return {
       destinatario:'',
+      destinatarios:'',
       crear:false,
       miaccion:'',
       filter:'',
@@ -310,7 +315,7 @@ export default {
     //   this.folios.push(i)
     // }
     this.misremitentes()
-
+    this.misdestinatarios()
     this.$axios.post(process.env.API+'/misremetentes').then(res=>{
       res.data.forEach(r=>{
         // console.log(r)
@@ -438,6 +443,13 @@ export default {
       this.$axios.get(process.env.API+'/mail/create').then(res=>{
         // console.log(res.data)
         this.remitentes=res.data
+        // this.remitentes2=res.data
+      })
+    },
+    misdestinatarios(){
+      this.$axios.get(process.env.API+'/destinatarios').then(res=>{
+        console.log("destinatarios: ",res.data)
+        this.destinatarios=res.data
         // this.remitentes2=res.data
       })
     },
@@ -924,7 +936,7 @@ export default {
         this.pagination.rowsNumber = res.data.total
         console.log('pagination',this.pagination)
         res.data.data.forEach(r=>{
-          console.log(r)
+          //console.log(r)
           // const date1 = new Date()
           // const date2 = date.extractDate(r.mail.fecha, 'YYYY-MM-DD')
           // const dias = date.getDateDiff(date1, date2, 'days')
@@ -1028,13 +1040,15 @@ export default {
             this.destinatario=''
             this.cargo=''
             this.institucion=''
-            this.filter=''.
+            this.filter=''
             this.misdatos()
             this.misremitentes()
+            this.misdestinatarios()
             this.crear=false
 
             // this.$q.loading.hide()
           }).catch(err=>{
+            console.log("error",err)
             this.$q.loading.hide()
             this.$q.notify({
               message:err.response.data.message,
@@ -1045,7 +1059,7 @@ export default {
         else{
           this.$q.loading.show()
           this.$axios.post(process.env.API+'/updatemail',this.dato).then(res=>{
-            console.log(res.data)
+            console.log("RES.DATA",res.data)
             //return false
             this.dato={tipo:'EXTERNO',fecha:date.formatDate(Date.now(),'YYYY-MM-DD'),folio:1};
             this.remitente=''
@@ -1055,6 +1069,7 @@ export default {
             // console.log(res.data)
             this.misdatos(this.pagination.page,this.filter,this.pagination.rowsPerPage)
             this.misremitentes()
+            this.misdestinatarios()
             this.crear=false
 
             // this.$q.loading.hide()
