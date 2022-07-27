@@ -9,7 +9,7 @@
         <q-input dense outlined v-model="fecha1" type="date" label="fecha inicio"/>
       </div>
       <div class="col-4">
-        <q-input dense outlined v-model="fecha1" type="date" label="fecha fin"/>
+        <q-input dense outlined v-model="fecha2" type="date" label="fecha fin"/>
       </div>
       <div class="col-4 flex ">
         <!--    <q-input dense outlined v-model="fecha1" type="date"/>-->

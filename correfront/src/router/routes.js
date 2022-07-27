@@ -8,6 +8,8 @@ import MainLayout from "layouts/MainLayout";
 import Consulta from "pages/Consulta";
 import MainLayoutPublico from "layouts/MainLayoutPublico";
 import Reportecorrespondencia from "pages/Reportecorrespondencia";
+import Reportecorrespondenciaremitida from "pages/Reportecorrespondenciaremitida";
+import Reportecorrespondenciarecibida from "pages/Reportecorrespondenciarecibida";
 
 const routes = [
   {
@@ -21,6 +23,8 @@ const routes = [
       { path: '/asignacion', component: Asignacion,meta: {requiresAuth: true,} },
       { path: '/misrecepciones', component: Misrecepciones,meta: {requiresAuth: true,} },
       { path: '/reportecorrespondencia', component: Reportecorrespondencia,meta: {requiresAuth: true,} },
+      { path: '/reportecorrespondenciaremitida', component: Reportecorrespondenciaremitida,meta: {requiresAuth: true,} },
+      { path: '/reportecorrespondenciarecibida', component: Reportecorrespondenciarecibida,meta: {requiresAuth: true,} },
     ]
   },
   {

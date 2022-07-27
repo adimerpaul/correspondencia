@@ -36,6 +36,7 @@ class ReportecorrespondenciaController extends Controller
      */
     public function store(Request $request)
     {
+
         return Mail::with('logs')
             ->whereDate('fecha','>=',$request->fecha1)
             ->whereDate('fecha','<=',$request->fecha2)
@@ -88,5 +89,27 @@ class ReportecorrespondenciaController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function correspondenciaremitida(Request $request){
+        $remitidos = Log::where('user_id',$request->user()->id)
+                ->whereDate('fecha','>=',$request->fecha1)
+                ->whereDate('fecha','<=',$request->fecha2)
+                ->whereIN('estado',['REMITIDO'])
+                ->with(['mail','user','unit','user2'])
+                ->get();
+        return $remitidos;
+    }
+    public function correspondenciarecibida(Request $request){
+        $recibidos = Log::where('user_id2',$request->user()->id)
+                ->whereDate('fecha','>=',$request->fecha1)
+                ->whereDate('fecha','<=',$request->fecha2)
+                ->whereIN('estado',['ACEPTADO'])
+                ->where('accion','<>','CREADO')
+                ->with(['mail','user'=> function ($query) {
+                         $query->with('unit');
+                     },'unit','user2'])
+                ->get();
+        return $recibidos;
     }
 }

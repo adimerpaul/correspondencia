@@ -132,7 +132,32 @@
               <q-icon name="print" />
             </q-item-section>
             <q-item-section>
-              <q-item-label>Reporte</q-item-label>
+              <q-item-label>Reporte Correpondencia creada</q-item-label>
+              <q-item-label caption>
+                Reporte de correspondencia
+              </q-item-label>
+            </q-item-section>
+          </q-item>
+
+          <q-item v-if="$store.state.login.boolseguimiento" clickable to="/reportecorrespondenciaremitida">
+            <q-item-section avatar>
+              <q-icon name="print" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Reporte Correpondencia Remitida</q-item-label>
+              <q-item-label caption>
+                Reporte de correspondencia
+              </q-item-label>
+            </q-item-section>
+          </q-item>
+
+
+          <q-item v-if="$store.state.login.boolseguimiento" clickable to="/reportecorrespondenciarecibida">
+            <q-item-section avatar>
+              <q-icon name="print" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Reporte Correpondencia Recibida</q-item-label>
               <q-item-label caption>
                 Reporte de correspondencia
               </q-item-label>

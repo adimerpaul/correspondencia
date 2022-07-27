@@ -178,7 +178,7 @@
             </q-card-section>
             <q-card-section class="q-pt-none">
               <q-form @submit.prevent="registrarlog">
-                <q-input type="textarea" outlined label="Instruccion / Observacion" v-model="miaccion" required/>
+                <q-input type="textarea" style="text-transform: uppercase" outlined label="Instruccion / Observacion" v-model="miaccion" required/>
 <!--                <q-select :options="usuarios" label="Seleccionar personal" v-model="usuario" outlined required/>-->
                 <q-select dense use-input :options="usuarios" label="Seleccionar personal" v-model="usuario" @filter="filterFn" outlined >
                   <template v-slot:no-option>
@@ -672,80 +672,89 @@ export default {
           con++
         }
 
-        doc.addPage();
-        doc.setFont('times', 'bold');
-        doc.setDrawColor(122);
-        doc.roundedRect(5, 10, 200, 282, 2, 2, 'S')//principal
-        doc.roundedRect(183, 11, 20, 8, 1, 1, 'S')//hoja1 hoja de ruta
-        doc.setTextColor(158,158,158)
-        doc.setFontSize(10);
-        doc.text('HOJA 2',187,14)
-        doc.setFontSize(7);
-        doc.text('HOJA DE RUTA',184,17)
-        doc.setTextColor(0,0,0)
 
 
-        con=5
 
-        for (let i=0;i<4;i++){
-          // doc.roundedRect(8, 52+i*80, 194, 80, 2, 2, 'S')
-          doc.roundedRect(8, 20+i*68, 194, 68, 2, 2, 'S')
+///////////////////////////////////////
+        // doc.addPage();
+        // doc.setFont('times', 'bold');
+        // doc.setDrawColor(122);
+        // doc.roundedRect(5, 10, 200, 282, 2, 2, 'S')//principal
+        // doc.roundedRect(183, 11, 20, 8, 1, 1, 'S')//hoja1 hoja de ruta
+        // doc.setTextColor(158,158,158)
+        // doc.setFontSize(10);
+        // doc.text('HOJA 2',187,14)
+        // doc.setFontSize(7);
+        // doc.text('HOJA DE RUTA',184,17)
+        // doc.setTextColor(0,0,0)
 
-          doc.setFontSize(5)
-          doc.text(['ATENDRE TRAMITE DE','A CUERDO','A PROCEDIMIENTO','VIGENTE Y NORMATIVA'],21,22+i*68,{align:'center'})
-          doc.setFontSize(9)
-          doc.text('RESPONDER',21,34+i*68,{align:'center'})
-          doc.text('INFORME',21,43+i*68,{align:'center'})
-          doc.text('TOME ACCION',21,51+i*68,{align:'center'})
-          doc.text('NOTIFICAR',21,60+i*68,{align:'center'})
-          doc.setFontSize(6)
-          doc.text(['PROCESAR CONFORME','EL PROVEIDO QUE','ANTECEDE'],21,65+i*68,{align:'center'})
-          doc.setFontSize(9)
-          doc.text(['PROYECTAR','NOTA'],21,75+i*68,{align:'center'})
-          doc.text('ARCHIVAR',21,85+i*68,{align:'center'})
-          doc.roundedRect(35, 20+i*68, 5, 8.5, 1, 1, 'S')
-          doc.roundedRect(35, 28.5+i*68, 5, 8.5, 1, 1, 'S')
-          doc.roundedRect(35, 37+i*68, 5, 8.5, 1, 1, 'S')
-          doc.roundedRect(35, 45.5+i*68, 5, 8.5, 1, 1, 'S')
-          doc.roundedRect(35, 54+i*68, 5, 8.5, 1, 1, 'S')
-          doc.roundedRect(35, 62.5+i*68, 5, 8.5, 1, 1, 'S')
-          doc.roundedRect(35, 71+i*68, 5, 8.5, 1, 1, 'S')
-          doc.roundedRect(35, 79.5+i*68, 5, 8.5, 1, 1, 'S')
-          doc.line(8, 28.5+i*68, 40, 28.5+i*68)//line1
-          doc.line(8, 37+i*68, 40, 37+i*68)//line2
-          doc.line(8, 45.5+i*68, 40, 45.5+i*68)//line3
-          doc.line(8, 54+i*68, 40, 54+i*68)//line4
-          doc.line(8, 62.5+i*68, 40, 62.5+i*68)//line5
-          doc.line(8, 71+i*68, 40, 71+i*68)//line5
-          doc.line(8, 79.5+i*68, 40, 79.5+i*68)//line6
 
-          doc.text('INSTRUCCIONES:',85,23+i*68,{align:'center'})
-          doc.text('_________________',85,23+i*68,{align:'center'})
-          doc.text('.................................................................................................................',40,28.5+i*68)
-          doc.text('.................................................................................................................',40,33+i*68)
-          doc.text('.................................................................................................................',40,37+i*68)
-          doc.text('.................................................................................................................',40,41.5+i*68)
-          doc.text('.................................................................................................................',40,45.5+i*68)
-          doc.text('.................................................................................................................',40,50+i*68)
-          doc.text('.................................................................................................................',40,54+i*68)
-          doc.text('.................................................................................................................',40,58.5+i*68)
-          doc.text('.................................................................................................................',40,62.5+i*68)
-          doc.text('.................................................................................................................',40,67+i*68)
-          doc.text('.................................................................................................................',40,71+i*68)
-          doc.text('.................................................................................................................',40,75.5+i*68)
-          doc.text('.................................................................................................................',40,79.5+i*68)
-          doc.text('.................................................................................................................',40,84+i*68)
-          doc.text('FIRMAR',115,87+i*68)
+        // con=5
 
-          doc.roundedRect(130, 20+i*68, 72, 68, 1, 1, 'S')
-          doc.line(130, 24+i*68, 202, 24+i*68)//line1
-          doc.line(130, 84+i*68, 202, 84+i*68)//line2
-          doc.text('DESTINATARIO '+con+':',132,23+i*68)
-          doc.text('SELLO DE RECEPCION '+con+':',150,83+i*68)
-          doc.text('FECHA:',132,87+i*68)
-          doc.text('HORA:',172,87+i*68)
-          con++
-        }
+        // for (let i=0;i<4;i++){
+        //   // doc.roundedRect(8, 52+i*80, 194, 80, 2, 2, 'S')
+        //   doc.roundedRect(8, 20+i*68, 194, 68, 2, 2, 'S')
+
+        //   doc.setFontSize(5)
+        //   doc.text(['ATENDRE TRAMITE DE','A CUERDO','A PROCEDIMIENTO','VIGENTE Y NORMATIVA'],21,22+i*68,{align:'center'})
+        //   doc.setFontSize(9)
+        //   doc.text('RESPONDER',21,34+i*68,{align:'center'})
+        //   doc.text('INFORME',21,43+i*68,{align:'center'})
+        //   doc.text('TOME ACCION',21,51+i*68,{align:'center'})
+        //   doc.text('NOTIFICAR',21,60+i*68,{align:'center'})
+        //   doc.setFontSize(6)
+        //   doc.text(['PROCESAR CONFORME','EL PROVEIDO QUE','ANTECEDE'],21,65+i*68,{align:'center'})
+        //   doc.setFontSize(9)
+        //   doc.text(['PROYECTAR','NOTA'],21,75+i*68,{align:'center'})
+        //   doc.text('ARCHIVAR',21,85+i*68,{align:'center'})
+        //   doc.roundedRect(35, 20+i*68, 5, 8.5, 1, 1, 'S')
+        //   doc.roundedRect(35, 28.5+i*68, 5, 8.5, 1, 1, 'S')
+        //   doc.roundedRect(35, 37+i*68, 5, 8.5, 1, 1, 'S')
+        //   doc.roundedRect(35, 45.5+i*68, 5, 8.5, 1, 1, 'S')
+        //   doc.roundedRect(35, 54+i*68, 5, 8.5, 1, 1, 'S')
+        //   doc.roundedRect(35, 62.5+i*68, 5, 8.5, 1, 1, 'S')
+        //   doc.roundedRect(35, 71+i*68, 5, 8.5, 1, 1, 'S')
+        //   doc.roundedRect(35, 79.5+i*68, 5, 8.5, 1, 1, 'S')
+        //   doc.line(8, 28.5+i*68, 40, 28.5+i*68)//line1
+        //   doc.line(8, 37+i*68, 40, 37+i*68)//line2
+        //   doc.line(8, 45.5+i*68, 40, 45.5+i*68)//line3
+        //   doc.line(8, 54+i*68, 40, 54+i*68)//line4
+        //   doc.line(8, 62.5+i*68, 40, 62.5+i*68)//line5
+        //   doc.line(8, 71+i*68, 40, 71+i*68)//line5
+        //   doc.line(8, 79.5+i*68, 40, 79.5+i*68)//line6
+
+        //   doc.text('INSTRUCCIONES:',85,23+i*68,{align:'center'})
+        //   doc.text('_________________',85,23+i*68,{align:'center'})
+        //   doc.text('.................................................................................................................',40,28.5+i*68)
+        //   doc.text('.................................................................................................................',40,33+i*68)
+        //   doc.text('.................................................................................................................',40,37+i*68)
+        //   doc.text('.................................................................................................................',40,41.5+i*68)
+        //   doc.text('.................................................................................................................',40,45.5+i*68)
+        //   doc.text('.................................................................................................................',40,50+i*68)
+        //   doc.text('.................................................................................................................',40,54+i*68)
+        //   doc.text('.................................................................................................................',40,58.5+i*68)
+        //   doc.text('.................................................................................................................',40,62.5+i*68)
+        //   doc.text('.................................................................................................................',40,67+i*68)
+        //   doc.text('.................................................................................................................',40,71+i*68)
+        //   doc.text('.................................................................................................................',40,75.5+i*68)
+        //   doc.text('.................................................................................................................',40,79.5+i*68)
+        //   doc.text('.................................................................................................................',40,84+i*68)
+        //   doc.text('FIRMAR',115,87+i*68)
+
+        //   doc.roundedRect(130, 20+i*68, 72, 68, 1, 1, 'S')
+        //   doc.line(130, 24+i*68, 202, 24+i*68)//line1
+        //   doc.line(130, 84+i*68, 202, 84+i*68)//line2
+        //   doc.text('DESTINATARIO '+con+':',132,23+i*68)
+        //   doc.text('SELLO DE RECEPCION '+con+':',150,83+i*68)
+        //   doc.text('FECHA:',132,87+i*68)
+        //   doc.text('HORA:',172,87+i*68)
+        //   con++
+        // }
+/////////////////////////////
+
+
+
+
         // $( '#docpdf' ).attr('src', doc.output('datauristring'));
         // // doc.save("Pago"+date.formatDate(Date.now(),'DD-MM-YYYY')+".pdf");
         window.open(doc.output('bloburl'), '_blank');
