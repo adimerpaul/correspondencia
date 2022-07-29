@@ -1095,7 +1095,6 @@ export default {
         this.dato.cargo=this.cargo
         this.dato.institucion=this.institucion
         this.dato.codigo=this.codigo
-        console.log('user',this.$store.state.login.user)
         if(this.dato.id==undefined || this.dato.id==''){
           // console.log('new')
           this.$q.loading.show()
@@ -1112,7 +1111,7 @@ export default {
             this.misremitentes()
             this.misdestinatarios()
             this.crear=false
-            this.impresionticket(res.data)
+           // this.impresionticket(res.data)
 
             // this.$q.loading.hide()
           }).catch(err=>{
@@ -1142,7 +1141,7 @@ export default {
             this.misremitentes()
             this.misdestinatarios()
             this.crear=false
-            this.impresionticket(res.data)
+         //   this.impresionticket(res.data)
             // this.$q.loading.hide()
           }).catch(err=>{
             this.$q.loading.hide()

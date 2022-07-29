@@ -32,7 +32,7 @@
       </template>
       <template v-slot:body-cell-datos="props" >
         <q-td auto-width :props="props">
-          <div class="">DE: {{props.row.user.name}} </div>
+          <div class="">DE: {{props.row.user===null?'':props.row.user.name}} </div>
           <div class="">A: {{props.row.user2.name}} | <q-badge color="blue">
              <div class=""> {{props.row.user2.unit.nombre}}</div>
           </q-badge></div>
@@ -112,6 +112,12 @@ export default {
       let cont=0
       doc.roundedRect(5, 10, 200, 282, 2, 2, 'S')//principal
       doc.roundedRect(183, 11, 20, 8, 1, 1, 'S')//hoja1 hoja de ruta
+
+      doc.setFontSize(10);
+      doc.text('CITE ',18,17)
+      doc.text('REMISIÓN ',43,17)
+      doc.text('RECEPCION ',172,17)
+
       doc.setTextColor(158,158,158)
       doc.setFontSize(10);
       doc.text('HOJA '+numhoja,187,14)
@@ -124,18 +130,21 @@ export default {
         doc.roundedRect(8, 20+i*34, 194, 34, 0, 0, 'S')
         doc.line(40, 20+i*34, 40, 54+i*34)//line1
         doc.line(170, 20+i*34, 170, 54+i*34)//line1
-        doc.setFontSize(12);
-        doc.setFont('times', 'bold');
+        doc.setFontSize(10);
+        doc.setFont('times', 'normal');
         doc.text(d.mail.fecha.toString(),23,25+i*34,'center')
         doc.text(d.mail.hora.toString(),23,30+i*34,'center')
-        doc.setFont('times', 'normal');
-        doc.setFontSize(15);
+        doc.setFont('times', 'bold');
+        doc.setFontSize(22);
         doc.text(d.mail.citecontrol.toString(),23,38+i*34,'center')
 
         doc.setFontSize(10);
         // doc.setFont('times', 'bold');
+        doc.setFont('times', 'normal');
         doc.text('De: '+d.user.name,41,25+i*34,'left')
+        doc.setFont('times', 'bold');
         doc.text('A: '+d.user2.name,41,30+i*34,'left')
+        doc.setFont('times', 'normal');
         doc.text('REF: '+d.mail.ref.substr(0,50),41,35+i*34,'left')
         doc.text(d.mail.ref.substr(50,50),41,40+i*34,'left')
         doc.text(d.mail.ref.substr(100,50),41,45+i*34,'left')

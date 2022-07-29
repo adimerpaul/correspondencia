@@ -93,9 +93,11 @@ class ReportecorrespondenciaController extends Controller
 
     public function correspondenciaremitida(Request $request){
         $remitidos = Log::where('user_id',$request->user()->id)
+                ->where('accion','<>','CREADO')
+                //->orWhere('user_id2',$request->user()->id)
                 ->whereDate('fecha','>=',$request->fecha1)
                 ->whereDate('fecha','<=',$request->fecha2)
-                ->whereIN('estado',['REMITIDO'])
+                //->where('estado','REMITIDO')
                 ->with(['mail','user','unit','user2'])
                 ->get();
         return $remitidos;
@@ -113,3 +115,8 @@ class ReportecorrespondenciaController extends Controller
         return $recibidos;
     }
 }
+
+
+
+
+
