@@ -109,9 +109,19 @@
 <!--          </template>-->
           <template v-slot:body-cell-fecha="props">
               <q-td  :props="props">
-<!--                 <div class="text-h6"> {{props.row.fecha}}<br>{{props.row.hora}}</div>-->
+                <div class="text-h6"> {{props.row.fecha}}<br>{{props.row.hora}}</div>
               </q-td>
           </template>
+
+          <template v-slot:body-cell-dias="props">
+              <q-td  :props="props">
+               <q-tooltip class="bg-amber text-black shadow-4" anchor="top middle" self="top middle">
+                    {{props.row.fecha}}
+              </q-tooltip>
+               {{props.row.dias}}
+              </q-td>
+          </template>
+
           <template v-slot:body-cell-archivo="props">
               <q-td key="archivo" :props="props">
                 <template v-if="props.row.archivo!=''">
@@ -290,7 +300,7 @@ export default {
         // {name:'ref',field:'ref',label:'ref',align:'right'},
         // {field:'cargo',name:'cargo',label:'cargo',align:'right'},
         // {field:'institucion',name:'institucion',label:'institucion',align:'right'},
-        // {field:'fecha',name:'fecha',label:'fecha',align:'right'},
+         //{field:'fecha',name:'fecha',label:'fecha',align:'right'},
         // {name:'logs',field:row=>'logs',label:'logs',align:'left'},
         {name:'dias',field:'dias',label:'dias',align:'right'},
         // {field:'estado',name:'estado',label:'estado',align:'right'},
