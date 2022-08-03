@@ -79,22 +79,21 @@
             </q-input>
           </template>
           <template v-slot:body-cell-ref="props">
-              <q-td key="ref" :props="props">
-                <!--            <q-badge color="orange">-->
-<!--                <q-badge color="info" v-if="props.row.ref!=''" @click="mostrar(props.row.ref)">-->
-                  {{ props.row.ref.substring(0,10) }}
-<!--                </q-badge>-->
-                <!--            </q-badge>-->
+              <q-td key="ref" :props="props"  @click="mostrar(props.row.ref)">
+                           <!-- <q-badge color="orange"> -->
+               <!-- <q-badge color="warning" v-if="props.row.ref!=''" @click="mostrar(props.row.ref)"> -->
+                  {{ props.row.ref.substring(0,20) }}
+               <!-- </q-badge> -->
+                           <!-- </q-badge> -->
               </q-td>
           </template>
           <template v-slot:body-cell-logs="props">
               <q-td key="logs" :props="props">
                 <ul style="font-size: 0.8em;padding: 0px;margin: 0px;border: 0px;    list-style: none;">
                   <li v-for="l in props.row.logs" :key="l.id">
-                    <q-btn @click="impresion(l)" v-if="l.estado=='EN PROCESO'" size="xs" icon="print" color="info" flat round/>
+                    <q-btn @click="impresioncondependencias(l)" v-if="l.estado=='EN PROCESO'" size="xs" icon="print" color="info" flat round/>
                     <!-- uso exclusivo para secretaria del alcalde despacho UNIT_ID=97 -->
-                    <q-btn @click="impresion(l)" v-if="l.estado=='ACEPTADO' && l.unit.id==97" size="xs" icon="print" color="info" flat round/>
-                    <q-btn @click="impresioncondependencias(l)" v-if="l.estado=='ACEPTADO' && l.unit.id==1" size="xs" icon="print" color="info" flat round/>
+                    <q-btn @click="impresioncondependencias(l)" v-if="l.estado=='ACEPTADO' &&  secretarios.includes($store.state.login.user.id)" size="xs" icon="print" color="info" flat round/>
                     {{l.unit.nombre}}
                     <q-badge :color="l.estado=='REMITIDO'||l.estado=='ARCHIVADO'?'positive':'negative'" :label="l.estado" />
                   </li>
@@ -288,6 +287,7 @@ export default {
       institucion:'',
       codigo:'',
       dest:[],
+      secretarios:[172,292,173,36,190,121,349,169,106],
       columns:[
         {name:'opciones',field:'opciones',label:'opciones',align:'right'},
         {name:'codigo',field:'codigo',label:'codigo',align:'left'},
@@ -881,13 +881,13 @@ export default {
         doc.setFont('times', 'normal');
         doc.text([m.ref.substring(0,50),m.ref.substring(50,100)],148,40,'center')
         doc.setFont('times', 'bold');
-        doc.text('DESTINATARIO 1:',80,50)
+        doc.text('A:',80,50)
         doc.setFont(undefined, 'normal');
-        doc.text(l.user2.name,152,50,'center')
+        doc.text(l.user2.name,145,50,'center')
         doc.setFont('times', 'bold');
         //FIN CABEZERA
         //INICIO CORRESPONDENCIA
-        let con=2
+        let con=1
         for (let i=0;i<2;i++){
           let inicuadro1 = 18, fincuadro1=97,inicuadro2=107,fincuadro2=202;
           let saltoeny=117;
@@ -941,18 +941,23 @@ export default {
           //instrucciones
         //  doc.roundedRect(8, 89+i*saltoeny, 194, 80, 2, 2, 'S')
 
+          doc.setFontSize(8)
+          doc.text('AGENDAR',21,95+i*saltoeny,{align:'center'})
           doc.setFontSize(7)
-          doc.text(['ELABORE',' MEMORANDUM','DE INSTRUCCION'],21,92+i*saltoeny,{align:'center'})
-          doc.setFontSize(10)
-          doc.text('RESPONDER',21,106+i*saltoeny,{align:'center'})
-          doc.text('INFORME',21,116+i*saltoeny,{align:'center'})
-          doc.text('TOME ACCION',21,126+i*saltoeny,{align:'center'})
-          doc.text('NOTIFICAR',21,136+i*saltoeny,{align:'center'})
+          doc.text(['ELABORE',' MEMORANDUM','DE INSTRUCCIÓN'],21,102+i*saltoeny,{align:'center'})
+          doc.setFontSize(7)
+          doc.text(['PARA SU','ATENCIÓN'],21,114+i*saltoeny,{align:'center'})
+          doc.setFontSize(7)
+          doc.text(['PROCEDA',' SEGUN','CORRESPONDA'],21,122+i*saltoeny,{align:'center'})
+          doc.setFontSize(7)
+          doc.text(['ELABORE',' NOTA'],21,134+i*saltoeny,{align:'center'})
           doc.setFontSize(7)
           doc.text(['ELABORE','CONVOCATORIA','Y CIRCULAR'],21,142+i*saltoeny,{align:'center'})
-          doc.setFontSize(9)
-          doc.text(['PROYECTAR','NOTA'],21,154+i*saltoeny,{align:'center'})
-          doc.text('ARCHIVAR',21,166+i*saltoeny,{align:'center'})
+          doc.setFontSize(7)
+          doc.text(['ELABORE','RESOLUCIÓN','EJECUTIVA'],21,152+i*saltoeny,{align:'center'})
+          doc.setFontSize(8)
+          doc.text('ARCHIVAR',21,165+i*saltoeny,{align:'center'})
+
           doc.roundedRect(35, 89+i*saltoeny, 5, 10, 1, 1, 'S')
           doc.line(8, 99+i*saltoeny, 40, 99+i*saltoeny)//line1
           doc.roundedRect(35, 99+i*saltoeny, 5, 10, 1, 1, 'S')
@@ -968,9 +973,9 @@ export default {
           doc.roundedRect(35, 149+i*saltoeny, 5, 10, 1, 1, 'S')
           doc.line(8, 159+i*saltoeny, 40, 159+i*saltoeny)//line6
           doc.roundedRect(35, 159+i*saltoeny, 5, 10, 1, 1, 'S')
-
-          doc.text('INSTRUCCIONES:',85,92+i*saltoeny,{align:'center'})
-          doc.text('_________________',85,92+i*saltoeny,{align:'center'})
+          doc.setFontSize(9)
+          doc.text('INSTRUCCIONES:',85,94+i*saltoeny,{align:'center'})
+          doc.text('_________________',85,94+i*saltoeny,{align:'center'})
           if (i==0){
 
             if(l.accion.toString()==='CREADO'){
@@ -1259,6 +1264,7 @@ export default {
         })
         this.loading=false
         this.$q.loading.hide()
+        console.log('mails: ',this.mails)
       })
     },
     handleRequest(props){
