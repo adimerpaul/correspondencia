@@ -4,9 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Log extends Model
 {
+    use SoftDeletes;
     use HasFactory;
     protected $fillable=[
         'mail_id',
@@ -21,6 +23,7 @@ class Log extends Model
         'archivado',
         'unid_id',
     ];
+    protected $dates = ['deleted_at'];
     public function user(){
         return $this->belongsTo(User::class);
     }

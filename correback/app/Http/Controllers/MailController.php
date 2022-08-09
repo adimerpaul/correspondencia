@@ -45,6 +45,30 @@ class MailController extends Controller
         return Mail::where('codigo',$request->codigo)->with('logs')->get();
     }
 
+    public function buscarhijosparacancelarderivacion(Request $request){
+        $denegado = false;
+        $hijosaeliminar=[];
+       $hijos = Log::where('log_id',$request->logpadreid)->get();
+       foreach($hijos as $hijo){
+         if($hijo->estado!="EN PROCESO"){
+           $denegado=true;
+           break;
+         }
+          array_push($hijosaeliminar,$hijo->id);
+       }
+       if(!$denegado){
+        $hijos = Log::whereIn('id',$hijosaeliminar)->delete();
+        $padre = Log::find($request->logpadreid);
+        $padre->estado = "ACEPTADO";
+        $padre->save();
+
+        return true;// se cancelo
+       }
+       else{
+        return false; //"no se puede cancelar";
+       }
+    }
+
     public function micorre(Request $request)
     {
         //se ejecuta cuando filtramos desde el buscardor de la tabla en mis_asignaciones
@@ -60,20 +84,22 @@ class MailController extends Controller
                   array_push($resultmail,$mail->id);
             }
              //return $resultmail;
-            return Log::where('user_id2',$request->user()->id)
-            ->where('unit_id',$request->user()->unit_id)
-            ->whereIn('id', function($query) use($resultmail,$request){
-                $query->selectRaw('max(id)')
-                ->from('logs')
-                ->whereIn('mail_id',$resultmail)
-                ->where('user_id2',$request->user()->id)
-                ->groupBy('mail_id');
-            })
-            ->with('user')
-            ->with(['mail' => function ($query){
-                $query->with('logs');
-            }])
-            ->paginate($request->rowsPerPage);
+             $logreturn = Log::where('user_id2',$request->user()->id)
+             ->where('unit_id',$request->user()->unit_id)
+             ->whereIn('id', function($query) use($resultmail,$request){
+                 $query->selectRaw('max(id)')
+                 ->from('logs')
+                 ->whereIn('mail_id',$resultmail)
+                 ->where('user_id2',$request->user()->id)
+                 ->whereNull('deleted_at')
+                 ->groupBy('mail_id');
+             })
+             ->with('user')
+             ->with(['mail' => function ($query){
+                 $query->with('logs');
+             }])
+             ->paginate($request->rowsPerPage);
+            return $logreturn;
 
             // return Log::where('user_id2',$request->user()->id)
             // ->where('unit_id',$request->user()->unit_id)
@@ -83,12 +109,13 @@ class MailController extends Controller
             // ->get();
         }
         else{
-            return Log::where('unit_id',$request->user()->unit_id)
+            $logreturn =Log::where('unit_id',$request->user()->unit_id)
             ->where('user_id2',$request->user()->id)
             ->whereIn('id', function($query) use($request){
                 $query->selectRaw('max(id)')
                 ->from('logs')
                 ->where('user_id2',$request->user()->id)
+                ->whereNull('deleted_at')
                 ->groupBy('mail_id');
             })
             ->with('user')
@@ -96,7 +123,9 @@ class MailController extends Controller
                      $query->with('logs');
                  }])
             ->orderBy('id','desc')
+
             ->paginate($request->rowsPerPage);
+            return $logreturn;
         }
 
     }
@@ -171,7 +200,6 @@ class MailController extends Controller
     }
     public function destinatarios(){
          return Mail::select('destinatario')->orderBy('destinatario')->distinct()->get();
-
     }
     public function consulta(Request $request)
     {
@@ -439,12 +467,16 @@ font-size: 13px;
     }
 
     public function anulado(Request $request){
+        $array = [];
         $log=Log::find($request->id);
-//
         $log->estado='ARCHIVADO';
-        $log->archivado=$request->archivado;
+        $value['archivado'] =(string) $request->archivado;
+        if(!is_null($log->archivado) || $log->archivado!=''){
+            $archivadoAnt = json_decode($log->archivado);
+            array_push($array,$archivadoAnt,$value);
+            $log->archivado=json_encode($array);
+        }
         $log->save();
-
 //        $mail=Mail::find($request->mail_id);
 //        $mail->estado='ARCHIVADO';
 //        $mail->save();
@@ -461,7 +493,18 @@ font-size: 13px;
 //        $log->hora=date('H:i:s');
 //        $log->unit_id=$request->user()->unit_id;
 //        $log->save();
-
+    }
+    public function desarchivar(Request $request){
+        $array = [];
+        $log=Log::find($request->id);
+        $log->estado='ACEPTADO';
+        $value['desarchivado'] =(string) $request->desarchivado;
+        if(!is_null($log->archivado)  && $log->archivado!=''){
+            $archivadoAnt = json_decode($log->archivado);
+            array_push($array,$archivadoAnt,$value);
+            $log->archivado=json_encode($array);
+        }
+        $log->save();
     }
 
     public function archivar(Request $request)

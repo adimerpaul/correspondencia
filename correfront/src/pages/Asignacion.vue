@@ -136,10 +136,20 @@
                     <q-btn dense @click="aceptar(props.row)" color="info" label="Aceptar" icon="code" size="xs" />
                   </template >
                   <template v-if="props.row.estado=='ARCHIVADO'">
-                    <small style="color: darkred;font-weight: bold">Archivado</small>
+                    <small style="color: darkred;font-weight: bold">Archivado</small><br>
+                    <q-btn @click="desarchivar(props.row)" color="primary" label="Desarchivar" icon="settings_backup_restore" size="sm">
+                    </q-btn>
                   </template >
                 <template v-if="props.row.estado=='REMITIDO'">
-                  <small style="color: darkgreen;font-weight: bold">Remitido</small>
+                  <small v-if="props.row.nopuedecancelarremision" style="color: darkgreen;font-weight: bold">Remitido</small>
+
+                    <q-btn v-else @click="cancelarremision(props.row)" color="primary" label="Cancelar remisión" icon="cancel" size="xs">
+                    </q-btn>
+                    <!-- <q-btn dense color="info" label="" icon="help" size="xs">
+                      <q-tooltip class="bg-amber text-black shadow-4" anchor="top right" self="top middle">
+                         Puede cancelar antes que el destinatario acepte la correspondencia
+                      </q-tooltip>
+                    </q-btn> -->
                 </template >
                   <template v-if="props.row.estado=='ACEPTADO'">
                     <q-btn-dropdown color="primary" label="Opciones">
@@ -287,7 +297,7 @@ export default {
       institucion:'',
       codigo:'',
       dest:[],
-      secretarios:[172,292,173,36,190,121,349,169,106],
+      secretarios:[172,292,173,36,190,121,349,169,106,42],
       columns:[
         {name:'opciones',field:'opciones',label:'opciones',align:'right'},
         {name:'codigo',field:'codigo',label:'codigo',align:'left'},
@@ -907,7 +917,7 @@ export default {
           doc.line(inicuadro1, 72+i*saltoeny, fincuadro2, 72+i*saltoeny)//line5
           doc.line(inicuadro1, 76+i*saltoeny, fincuadro2, 76+i*saltoeny)//line6
           doc.line(inicuadro1, 80+i*saltoeny, fincuadro2, 80+i*saltoeny)//line7
-          doc.line(inicuadro1, 84+i*saltoeny, fincuadro2, 84+i*saltoeny)//line8
+          doc.line(inicuadro1, 84+i*saltoeny, inicuadro2+8, 84+i*saltoeny)//line8
           doc.line(inicuadro1-10, 89+i*saltoeny, fincuadro2, 89+i*saltoeny)//line9
           doc.line(inicuadro1+5, 52+i*saltoeny, inicuadro1+5, 89+i*saltoeny)//vertical2
           doc.line(inicuadro2+8, 52+i*saltoeny, inicuadro2+8, 89+i*saltoeny)//vertical3
@@ -932,8 +942,8 @@ export default {
           doc.text('UNIDAD DE AUDITORIA INTERNA',inicuadro2+15,71+i*saltoeny)
           doc.text('UNIDAD DE FISCALIZACIÓN DE OBRAS',inicuadro2+15,75+i*saltoeny)
           doc.text('UNIDAD DE TRANSPARENCIA',inicuadro2+15,79+i*saltoeny)
-          doc.text('CONCEJO MUNICIPAL DE ORURO (C.M.O.)',inicuadro2+15,83+i*saltoeny)
-          doc.text('OTRO:',inicuadro2+15,87+i*saltoeny)
+          doc.text('OTRO:',inicuadro2+15,83+i*saltoeny)
+          //doc.text('OTRO:',inicuadro2+15,87+i*saltoeny)
 
 
 
@@ -945,8 +955,8 @@ export default {
           doc.text('AGENDAR',21,95+i*saltoeny,{align:'center'})
           doc.setFontSize(7)
           doc.text(['ELABORE',' MEMORANDUM','DE INSTRUCCIÓN'],21,102+i*saltoeny,{align:'center'})
-          doc.setFontSize(7)
-          doc.text(['PARA SU','ATENCIÓN'],21,114+i*saltoeny,{align:'center'})
+          doc.setFontSize(6)
+          doc.text(['PARA SU','ATENCIÓN','PREVIA VERIFICACIÓN'],21,112+i*saltoeny,{align:'center'})
           doc.setFontSize(7)
           doc.text(['PROCEDA',' SEGUN','CORRESPONDA'],21,122+i*saltoeny,{align:'center'})
           doc.setFontSize(7)
@@ -1077,21 +1087,55 @@ export default {
     archivar(mail){
       this.$q.dialog({
         title:'Seguro de archivar?',
-         message:'Motivo de archivar',
+         message:'Motivo de archivar (mínimo 4 carácteres)',
          prompt:{
            model:'',
+           isValid: val => val.length > 4, // << here is the magic
            type:'text'
          },
         cancel:true,
+        persistent: true
       }).onOk(data=>{
         // console.log(mail)
         this.$q.loading.show()
-        this.$axios.post(process.env.API+'/anulado',{id:mail.id,archivado:data}).then(res=>{
+        var today = new Date();
+        var now = today.toLocaleString();
+        let mensaje = `(${now}): ${data}`
+        this.$axios.post(process.env.API+'/anulado',{id:mail.id,archivado:mensaje}).then(res=>{
           // console.log(res.data)
           this.misdatos();
           this.$q.notify({
             message: 'Archivado',
             caption: 'Registro archivado',
+            color: 'green',
+            icon:'done'
+          });
+        })
+      })
+    },
+    desarchivar(mail){
+      this.$q.dialog({
+        title:'Seguro de desarchivar?',
+         message:'Motivo de desarchivar (mínimo 4 carácteres)',
+         prompt:{
+           model:'',
+           isValid: val => val.length > 4, // << here is the magic
+           type:'text'
+         },
+        cancel:true,
+        persistent: true
+      }).onOk(data=>{
+        // console.log(mail)
+        var today = new Date();
+        var now = today.toLocaleString();
+        let mensaje = `(${now}): ${data}`
+        this.$q.loading.show()
+        this.$axios.post(process.env.API+'/desarchivar',{id:mail.id,desarchivado:mensaje}).then(res=>{
+          // console.log(res.data)
+          this.misdatos();
+          this.$q.notify({
+            message: 'Desarchivado',
+            caption: 'Registro desarchivado',
             color: 'green',
             icon:'done'
           });
@@ -1230,10 +1274,26 @@ export default {
         this.pagination.rowsNumber = res.data.total
         console.log('pagination',this.pagination)
         res.data.data.forEach(r=>{
+          let cancelarremision = false
+          let padrelog = []
+          for(let log of r.mail.logs){
+            if(log.user_id2 ===this.$store.state.login.user.id && log.estado==="REMITIDO"){
+              padrelog.push(log.id)
+            }
+          }
+          for(let log2 of r.mail.logs){
+             if(log2.estado != "EN PROCESO" && log2.log_id===padrelog[padrelog.length-1]){
+                cancelarremision=true
+                break;
+            }
+          }
+
           //console.log(r)
           // const date1 = new Date()
           // const date2 = date.extractDate(r.mail.fecha, 'YYYY-MM-DD')
           // const dias = date.getDateDiff(date1, date2, 'days')
+
+
           const dias=format(r.mail.fecha+' '+r.mail.hora,'es_ES')
           this.mails.push({
             id:r.id,
@@ -1258,6 +1318,7 @@ export default {
             codexterno:r.mail.codexterno,
             logs:r.mail.logs,
             dias:dias,
+            nopuedecancelarremision: cancelarremision,
             user_id:r.mail.user_id
           })
 
@@ -1386,8 +1447,51 @@ export default {
         }
       })
 
+    },
+    cancelarremision(data){
+      let logpadreid=[]
+      this.$q.dialog({
+        title:'Confirme por favor',
+         message:'¿Esta seguro de cancelar la derivación?',
+        cancel:true,
+        persistent: true
+      }).onOk(()=>{
+     this.$q.loading.show()
+      //encontrar al padre del lo ultimo remitido
+      for(const element of data.logs){
+        if(element.user_id2 ===this.$store.state.login.user.id && element.estado==="REMITIDO"){
+          logpadreid.push(element.id)
+        }
+      }
+      console.log("IDLOG principal:",logpadreid)
+      //buscar hijos que pertenezcan al ese padre
+      this.$axios.post(process.env.API+'/buscarhijos',{logpadreid:logpadreid[logpadreid.length-1]}).then(res=>{
+            console.log("resp axios",res)
+          this.misdatos(this.pagination.page,this.filter,this.pagination.rowsPerPage)
+          if(res.data){
+            this.$q.notify({
+            message: 'DERIVACION CANCELADA',
+            caption: 'Proceso exitoso!!',
+            color: 'green',
+            icon:'done'
+          });
+          }else{
+             this.$q.notify({
+            message: 'NO SE PUDO CANCELAR LA DERIVACION',
+            caption: 'No se pudo cancelar la derivación, quizas por que ya acepto la correspondecia el destinatario',
+            color: 'red',
+            icon:'error'
+          });
+          }
+
+      })
+
+        })
+
+
     }
   }
+
 
 }
 </script>

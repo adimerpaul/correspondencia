@@ -41,6 +41,7 @@ Route::group(['middleware'=>'auth:sanctum'],function (){
 //    Route::post('/buscar',[\App\Http\Controllers\MailController::class,'buscar']);
     Route::post('/dividir',[\App\Http\Controllers\MailController::class,'dividir']);
     Route::post('/anulado',[\App\Http\Controllers\MailController::class,'anulado']);
+    Route::post('/desarchivar',[\App\Http\Controllers\MailController::class,'desarchivar']);
     Route::post('/archivar',[\App\Http\Controllers\MailController::class,'archivar']);
     Route::post('/aceptar',[\App\Http\Controllers\MailController::class,'aceptar']);
     Route::post('/misremetentes',[\App\Http\Controllers\UserController::class,'misremetentes']);
@@ -53,6 +54,7 @@ Route::group(['middleware'=>'auth:sanctum'],function (){
     Route::post('/impruta/{id}',[\App\Http\Controllers\MailController::class,'impruta']);
     Route::post('/impblanco/{id}',[\App\Http\Controllers\MailController::class,'impblanco']);
     Route::get('/destinatarios',[\App\Http\Controllers\MailController::class,'destinatarios']);
+    Route::post('/buscarhijos',[\App\Http\Controllers\MailController::class,'buscarhijosparacancelarderivacion']);
 });
 Route::get('/mail/{mail}/{user}',[\App\Http\Controllers\MailController::class,'show2']);
 
