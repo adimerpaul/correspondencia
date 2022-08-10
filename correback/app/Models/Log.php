@@ -22,6 +22,7 @@ class Log extends Model
         'accion',
         'archivado',
         'unid_id',
+        'tipodoc',
     ];
     protected $dates = ['deleted_at'];
     public function user(){

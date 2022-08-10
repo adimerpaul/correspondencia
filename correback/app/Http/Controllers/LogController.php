@@ -51,7 +51,7 @@ class LogController extends Controller
         $log->unit_id=$list['unit_id'];
 //        $log->remitente=$request->user()->name;
 //        $log->destinatario=$list['name'];
-        $log->accion=$request->accion;
+        $log->accion=strtoupper($request->accion);
         $log->estado='EN PROCESO';
         $log->fecha=date('Y-m-d');
         $log->hora=date('H:i:s');

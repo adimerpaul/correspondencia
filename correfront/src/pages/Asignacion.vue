@@ -6,7 +6,8 @@
 <!--          <iframe id="docpdf" src="" frameborder="0" style="width: 100%;height: 100vh"></iframe>-->
 <!--        </div>-->
         <q-btn label="Crear" icon="mail" color="primary" @click="fromcrear" />
-        <q-btn label="Actualizar" icon="refresh" color="teal" @click="actualizar" />
+        <q-btn label="Actualizar" icon="refresh" color="amber-5" @click="actualizar" />
+        <q-btn label="Hoja de ruta extra" icon="post_add" color="teal-9" @click="impresionextra" />
         <q-dialog full-width v-model="crear">
           <q-card>
             <q-card-section>
@@ -136,14 +137,19 @@
                     <q-btn dense @click="aceptar(props.row)" color="info" label="Aceptar" icon="code" size="xs" />
                   </template >
                   <template v-if="props.row.estado=='ARCHIVADO'">
-                    <small style="color: darkred;font-weight: bold">Archivado</small><br>
-                    <q-btn @click="desarchivar(props.row)" color="primary" label="Desarchivar" icon="settings_backup_restore" size="sm">
+                  <q-badge color="amber-9">
+                    Archivado
+                  </q-badge><br>
+                    <q-btn @click="desarchivar(props.row)" color="blue-grey-6" label="Desarchivar" icon="settings_backup_restore" size="sm">
                     </q-btn>
                   </template >
                 <template v-if="props.row.estado=='REMITIDO'">
                   <small v-if="props.row.nopuedecancelarremision" style="color: darkgreen;font-weight: bold">Remitido</small>
 
-                    <q-btn v-else @click="cancelarremision(props.row)" color="primary" label="Cancelar remisión" icon="cancel" size="xs">
+                    <q-btn v-else @click="cancelarremision(props.row)" color="light-blue-9" label="Cancelar remisión" icon="cancel" size="xs">
+                     <q-tooltip anchor="top middle" self="bottom middle" :offset="[5, 5]">
+                      Se podra cancelar hasta que el destinatario acepte la correspondencia
+                    </q-tooltip>
                     </q-btn>
                     <!-- <q-btn dense color="info" label="" icon="help" size="xs">
                       <q-tooltip class="bg-amber text-black shadow-4" anchor="top right" self="top middle">
@@ -196,7 +202,7 @@
         <q-dialog full-width full-height v-model="diaglosasignacion">
           <q-card >
             <q-card-section>
-              <div class="text-h6"> <q-icon name="code"/> {{mail.ref}} | Remitir</div>
+              <div class="text-h6"> <q-icon name="outgoing_mail"/> {{mail.ref}} | Remitir</div>
             </q-card-section>
             <q-card-section class="q-pt-none">
               <q-form @submit.prevent="registrarlog">
@@ -237,6 +243,165 @@
             </q-card-section>
             <q-card-section align="right">
               <q-btn flat label="Cancelar" color="primary" icon="delete" v-close-popup />
+
+            </q-card-section>
+          </q-card>
+        </q-dialog>
+
+
+        <q-dialog full-width full-height v-model="dialogremitir">
+          <q-card >
+            <q-card-section>
+              <div class="text-h6"> <q-icon name="outgoing_mail"/> {{mail.ref}} | Remitir2</div>
+            </q-card-section>
+            <q-card-section class="q-pt-none">
+              <q-form @submit.prevent="registrarlog">
+                <q-input type="textarea" style="text-transform: uppercase" outlined label="Instruccion / Observacion" v-model="miaccion" required/>
+<!--                <q-select :options="usuarios" label="Seleccionar personal" v-model="usuario" outlined required/>-->
+                <q-select dense use-input :options="usuarios" label="Seleccionar personal" v-model="usuario" @filter="filterFn" outlined >
+                  <template v-slot:no-option>
+                    <q-item>
+                      <q-item-section class="text-grey">
+                        Sin resultados
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                </q-select>
+                <q-btn color="positive"  label="Agregar Destinatario" icon="add_circle" @click="tabdest"/>
+<!--                <table>-->
+<!--                  <tbody>-->
+<!--                  <tr v-for="(row,index) in dest" :key="index"><td>{{index+1}}- {{row.label}} </td></tr>-->
+<!--                  </tbody>-->
+<!--                </table>-->
+                <q-list dense bordered padding class="rounded-borders">
+                  <q-item clickable v-ripple v-for="(row,index) in dest" :key="index">
+                    <q-item-section class="top" no-wrap>
+                      <q-item-label lines="1" >
+                            <span class="text-weight-medium"> {{index+1}} {{row.name}}</span>
+                          </q-item-label>
+                          <q-item-label lines="1" class="q-mt-xs text-weight-bold text-primary text-uppercase">
+                            <span class="text-grey-8 cursor-pointer">{{row.unit.nombre}}</span>
+                          </q-item-label>
+                    </q-item-section >
+                    <q-item-section class="q-pa-none text-subtitle2">
+                          <q-input
+                          dense
+                            v-model="textareaModel"
+                            filled
+                            clearable
+                            autogrow
+                            color="green-8"
+                            label="INSTRUCCION / OBSERVACION"
+                            :shadow-text="textareaShadowText"
+                            @keydown="processTextareaFill"
+                            @focus="processTextareaFill"
+                          />
+                    </q-item-section>
+                    <q-item-section >
+                        <div class="text-grey-8 q-gutter-xs" style="max-width: 200px">
+                          <q-select outlined v-model="tipodoc" label="Tipo documento" :options="optionstipodocs" style="max-width: 200px" dense options-dense>
+                            <template v-slot:prepend>
+                              <q-icon name="event" />
+                            </template>
+                          </q-select>
+
+                          </div>
+                    </q-item-section>
+                    <q-item-section style="max-width: 100px">
+                        <div class="text-grey-8 q-gutter-xs">
+
+                           <q-input
+                          dense
+                          outlined
+                          v-model.number="model"
+                          type="number"
+                          label="N° Fojas"
+
+                        />
+                          </div>
+                    </q-item-section>
+                     <q-item-section style="max-width: 100px" >
+                          <div class="text-grey-8 q-gutter-xs">
+                            <q-btn @click="quitardestinatario(index)" icon="delete" color="negative" flat />
+                          </div>
+                        </q-item-section>
+                  </q-item>
+                </q-list>
+
+                <q-list bordered class="rounded-borders">
+                      <q-item-label header>Google Inbox style</q-item-label>
+
+                      <q-item>
+                        <q-item-section avatar top>
+                          <q-icon name="account_tree" color="black" size="34px" />
+                        </q-item-section>
+
+                        <q-item-section top class="col-2 gt-sm">
+                          <q-item-label class="q-mt-sm">GitHub</q-item-label>
+                        </q-item-section>
+
+                        <q-item-section top>
+                          <q-item-label lines="1">
+                            <span class="text-weight-medium">[quasarframework/quasar]</span>
+                            <span class="text-grey-8"> - GitHub repository</span>
+                          </q-item-label>
+                          <q-item-label caption lines="1">
+                            @rstoenescu in #3: > Generic type parameter for props
+                          </q-item-label>
+                          <q-item-label lines="1" class="q-mt-xs text-body2 text-weight-bold text-primary text-uppercase">
+                            <span class="cursor-pointer">Open in GitHub</span>
+                          </q-item-label>
+                        </q-item-section>
+
+                        <q-item-section top side>
+                          <div class="text-grey-8 q-gutter-xs">
+                            <q-btn class="gt-xs" size="12px" flat dense round icon="delete" />
+                            <q-btn class="gt-xs" size="12px" flat dense round icon="done" />
+                            <q-btn size="12px" flat dense round icon="more_vert" />
+                          </div>
+                        </q-item-section>
+                      </q-item>
+
+                      <q-separator spaced />
+
+                      <q-item>
+                        <q-item-section avatar top>
+                          <q-icon name="account_tree" color="black" size="34px" />
+                        </q-item-section>
+
+                        <q-item-section top class="col-2 gt-sm">
+                          <q-item-label class="q-mt-sm">GitHub</q-item-label>
+                        </q-item-section>
+
+                        <q-item-section top>
+                          <q-item-label lines="1">
+                            <span class="text-weight-medium">[quasarframework/quasar]</span>
+                            <span class="text-grey-8"> - GitHub repository</span>
+                          </q-item-label>
+                          <q-item-label caption lines="1">
+                            @rstoenescu in #1: > The build system
+                          </q-item-label>
+                          <q-item-label lines="1" class="q-mt-xs text-body2 text-weight-bold text-primary text-uppercase">
+                            <span class="cursor-pointer">Open in GitHub</span>
+                          </q-item-label>
+                        </q-item-section>
+
+                        <q-item-section top side>
+                          <div class="text-grey-8 q-gutter-xs">
+                            <q-btn class="gt-xs" size="12px" flat dense round icon="delete" />
+                            <q-btn class="gt-xs" size="12px" flat dense round icon="done" />
+                            <q-btn size="12px" flat dense round icon="more_vert" />
+                          </div>
+                        </q-item-section>
+                      </q-item>
+              </q-list>
+<!--                {{mail}}-->
+                <q-btn label="Remitir" color="teal" icon="send" class="full-width" type="submit"/>
+              </q-form>
+            </q-card-section>
+            <q-card-section align="right">
+              <q-btn flat label="Cancelar" color="primary" icon="delete" v-close-popup />
+
             </q-card-section>
           </q-card>
         </q-dialog>
@@ -281,6 +446,7 @@ export default {
       filter:'',
       usuario:'',
       diaglosasignacion:false,
+      dialogremitir:false,
       dialogarchivo:false,
       url:process.env.API,
       dato:{tipo:'',fecha:date.formatDate(Date.now(),'YYYY-MM-DD'),folio:1},
@@ -298,6 +464,8 @@ export default {
       codigo:'',
       dest:[],
       secretarios:[172,292,173,36,190,121,349,169,106,42],
+      optionstipodocs:['Notas','Memorandum'],
+      tipodoc:null,
       columns:[
         {name:'opciones',field:'opciones',label:'opciones',align:'right'},
         {name:'codigo',field:'codigo',label:'codigo',align:'left'},
@@ -449,6 +617,7 @@ export default {
         this.misdatos()
         // this.$q.loading.hide()
         this.diaglosasignacion=false
+        this.dialogremitir=false
         this.$q.notify({
           message:'Remitido correctamente!!',
           color:'green',
@@ -707,7 +876,7 @@ export default {
 
 
 
-///////////////////////////////////////
+/////////////////////////////////////
         // doc.addPage();
         // doc.setFont('times', 'bold');
         // doc.setDrawColor(122);
@@ -782,7 +951,7 @@ export default {
         //   doc.text('HORA:',172,87+i*68)
         //   con++
         // }
-/////////////////////////////
+///////////////////////////
 
 
 
@@ -805,6 +974,128 @@ export default {
       //     myWindow.close();
       //   },700);
       // })
+    },
+    impresionextra(){
+       this.$q.dialog({
+        title:'Ingrese numero de página?',
+         message:'Numero de Pagina permitida (2, 3, 4)',
+         prompt:{
+           model:'',
+           isValid: val => val > 1 && val < 5, // << here is the magic
+           type:'text'
+         },
+        cancel:true,
+        persistent: true
+      }).onOk(data=>{
+        this.$q.loading.show()
+        let n = Number(data);
+        var doc = new jsPDF()
+        //INICIO CORRESPONDENCIA
+        doc.setFont('times', 'bold');
+        doc.setDrawColor(122);
+        doc.roundedRect(5, 10, 200, 282, 2, 2, 'S')//principal
+        doc.roundedRect(183, 11, 20, 8, 1, 1, 'S')//hoja1 hoja de ruta
+        doc.setTextColor(158,158,158)
+        doc.setFontSize(10);
+        doc.text('HOJA '+n,187,14)
+        doc.setFontSize(7);
+        doc.text('HOJA DE RUTA',184,17)
+        doc.setTextColor(0,0,0)
+       let con
+       switch (n) {
+        case 2:
+              con=3;
+          break;
+        case 3:
+              con=7;
+          break;
+        case 4:
+              con=11;
+          break;
+       }
+
+        for (let i=0;i<4;i++){
+          // doc.roundedRect(8, 52+i*80, 194, 80, 2, 2, 'S')
+          doc.setDrawColor("#000000")
+          doc.setLineWidth(0.5)
+          doc.roundedRect(8, 20+i*68, 194, 68, 2, 2, 'S')
+
+          doc.setDrawColor(122)
+          doc.setLineWidth(0.2)
+
+          doc.setFontSize(9)
+          doc.text('AGENDAR',21,25+i*68,{align:'center'})
+          doc.setFontSize(6)
+          doc.text(['ELABORE',' MEMORANDUM','DE INSTRUCCIÓN'],21,31+i*68,{align:'center'})
+          doc.setFontSize(6)
+          doc.text(['PARA SU','ATENCIÓN','PREVIA VERIFICACIÓN'],21,39+i*68,{align:'center'})
+          doc.setFontSize(6)
+          doc.text(['PROCEDA',' SEGUN','CORRESPONDA'],21,48+i*68,{align:'center'})
+          doc.setFontSize(7)
+          doc.text(['ELABORE',' NOTA'],21,58+i*68,{align:'center'})
+          doc.setFontSize(6)
+          doc.text(['ELABORE','CONVOCATORIA','Y CIRCULAR'],21,65+i*68,{align:'center'})
+          doc.text(['ELABORE','RESOLUCIÓN','EJECUTIVA'],21,74+i*68,{align:'center'})
+          doc.setFontSize(9)
+          doc.text('ARCHIVAR',21,85+i*68,{align:'center'})
+          doc.roundedRect(35, 20+i*68, 5, 8.5, 1, 1, 'S')
+          doc.roundedRect(35, 28.5+i*68, 5, 8.5, 1, 1, 'S')
+          doc.roundedRect(35, 37+i*68, 5, 8.5, 1, 1, 'S')
+          doc.roundedRect(35, 45.5+i*68, 5, 8.5, 1, 1, 'S')
+          doc.roundedRect(35, 54+i*68, 5, 8.5, 1, 1, 'S')
+          doc.roundedRect(35, 62.5+i*68, 5, 8.5, 1, 1, 'S')
+          doc.roundedRect(35, 71+i*68, 5, 8.5, 1, 1, 'S')
+          doc.roundedRect(35, 79.5+i*68, 5, 8.5, 1, 1, 'S')
+          doc.line(8, 28.5+i*68, 40, 28.5+i*68)//line1
+          doc.line(8, 37+i*68, 40, 37+i*68)//line2
+          doc.line(8, 45.5+i*68, 40, 45.5+i*68)//line3
+          doc.line(8, 54+i*68, 40, 54+i*68)//line4
+          doc.line(8, 62.5+i*68, 40, 62.5+i*68)//line5
+          doc.line(8, 71+i*68, 40, 71+i*68)//line5
+          doc.line(8, 79.5+i*68, 40, 79.5+i*68)//line6
+
+          doc.text('INSTRUCCIONES:',85,23+i*68,{align:'center'})
+          doc.text('_________________',85,23+i*68,{align:'center'})
+          doc.text('.................................................................................................................',40,28.5+i*68)
+          doc.text('.................................................................................................................',40,33+i*68)
+          doc.text('.................................................................................................................',40,37+i*68)
+          doc.text('.................................................................................................................',40,41.5+i*68)
+          doc.text('.................................................................................................................',40,45.5+i*68)
+          doc.text('.................................................................................................................',40,50+i*68)
+          doc.text('.................................................................................................................',40,54+i*68)
+          doc.text('.................................................................................................................',40,58.5+i*68)
+          doc.text('.................................................................................................................',40,62.5+i*68)
+          doc.text('.................................................................................................................',40,67+i*68)
+          doc.text('.................................................................................................................',40,71+i*68)
+          doc.text('.................................................................................................................',40,75.5+i*68)
+          doc.text('.................................................................................................................',40,79.5+i*68)
+          doc.text('.................................................................................................................',40,84+i*68)
+          doc.text('FIRMAR',115,87+i*68)
+
+          doc.roundedRect(130, 20+i*68, 72, 68, 1, 1, 'S')
+          doc.line(130, 24+i*68, 202, 24+i*68)//line1
+          doc.line(130, 84+i*68, 202, 84+i*68)//line2
+
+          doc.text('DESTINATARIO '+con+':',132,23+i*68)
+          doc.text('SELLO DE RECEPCION '+con+':',150,83+i*68)
+          doc.text('FECHA:',132,87+i*68)
+          doc.text('HORA:',172,87+i*68)
+          con++
+        }
+
+
+
+        window.open(doc.output('bloburl'), '_blank');
+
+         this.$q.notify({
+            message: 'Hoja de ruta extra',
+            caption: 'Hoja de ruta generada exitosamente',
+            color: 'green',
+            icon:'done'
+          });
+
+      })
+      this.$q.loading.hide()
     },
     impresioncondependencias(l){
       // console.log(l)
@@ -925,15 +1216,16 @@ export default {
 
           doc.setFontSize(7)
           doc.setFont('times', 'normal');
-          doc.text('SECRETARIA GENERAL',inicuadro1+7,55+i*saltoeny)
-          doc.text('STRIA. MPAL. DE ECONOMÍA Y HACIENDA',inicuadro1+7,59+i*saltoeny)
-          doc.text('STRIA. MPAL. DE INFRAESTRUCTURA PÚBLICA',inicuadro1+7,63+i*saltoeny)
-          doc.text('STRIA. MPAL. DE GESTIÓN TERRITORIAL',inicuadro1+7,67+i*saltoeny)
-          doc.text('STRIA. MPAL. DE SALUD INTEGRAL Y DEPORTES',inicuadro1+7,71+i*saltoeny)
-          doc.text('STRIA. MPAL. DE DESARROLLO HUMANO',inicuadro1+7,75+i*saltoeny)
-          doc.text('STRIA. MPAL. DE CULTURA',inicuadro1+7,79+i*saltoeny)
-          doc.text('STRIA. MPAL. DE ASUNTOS JURIDICOS',inicuadro1+7,83+i*saltoeny)
-          doc.text('SUB - ALCALDIA',inicuadro1+7,87+i*saltoeny)
+          doc.text('',inicuadro1+7,55+i*saltoeny)
+          doc.text('ALCALDE MUNICIPAL',inicuadro1+7,55+i*saltoeny)
+          doc.text('SECRETARIA GENERAL',inicuadro1+7,59+i*saltoeny)
+          doc.text('STRIA. MPAL. DE ECONOMÍA Y HACIENDA',inicuadro1+7,63+i*saltoeny)
+          doc.text('STRIA. MPAL. DE INFRAESTRUCTURA PÚBLICA',inicuadro1+7,67+i*saltoeny)
+          doc.text('STRIA. MPAL. DE GESTIÓN TERRITORIAL',inicuadro1+7,71+i*saltoeny)
+          doc.text('STRIA. MPAL. DE SALUD INTEGRAL Y DEPORTES',inicuadro1+7,75+i*saltoeny)
+          doc.text('STRIA. MPAL. DE DESARROLLO HUMANO',inicuadro1+7,79+i*saltoeny)
+          doc.text('STRIA. MPAL. DE CULTURA',inicuadro1+7,83+i*saltoeny)
+          doc.text('STRIA. MPAL. DE ASUNTOS JURIDICOS',inicuadro1+7,87+i*saltoeny)
 
           doc.text('DIRECCIÓN DE GESTIÓN DE R.R.H.H.',inicuadro2+15,55+i*saltoeny)
           doc.text('DIRECCIÓN DE PLANIFICACIÓN INTEGRAL',inicuadro2+15,59+i*saltoeny)
