@@ -218,11 +218,7 @@
                   </template>
                 </q-select>
                 <q-btn color="positive"  label="Agregar Destinatario" icon="add_circle" @click="tabdest"/>
-<!--                <table>-->
-<!--                  <tbody>-->
-<!--                  <tr v-for="(row,index) in dest" :key="index"><td>{{index+1}}- {{row.label}} </td></tr>-->
-<!--                  </tbody>-->
-<!--                </table>-->
+                <q-btn color="info"  label="Ayuda" icon="help" @click="dialogayudaremitir=true"/>
                 <q-list dense bordered padding class="rounded-borders">
                   <q-item clickable v-ripple v-for="(row,index) in dest" :key="index">
                     <q-item-section class="q-pa-none text-subtitle2" >
@@ -266,8 +262,6 @@
           </q-card>
         </q-dialog>
 
-
-
         <q-dialog full-width full-height v-model="dialogremitir">
           <q-card >
             <q-card-section>
@@ -294,7 +288,6 @@
                         <div class="col">
                           <q-btn  class="col" color="positive"  label="Agregar Destinatario" icon="add_circle" @click="tabdest" />
                           <q-btn color="info"  label="Ayuda" icon="help" @click="dialogayudaremitir=true"/>
-
                         </div>
                       </div>
 
@@ -1520,7 +1513,7 @@ this.$q.loading.hide()
     misdatos(page = 0,filter,rowsPerPage=10){
       //this.$q.loading.show()
       this.loading=true
-      this.$axios.get(process.env.API+'/micorre',{params:{page: page,filter:filter,rowsPerPage: rowsPerPage}}).then(res=>{
+      this.$axios.get(process.env.API+'/micorre',{params:{page: page,filter:filter,rowsPerPage: rowsPerPage, estado:'ACEPTADO' }}).then(res=>{
           console.log('micorre:',res)
         // this.mails=res.data
         this.mails=[]

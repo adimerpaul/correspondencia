@@ -97,28 +97,54 @@
               </q-item-label>
             </q-item-section>
           </q-item>
-          <q-item
-            v-if="$store.state.login.booldesignacion"
-            clickable
-            to="/asignacion"
-          >
-            <q-item-section
-              avatar
-            >
-              <q-icon name="code" />
-            </q-item-section>
 
-            <q-item-section>
-              <q-item-label>Mis asignaciones</q-item-label>
-              <q-item-label caption>
-                Mis asignaciones
-              </q-item-label>
-            </q-item-section>
-          </q-item>
+
+          <q-expansion-item
+            expand-separator
+            icon="mail"
+            label="Mis asignaciones"
+            caption="Mi correspondencia"
+            default-opened
+            v-if="$store.state.login.booldesignacion"
+            >
+
+              <q-item dense clickable v-ripple class="q-pl-xl" to="/asignacion">
+                <q-item-section avatar>
+                  <q-icon name="source" />
+                </q-item-section>
+                <q-item-section>Todo</q-item-section>
+              </q-item>
+              <q-item dense clickable v-ripple class="q-pl-xl" to="/asignacionrecibidos">
+                <q-item-section avatar>
+                  <q-icon name="receipt" />
+                </q-item-section>
+                <q-item-section>Recibidos</q-item-section>
+              </q-item>
+              <q-item dense clickable v-ripple class="q-pl-xl" to="/asignacionpendiente">
+                <q-item-section avatar>
+                  <q-icon name="schedule" />
+                </q-item-section>
+                <q-item-section>Pendientes</q-item-section>
+              </q-item>
+              <q-item dense clickable v-ripple class="q-pl-xl" to="/asignacionenviados">
+                <q-item-section avatar>
+                  <q-icon name="send" />
+                </q-item-section>
+                <q-item-section>Enviados</q-item-section>
+              </q-item>
+              <q-item clickable v-ripple class="q-pl-xl" to="/asignacionarchivados">
+                <q-item-section avatar>
+                  <q-icon name="archive" />
+                </q-item-section>
+                <q-item-section>Archivados</q-item-section>
+              </q-item>
+
+
+          </q-expansion-item>
 
           <q-item v-if="$store.state.login.boolseguimiento" clickable to="/seguimiento">
             <q-item-section avatar>
-              <q-icon name="list" />
+              <q-icon name="query_stats" />
             </q-item-section>
             <q-item-section>
               <q-item-label>Seguimiento</q-item-label>
@@ -127,7 +153,14 @@
               </q-item-label>
             </q-item-section>
           </q-item>
-          <q-item v-if="$store.state.login.boolseguimiento" clickable to="/reportecorrespondencia">
+           <q-expansion-item
+            expand-separator
+            icon="summarize"
+            label="Reportes"
+            caption="Reporte de correspondencia"
+            v-if="$store.state.login.booldesignacion"
+            >
+          <q-item dense v-if="$store.state.login.boolseguimiento" class="q-pl-xl" clickable to="/reportecorrespondencia">
             <q-item-section avatar>
               <q-icon name="print" />
             </q-item-section>
@@ -139,7 +172,7 @@
             </q-item-section>
           </q-item>
 
-          <q-item v-if="$store.state.login.boolseguimiento" clickable to="/reportecorrespondenciaremitida">
+          <q-item dense v-if="$store.state.login.boolseguimiento" class="q-pl-xl" clickable to="/reportecorrespondenciaremitida">
             <q-item-section avatar>
               <q-icon name="print" />
             </q-item-section>
@@ -152,7 +185,7 @@
           </q-item>
 
 
-          <q-item v-if="$store.state.login.boolseguimiento" clickable to="/reportecorrespondenciarecibida">
+          <q-item dense v-if="$store.state.login.boolseguimiento" class="q-pl-xl" clickable to="/reportecorrespondenciarecibida">
             <q-item-section avatar>
               <q-icon name="print" />
             </q-item-section>
@@ -163,7 +196,7 @@
               </q-item-label>
             </q-item-section>
           </q-item>
-
+        </q-expansion-item>
           <q-item v-if="$store.state.login.boolmisrecepciones" clickable to="/misrecepciones">
             <q-item-section avatar>
               <q-icon name="picture_as_pdf" />

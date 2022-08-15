@@ -61,7 +61,7 @@
       <div class="col-12">
         <q-table
           dense
-          title="Correspondencia "
+          title="Correspondencia Remitida "
           :rows="mails"
           :columns="columns"
           :filter="filter"
@@ -218,6 +218,7 @@
                   </template>
                 </q-select>
                 <q-btn color="positive"  label="Agregar Destinatario" icon="add_circle" @click="tabdest"/>
+                <q-btn color="info"  label="Ayuda" icon="help" @click="tabdest"/>
 <!--                <table>-->
 <!--                  <tbody>-->
 <!--                  <tr v-for="(row,index) in dest" :key="index"><td>{{index+1}}- {{row.label}} </td></tr>-->
@@ -248,25 +249,6 @@
           </q-card>
         </q-dialog>
 
-        <q-dialog v-model="dialogayudaremitir" full-width full-height>
-          <q-card>
-            <q-card-section>
-              <div class="text-h6"> <q-icon name="help"/> ¿Como Remitir?</div>
-            </q-card-section>
-            <q-card-section class="q-pt-none">
-              <q-img
-                src="img/ayudaremtir.gif"
-                spinner-color="white"
-                style="height:50%; width: 90%"
-              />
-            </q-card-section>
-            <q-card-section align="right">
-              <q-btn flat label="Cancelar" color="primary" icon="delete" v-close-popup />
-            </q-card-section>
-          </q-card>
-        </q-dialog>
-
-
 
         <q-dialog full-width full-height v-model="dialogremitir">
           <q-card >
@@ -293,7 +275,6 @@
                         </div>
                         <div class="col">
                           <q-btn  class="col" color="positive"  label="Agregar Destinatario" icon="add_circle" @click="tabdest" />
-                          <q-btn color="info"  label="Ayuda" icon="help" @click="dialogayudaremitir=true"/>
 
                         </div>
                       </div>
@@ -429,7 +410,6 @@ export default {
       optionstipodocs:['Notas','Memorandum'],
       tipodoc:null,
       derivaciones: [],
-      dialogayudaremitir:false,
       columns:[
         {name:'opciones',field:'opciones',label:'opciones',align:'right'},
         {name:'codigo',field:'codigo',label:'codigo',align:'left'},
@@ -1520,7 +1500,7 @@ this.$q.loading.hide()
     misdatos(page = 0,filter,rowsPerPage=10){
       //this.$q.loading.show()
       this.loading=true
-      this.$axios.get(process.env.API+'/micorre',{params:{page: page,filter:filter,rowsPerPage: rowsPerPage}}).then(res=>{
+      this.$axios.get(process.env.API+'/micorre',{params:{page: page,filter:filter,rowsPerPage: rowsPerPage, estado:'REMITIDO' }}).then(res=>{
           console.log('micorre:',res)
         // this.mails=res.data
         this.mails=[]

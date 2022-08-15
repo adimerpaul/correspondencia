@@ -109,6 +109,10 @@ export default {
       let cont=0
       doc.roundedRect(5, 10, 200, 282, 2, 2, 'S')//principal
       doc.roundedRect(183, 11, 20, 8, 1, 1, 'S')//hoja1 hoja de ruta
+      doc.setFontSize(10);
+      doc.text('CITE ',18,17)
+      doc.text('CODIGO ',52,17)
+      doc.text('PROCEDENCIA Y REFERENCIA ',93,17)
       doc.setTextColor(158,158,158)
       doc.setFontSize(10);
       doc.text('HOJA '+numhoja,187,14)
@@ -120,23 +124,27 @@ export default {
         cont++
         doc.roundedRect(8, 20+i*34, 194, 34, 0, 0, 'S')
         doc.line(40, 20+i*34, 40, 54+i*34)//line1
-        doc.line(170, 20+i*34, 170, 54+i*34)//line1
+        doc.line(80, 20+i*34, 80, 54+i*34)//line1
         doc.setFontSize(12);
-        doc.setFont('times', 'bold');
+         doc.setFont('times', 'normal');
         doc.text(d.mail.fecha.toString(),23,25+i*34,'center')
         doc.text(d.mail.hora.toString(),23,30+i*34,'center')
-        doc.setFont('times', 'normal');
+
         doc.setFontSize(15);
+         doc.setFont('times', 'bold');
         doc.text(d.mail.citecontrol.toString(),23,38+i*34,'center')
+        doc.text(d.mail.codigo.toString(),58,38+i*34,'center')
+        doc.setFont('times', 'normal');
 
         doc.setFontSize(10);
-        // doc.setFont('times', 'bold');
-        doc.text('De: '+d.user.name,41,25+i*34,'left')
-        doc.text('A: '+d.user2.name,41,30+i*34,'left')
-        doc.text('REF: '+d.mail.ref.substr(0,50),41,35+i*34,'left')
-        doc.text(d.mail.ref.substr(50,50),41,40+i*34,'left')
-        doc.text(d.mail.ref.substr(100,50),41,45+i*34,'left')
-        doc.text(d.mail.ref.substr(150,50),41,50+i*34,'left')
+         doc.setFont('times', 'bold');
+        doc.text('DE: '+d.user.name,82,25+i*34,'left')
+        doc.text('UNIDAD: '+d.user.unit.nombre,82,30+i*34,'left')
+        doc.setFont('times', 'normal');
+        doc.text('REF: '+d.mail.ref.substr(0,50),82,35+i*34,'left')
+        doc.text(d.mail.ref.substr(50,50),82,40+i*34,'left')
+        doc.text(d.mail.ref.substr(100,50),82,45+i*34,'left')
+        doc.text(d.mail.ref.substr(150,50),82,50+i*34,'left')
         doc.setFontSize(10);
         i++
         if (cont==8){

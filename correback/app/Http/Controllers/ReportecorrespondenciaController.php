@@ -92,14 +92,25 @@ class ReportecorrespondenciaController extends Controller
     }
 
     public function correspondenciaremitida(Request $request){
-        $remitidos = Log::where('user_id',$request->user()->id)
-                ->where('accion','<>','CREADO')
-                //->orWhere('user_id2',$request->user()->id)
-                ->whereDate('fecha','>=',$request->fecha1)
-                ->whereDate('fecha','<=',$request->fecha2)
-                //->where('estado','REMITIDO')
-                ->with(['mail','user','unit','user2'])
-                ->get();
+        if($request->tipodoc!='TODO'){
+            $remitidos = Log::where('user_id',$request->user()->id)
+            ->where('accion','<>','CREADO')
+            //->orWhere('user_id2',$request->user()->id)
+            ->whereDate('fecha','>=',$request->fecha1)
+            ->whereDate('fecha','<=',$request->fecha2)
+            ->where('tipodoc',$request->tipodoc)
+            ->with(['mail','user','unit','user2'])
+            ->get();
+        }
+        else{
+            $remitidos = Log::where('user_id',$request->user()->id)
+            ->where('accion','<>','CREADO')
+            //->orWhere('user_id2',$request->user()->id)
+            ->whereDate('fecha','>=',$request->fecha1)
+            ->whereDate('fecha','<=',$request->fecha2)
+            ->with(['mail','user','unit','user2'])
+            ->get();
+        }
         return $remitidos;
     }
     public function correspondenciarecibida(Request $request){

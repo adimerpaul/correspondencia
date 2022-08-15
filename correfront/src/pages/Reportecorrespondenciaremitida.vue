@@ -5,15 +5,22 @@
 <!--    <iframe id="docpdf" src="" frameborder="0" style="width: 100%;height: 100vh"></iframe>-->
     <q-form @submit.prevent="consulta">
     <div class="row">
-      <div class="col-4">
+      <div class="col-3">
         <q-input dense outlined v-model="fecha1" type="date" label="fecha inicio"/>
       </div>
-      <div class="col-4">
+      <div class="col-3">
         <q-input dense outlined v-model="fecha2" type="date" label="fecha fin"/>
       </div>
-      <div class="col-4 flex ">
+      <div class="col-3">
+        <q-select outlined v-model="tipodoc" label="Tipo documento" :options="optionstipodocs" style="max-width: 200px" dense options-dense>
+            <template v-slot:prepend>
+                <q-icon name="note_add" />
+            </template>
+          </q-select>
+      </div>
+      <div class="col-3 flex ">
         <!--    <q-input dense outlined v-model="fecha1" type="date"/>-->
-        <q-btn type="submit" class="full-width" label="consulta" color="primary" icon="search"  />
+        <q-btn dense type="submit" class="full-width" label="consulta" color="primary" icon="search"  />
       </div>
     </div>
   </q-form>
@@ -37,9 +44,18 @@
              <div class=""> {{props.row.user2.unit.nombre}}</div>
           </q-badge></div>
           <div class="">REF: {{props.row.mail.ref}}</div>
+          <div class="">
+            <q-badge v-if="props.row.tipodoc!=null" :color="props.row.tipodoc==='NOTAS'?'teal-5':'amber-8'">Tipo: {{props.row.tipodoc}}</q-badge>
+            <q-badge v-if="props.row.nfojas!=null" color="green">Num Fojas: {{props.row.nfojas}}</q-badge></div>
+        </q-td>
+      </template>
+      <template v-slot:body-cell-sello="props" >
+        <q-td auto-width :props="props">
+            <!-- <q-btn @click="impresion" icon="print" color="info" /> -->
         </q-td>
       </template>
       <template v-slot:top-right>
+
         <q-btn @click="impresion" icon="print" label="imprimir" color="positive" />
         <q-input outlined dense  v-model="filter" placeholder="Buscar">
           <template v-slot:append>
@@ -67,9 +83,11 @@ export default {
       columns:[
         {name:'citecontrol',label:'citecontrol',field:'citecontrol',align: 'center'},
         {name:'datos',label:'datos',field:'datos',align:'left'},
-        {name:'sello',label:'sello',field:'sello'},
+        {name:'sello',label:'Impresión individual',field:'sello'},
       ],
-      datos:[]
+      datos:[],
+      optionstipodocs:['TODO','NOTAS','MEMORANDUM'],
+      tipodoc:'TODO',
     }
   },
   created() {
@@ -85,12 +103,12 @@ export default {
       this.$axios.post(process.env.API+'/reportecorrespondenciaremitida',{
         fecha1:this.fecha1,
         fecha2:this.fecha2,
+        tipodoc:this.tipodoc
       }).then(res=>{
         this.datos=[]
         this.$q.loading.hide()
         // console.log(res.data)
         res.data.forEach(r=>{
-          r.datos=r.destinatario+r.remitente+r.ref
           this.datos.push(r)
         })
         console.log("datos: ",this.datos)
@@ -140,16 +158,22 @@ export default {
 
         doc.setFontSize(10);
         // doc.setFont('times', 'bold');
-        doc.setFont('times', 'normal');
-        doc.text('De: '+d.user.name,41,25+i*34,'left')
         doc.setFont('times', 'bold');
-        doc.text('A: '+d.user2.name,41,30+i*34,'left')
+        doc.text('DE: '+d.user.name,41,25+i*34,'left')
+        doc.text('A: '+d.user2.name+' | ('+d.user2.unit.codigo+')',41,30+i*34,'left')
         doc.setFont('times', 'normal');
         doc.text('REF: '+d.mail.ref.substr(0,50),41,35+i*34,'left')
         doc.text(d.mail.ref.substr(50,50),41,40+i*34,'left')
         doc.text(d.mail.ref.substr(100,50),41,45+i*34,'left')
         doc.text(d.mail.ref.substr(150,50),41,50+i*34,'left')
+
+        if(d.tipodoc!=null){
+          doc.text('TIPO: '+d.tipodoc,130,25+i*34,'left')
+        }
         doc.setFontSize(10);
+
+
+
         i++
         if (cont==8){
           i=0

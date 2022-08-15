@@ -71,6 +71,7 @@ class MailController extends Controller
 
     public function micorre(Request $request)
     {
+
         //se ejecuta cuando filtramos desde el buscardor de la tabla en mis_asignaciones
         if($request->filter){
             $mail_id = Mail::select(['id'])
@@ -94,6 +95,7 @@ class MailController extends Controller
                  ->whereNull('deleted_at')
                  ->groupBy('mail_id');
              })
+             ->whereIn('estado',isset($request->estado)?[$request->estado]:['ACEPTADO','EN PROCESO','REMITIDO','ARCHIVADO'])
              ->with('user')
              ->with(['mail' => function ($query){
                  $query->with('logs');
@@ -118,6 +120,7 @@ class MailController extends Controller
                 ->whereNull('deleted_at')
                 ->groupBy('mail_id');
             })
+            ->whereIn('estado',isset($request->estado)?[$request->estado]:['ACEPTADO','EN PROCESO','REMITIDO','ARCHIVADO'])
             ->with('user')
             ->with(['mail' => function ($query) {
                      $query->with('logs');

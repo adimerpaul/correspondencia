@@ -23,6 +23,7 @@ class Log extends Model
         'archivado',
         'unid_id',
         'tipodoc',
+        'nfojas',
     ];
     protected $dates = ['deleted_at'];
     public function user(){

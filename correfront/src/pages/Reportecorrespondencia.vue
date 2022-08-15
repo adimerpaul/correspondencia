@@ -241,7 +241,9 @@ export default {
 
 
 
-
+      doc.setFontSize(10);
+      doc.text('CITE ',18,17)
+      doc.text('CORRESPONDENCIA CREADA ',43,17)
         doc.setFont('times', 'bold');
         doc.setDrawColor(122);
       let numhoja=1
@@ -259,7 +261,7 @@ export default {
         cont++
         doc.roundedRect(8, 20+i*34, 194, 34, 0, 0, 'S')
         doc.line(40, 20+i*34, 40, 54+i*34)//line1
-        doc.line(170, 20+i*34, 170, 54+i*34)//line1
+       // doc.line(170, 20+i*34, 170, 54+i*34)//line1
         doc.setFontSize(12);
         doc.setFont('times', 'bold');
         doc.text(d.fecha.toString(),23,25+i*34,'center')
