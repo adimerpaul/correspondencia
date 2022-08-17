@@ -323,10 +323,8 @@
                            <q-input
                           dense
                           outlined
-                          v-model.number="row.nfojas"
-                          type="number"
+                          v-model="row.nfojas"
                           label="N° Fojas"
-                          :rules="[ val => val >= 0 || 'Numeros positivos por favor' ]"
                           hint="OPCIONAL"
 
                         />
