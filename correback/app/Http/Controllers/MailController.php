@@ -105,7 +105,8 @@ class MailController extends Controller
                  ->whereNull('deleted_at');
                  //->groupBy('mail_id');
              })
-             ->whereIn('estado',isset($estado)?[$estado]:['ACEPTADO','EN PROCESO','REMITIDO','ARCHIVADO'])
+             //->whereIn('estado',isset($estado)?[$estado]:['ACEPTADO','EN PROCESO','REMITIDO','ARCHIVADO'])
+             ->whereIn('estado',$estado)
              ->with('user')
              ->with('user2')
              ->with(['mail' => function ($query){
