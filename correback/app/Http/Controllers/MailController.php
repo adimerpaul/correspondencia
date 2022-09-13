@@ -72,6 +72,15 @@ class MailController extends Controller
     public function micorre(Request $request)
     {
 
+        $estado = [];
+        switch($request->tipoasignacion){
+            case 'todo': $estado = ['ACEPTADO','EN PROCESO','REMITIDO','ARCHIVADO']; break;
+            case 'recibidos': $estado = ['EN PROCESO']; break;
+            case 'pendientes': $estado = ['ACEPTADO']; break;
+            case 'enviados': $estado = ['REMITIDO']; break;
+            case 'archivados': $estado = ['ARCHIVADO']; break;
+        }
+
         //se ejecuta cuando filtramos desde el buscardor de la tabla en mis_asignaciones
         if($request->filter){
             $mail_id = Mail::select(['id'])
@@ -88,15 +97,17 @@ class MailController extends Controller
              $logreturn = Log::where('user_id2',$request->user()->id)
              ->where('unit_id',$request->user()->unit_id)
              ->whereIn('id', function($query) use($resultmail,$request){
-                 $query->selectRaw('max(id)')
+                 //$query->selectRaw('max(id)')
+                 $query->selectRaw('id')
                  ->from('logs')
                  ->whereIn('mail_id',$resultmail)
                  ->where('user_id2',$request->user()->id)
-                 ->whereNull('deleted_at')
-                 ->groupBy('mail_id');
+                 ->whereNull('deleted_at');
+                 //->groupBy('mail_id');
              })
-             ->whereIn('estado',isset($request->estado)?[$request->estado]:['ACEPTADO','EN PROCESO','REMITIDO','ARCHIVADO'])
+             ->whereIn('estado',isset($estado)?[$estado]:['ACEPTADO','EN PROCESO','REMITIDO','ARCHIVADO'])
              ->with('user')
+             ->with('user2')
              ->with(['mail' => function ($query){
                  $query->with('logs');
              }])
@@ -114,14 +125,17 @@ class MailController extends Controller
             $logreturn =Log::where('unit_id',$request->user()->unit_id)
             ->where('user_id2',$request->user()->id)
             ->whereIn('id', function($query) use($request){
-                $query->selectRaw('max(id)')
+                // $query->selectRaw('max(id)')
+                $query->selectRaw('id')
                 ->from('logs')
                 ->where('user_id2',$request->user()->id)
-                ->whereNull('deleted_at')
-                ->groupBy('mail_id');
+                ->whereNull('deleted_at');
+                // ->groupBy('mail_id');
             })
-            ->whereIn('estado',isset($request->estado)?[$request->estado]:['ACEPTADO','EN PROCESO','REMITIDO','ARCHIVADO'])
+            // ->whereIn('estado',isset($estado)?[$estado]:['ACEPTADO','EN PROCESO','REMITIDO','ARCHIVADO'])
+            ->whereIn('estado',$estado)
             ->with('user')
+            ->with('user2')
             ->with(['mail' => function ($query) {
                      $query->with('logs');
                  }])

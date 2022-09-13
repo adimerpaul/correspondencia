@@ -1,5 +1,6 @@
 <template>
   <q-page class="q-pa-xs">
+
     <div class="row">
       <div class="col-12">
 <!--        <div class="col-12">-->
@@ -20,7 +21,20 @@
                 <div class="row" style="border: 1px solid rgba(128,128,128,0.50)">
                   <div class="col-6 flex flex-center"><q-radio dense required v-model="dato.tipo" val="EXTERNO" label="EXTERNO"/></div>
                   <div class="col-6 flex flex-center"><q-radio dense required v-model="dato.tipo" val="INTERNO" label="INTERNO"/></div>
-                  <div class="col-sm-2 col-12 q-pa-xs"><q-input style="text-transform: uppercase" required dense label="Cite/Codigo/Tramite" autofocus v-model="dato.citecontrol"  outlined /></div>
+                  <div class="col-sm-2 col-12 q-pa-xs">
+                    <q-input
+                    style="text-transform: uppercase" required
+                    dense
+                    label="Cite/Codigo/Tramite"
+                    autofocus
+                    v-model="dato.citecontrol"
+                    outlined
+                    bottom-slots
+                    hint="Max 10 Carácteres"
+                    counter
+                    maxlength="10"
+                    />
+                    </div>
                   <div class="col-sm-2 col-12 q-pa-xs"><q-input style="text-transform: uppercase" required dense label="Cite entrante" autofocus v-model="dato.cite"  outlined /></div>
                   <div class="col-sm-4 col-12 q-pa-xs">
                     <!-- <q-input style="text-transform: uppercase" outlined dense label="Destinatario" v-model="destinatario"/> -->
@@ -61,7 +75,7 @@
       <div class="col-12">
         <q-table
           dense
-          title="Correspondencia "
+          title="Correspondencia"
           :rows="mails"
           :columns="columns"
           :filter="filter"
@@ -79,26 +93,32 @@
               </template>
             </q-input>
           </template>
-          <template v-slot:body-cell-ref="props">
-              <q-td key="ref" :props="props"  @click="mostrar(props.row.ref)">
-                           <!-- <q-badge color="orange"> -->
-               <!-- <q-badge color="warning" v-if="props.row.ref!=''" @click="mostrar(props.row.ref)"> -->
-                  {{ props.row.ref.substring(0,20) }}
-               <!-- </q-badge> -->
-                           <!-- </q-badge> -->
+          <template v-slot:body-cell-documento="props">
+              <q-td key="ref" :props="props"  @click="mostrar(props.row)">
+                  {{ props.row.ref.substring(0,20) }} <q-icon name="visibility" color="info"/>
               </q-td>
           </template>
           <template v-slot:body-cell-logs="props">
               <q-td key="logs" :props="props">
+
                 <ul style="font-size: 0.8em;padding: 0px;margin: 0px;border: 0px;    list-style: none;">
                   <li v-for="l in props.row.logs" :key="l.id">
-                    <q-btn @click="impresioncondependencias(l)" v-if="l.estado=='EN PROCESO'" size="xs" icon="print" color="info" flat round/>
-                    <!-- uso exclusivo para secretaria del alcalde despacho UNIT_ID=97 -->
-                    <q-btn @click="impresioncondependencias(l)" v-if="l.estado=='ACEPTADO' &&  secretarios.includes($store.state.login.user.id)" size="xs" icon="print" color="info" flat round/>
+
                     {{l.unit.nombre}}
                     <q-badge :color="l.estado=='REMITIDO'||l.estado=='ARCHIVADO'?'positive':'negative'" :label="l.estado" />
                   </li>
                 </ul>
+
+                <q-btn @click="impresioncondependencias(props.row)" v-if="props.row.estado=='REMITIDO'" label="Hoja de Ruta" size="xs" icon="print" color="info" flat round/>
+                    <!-- uso exclusivo para secretaria del alcalde despacho UNIT_ID=97 -->
+                <q-btn @click="impresioncondependencias(props.row)" v-if="props.row.estado=='ACEPTADO' &&  secretarios.includes($store.state.login.user.id)" size="xs" label="Hoja de Ruta" icon="print" color="info" flat round/>
+
+                <div v-if="props.row.estado=='EN PROCESO' || props.row.estado=='ACEPTADO'">
+                <q-badge v-if="props.row.accion!='CREADO'" color="warning" :label="'Recibido de: '+props.row.user1"> </q-badge><br>
+                </div>
+
+
+                <q-btn v-if="secretariageneral.includes($store.state.login.user.id)" color="positive" dense icon="add_circle_outline" label="REMITIR" @click="dialogremitir=true;mail=props.row; dest=[]" />
               </q-td>
           </template>
 <!--          <template v-slot:body-cell-dias="props">-->
@@ -113,6 +133,17 @@
                 <div class="text-h6"> {{props.row.fecha}}<br>{{props.row.hora}}</div>
               </q-td>
           </template>
+          <template v-slot:body-cell-codigo="props">
+              <q-td  :props="props">
+              <strong> {{props.row.codigo}}</strong><br>
+                CITE: {{props.row.citecontrol}}
+
+              </q-td>
+          </template>
+
+
+
+
 
           <template v-slot:body-cell-dias="props">
               <q-td  :props="props">
@@ -397,6 +428,11 @@ import { format, render, cancel, register } from 'timeago.js';
 import $ from 'jquery'
 import {date} from 'quasar'
 export default {
+  props:{
+    tipoasignacion:{
+      type: String
+    }
+  },
   data(){
     return {
       destinatario:'',
@@ -423,18 +459,18 @@ export default {
       institucion:'',
       codigo:'',
       dest:[],
+      contadorcreadosignorados:0,
       secretarios:[172,292,173,36,190,121,349,169,106,42],
-      optionstipodocs:['Notas','Memorandum'],
+      secretariageneral:[172,32],
+      optionstipodocs:['Notas','Memorandum','Hoja de ruta'],
       tipodoc:null,
       derivaciones: [],
       dialogayudaremitir:false,
       columns:[
         {name:'opciones',field:'opciones',label:'opciones',align:'right'},
-        {name:'codigo',field:'codigo',label:'codigo',align:'left'},
-        {name:'citecontrol',field:'citecontrol',label:'CITE',align:'left'},
+        {name:'codigo',field:'codigo',label:'codigo/CITE',align:'left'},
         {name:'logs',field:'logs',label:'HISTORIAL',align:'left'},
-        {name:'remitente',field:'remitente',label:'Remitente',align:'left'},
-        {name:'ref',field:'ref',label:'Referencia',align:'left'},
+        {name:'documento',field:'documento',label:'Documento',align:'left'},
         // {name:'fecha',field:'fecha',label:'fecha',align:'right'},
         // {name:'hora',field:'hora',label:'hora',align:'right'},
         // {field:'codinterno',name:'codinterno',label:'codinterno',align:'right'},
@@ -459,10 +495,13 @@ export default {
       loading:false,
     }
   },
+  computed:{
+  },
   mounted() {
 
   },
   created() {
+
     this.misdatos()
     // for (let i=1;i<=1000;i++){
     //   this.folios.push(i)
@@ -477,6 +516,7 @@ export default {
       })
       this.usuarios2=this.usuarios
     })
+    console.log("tipo de asignacion: ",this.tipoasignacion)
   },
   methods:{
     fromcrear(){
@@ -570,12 +610,6 @@ export default {
         })
         return false;
       }
-        console.log("this.dest",this.dest)
-        console.log("this.mail.id",this.mail.id)
-        console.log("this.dest.listuser",this.dest.listuser)
-        console.log("this.dest.instruccion", this.dest.instruccion)
-        console.log("this.dest.tipodoc",this.dest.tipodoc)
-        console.log("this.dest.nfojas",this.dest.nfojas)
       this.$q.loading.show()
       this.$axios.post(process.env.API+'/log',{
         log_id:this.mail.id,
@@ -668,10 +702,24 @@ export default {
         })
       })
     },
-    mostrar(ref){
+    mostrar(row){
       this.$q.dialog({
-        title:'Referencia',
-        message:ref
+        title:`CODIGO: ${row.codigo}`,
+        message:`
+          CITE: ${row.cite} <br>
+          Fecha creación: ${row.fecha} <br>
+          Tipo: ${row.tipo} <br>
+          <blockquote>
+          Remitente: ${row.remitente} <br>
+          Cargo: ${row.cargo} <br>
+          Institucion: ${row.institucion} <br>
+          </blockquote>
+          <strong>Ref: ${row.ref} <br> </strong>
+          Fojas: ${row.folio} <br>
+          Destinatario: ${row.destinatario} <br>
+          Proveido: ${row.accion} <br>
+        `,
+        html:true
       })
     },
     impresion(l){
@@ -730,11 +778,11 @@ export default {
         doc.text(m.codigo.toString(),40,27,'center')
         doc.setFont('times', 'bold');
         doc.setFontSize(10)
-        doc.text(['FECHA DE','RECEPCION:'],10,31)
+        doc.text(['FECHA DE','CREACIÓN:'],10,31)
         doc.setFont(undefined, 'normal');
         doc.text(l.fecha.toString(),45,33,'center')
         doc.setFont('times', 'bold');
-        doc.text(['HORA DE','RECEPCION:'],10,40)
+        doc.text(['HORA DE','CREACIÓN:'],10,40)
         doc.setFont(undefined, 'normal');
         doc.text(l.hora.toString(),45,42,'center')
         doc.setFont('times', 'bold');
@@ -1125,18 +1173,18 @@ this.$q.loading.hide()
         doc.text(m.codigo.toString(),40,27,'center')
         doc.setFont('times', 'bold');
         doc.setFontSize(10)
-        doc.text(['FECHA DE','RECEPCION:'],10,31)
+        doc.text(['FECHA DE','CREACIÓN:'],10,31)
         doc.setFont(undefined, 'normal');
         doc.text(l.fecha.toString(),45,33,'center')
         doc.setFont('times', 'bold');
-        doc.text(['HORA DE','RECEPCION:'],10,40)
+        doc.text(['HORA DE','CREACIÓN:'],10,40)
         doc.setFont(undefined, 'normal');
         doc.text(l.hora.toString(),45,42,'center')
         doc.setFont('times', 'bold');
-        doc.text('CITE:',10,49)
+        doc.text('CITE:',10,50)
         doc.setFont('times', 'normal');
         doc.setFontSize(14)
-        doc.text(m.citecontrol.toString(),45,50,'center')
+        doc.text(m.citecontrol.toString(),40,50,'center')
         doc.setFontSize(10)
         doc.setFont('times', 'bold');
         doc.text('REMITENTE:',80,25)
@@ -1161,9 +1209,9 @@ this.$q.loading.hide()
         doc.setFont('times', 'normal');
         doc.text([m.ref.substring(0,50),m.ref.substring(50,100)],148,40,'center')
         doc.setFont('times', 'bold');
-        doc.text('A:',80,50)
+        doc.text('DESTINATARIO:',80,50)
         doc.setFont(undefined, 'normal');
-        doc.text(l.user2.name,145,50,'center')
+        doc.text(l.destinatario,150,50,'center')
         doc.setFont('times', 'bold');
         //FIN CABEZERA
         //INICIO CORRESPONDENCIA
@@ -1518,8 +1566,9 @@ this.$q.loading.hide()
     misdatos(page = 0,filter,rowsPerPage=10){
       //this.$q.loading.show()
       this.loading=true
-      this.$axios.get(process.env.API+'/micorre',{params:{page: page,filter:filter,rowsPerPage: rowsPerPage}}).then(res=>{
+      this.$axios.get(process.env.API+'/micorre',{params:{page: page,filter:filter,rowsPerPage: rowsPerPage,tipoasignacion:this.tipoasignacion}}).then(res=>{
           console.log('micorre:',res)
+
         // this.mails=res.data
         this.mails=[]
         register('es_ES', (number, index, total_sec) => [
@@ -1544,7 +1593,81 @@ this.$q.loading.hide()
         this.pagination.rowsPerPage = res.data.per_page
         this.pagination.rowsNumber = res.data.total
         console.log('pagination',this.pagination)
+
         res.data.data.forEach(r=>{
+          console.log("r: ",r)
+          if(r.mail.logs.length>1 && r.user2.id ==this.$store.state.login.user.id && r.accion==="CREADO" && r.log_id===null)
+          {
+            if(r.mail.logs.length>1 && r.mail.logs[0].user2.id==this.$store.state.login.user.id && r.accion==="CREADO" && r.log_id===null)
+            {
+
+
+                    let cancelarremision = false
+                    let padrelog = []
+                    for(let log of r.mail.logs){
+                      if(log.user_id2 ===this.$store.state.login.user.id && log.estado==="REMITIDO"){
+                        padrelog.push(log.id)
+                      }
+                    }
+                    console.log("padreids",padrelog," idmail",r.mail_id)
+                //let ultimoremitido= padrelog[padrelog.length-2]// solo muestra el ultimo
+                for(let padreid of padrelog){
+                if(padreid == r.id){
+                      for(let log2 of r.mail.logs){
+                        if(log2.user_id==this.$store.state.login.user.id && log2.estado != "EN PROCESO" && log2.log_id==padreid){
+                          cancelarremision=true
+                          console.log("cancelar remision en true", r.id)
+                            break;
+                        }
+                    }
+                  }
+                }
+
+
+
+              //console.log(r)
+              // const date1 = new Date()
+              // const date2 = date.extractDate(r.mail.fecha, 'YYYY-MM-DD')
+              // const dias = date.getDateDiff(date1, date2, 'days')
+
+
+              const dias=format(r.mail.fecha+' '+r.mail.hora,'es_ES')
+
+
+                this.mails.push({
+                id:r.id,
+                mail_id:r.mail_id,
+                hora:r.hora,
+                citecontrol:r.mail.citecontrol,
+                cite:r.mail.cite,
+                codigo:r.mail.codigo,
+                tipo:r.mail.tipo,
+                tipo2:r.mail.tipo2,
+                ref:r.mail.ref,
+                remitente:r.mail.remitente,
+                destinatario:r.mail.destinatario,
+                cargo:r.mail.cargo,
+                institucion:r.mail.institucion,
+                fecha:r.mail.fecha,
+                fechacarta:r.mail.fechacarta,
+                estado:r.estado,
+                folio:r.mail.folio,
+                archivo:r.mail.archivo,
+                codinterno:r.mail.codinterno,
+                codexterno:r.mail.codexterno,
+                logs:r.mail.logs,
+                dias:dias,
+                nopuedecancelarremision: cancelarremision,
+                user_id:r.mail.user_id,
+                user1: r.user===null?'':r.user.name,
+                user2:r.user2.name,
+                accion:r.accion
+
+              })
+            }
+             console.log("no muestra creado de un mail que ya tiene varios remitidos",r.mail.codigo)
+          }
+          else{
           let cancelarremision = false
           let padrelog = []
           for(let log of r.mail.logs){
@@ -1552,13 +1675,19 @@ this.$q.loading.hide()
               padrelog.push(log.id)
             }
           }
-          for(let log2 of r.mail.logs){
-             if(log2.estado != "EN PROCESO" && log2.log_id===padrelog[padrelog.length-1]){
-                cancelarremision=true
-                break;
+          console.log("padreids",padrelog," idmail",r.mail_id)
+          //let ultimoremitido= padrelog[padrelog.length-2]// solo muestra el ultimo
+          for(let padreid of padrelog){
+          if(padreid == r.id){
+                for(let log2 of r.mail.logs){
+                  if(log2.user_id==this.$store.state.login.user.id && log2.estado != "EN PROCESO" && log2.log_id==padreid){
+                    cancelarremision=true
+                    console.log("cancelar remision en true", r.id)
+                      break;
+                  }
+              }
             }
           }
-
           //console.log(r)
           // const date1 = new Date()
           // const date2 = date.extractDate(r.mail.fecha, 'YYYY-MM-DD')
@@ -1566,7 +1695,9 @@ this.$q.loading.hide()
 
 
           const dias=format(r.mail.fecha+' '+r.mail.hora,'es_ES')
-          this.mails.push({
+
+
+                this.mails.push({
             id:r.id,
             mail_id:r.mail_id,
             hora:r.hora,
@@ -1590,9 +1721,15 @@ this.$q.loading.hide()
             logs:r.mail.logs,
             dias:dias,
             nopuedecancelarremision: cancelarremision,
-            user_id:r.mail.user_id
+            user_id:r.mail.user_id,
+            user1: r.user===null?'':r.user.name,
+            user2:r.user2.name,
+            accion:r.accion
+
           })
 
+
+        }
         })
         this.loading=false
         this.$q.loading.hide()

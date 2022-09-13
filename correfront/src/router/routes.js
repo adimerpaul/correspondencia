@@ -21,29 +21,13 @@ const routes = [
       { path: '/user', component: User,meta: {requiresAuth: true,} },
       { path: '/seguimiento', component: Seguimiento,meta: {requiresAuth: true,} },
       {
-        path: '/asignacion',
+        path: '/asignacion/:tipoasignacion',
         component: () => import(/* webpackChunkName: "misasignaciones" */'../pages/asignacion.vue'),
         meta: {requiresAuth: true},
-      },
-      {
-        path: '/asignacionrecibidos',
-        component: () => import(/* webpackChunkName: "asignacionrecibidos" */'../pages/asignacionrecibidos.vue'),
-        meta: {requiresAuth: true},
-      },
-      {
-        path: '/asignacionpendiente',
-        component: () => import(/* webpackChunkName: "asignacionpendiente" */'../pages/asignacionpendiente.vue'),
-        meta: {requiresAuth: true},
-      },
-      {
-        path: '/asignacionenviados',
-        component: () => import(/* webpackChunkName: "asignacionenviados" */'../pages/asignacionenviados.vue'),
-        meta: {requiresAuth: true},
-      },
-      {
-        path: '/asignacionarchivados',
-        component: () => import(/* webpackChunkName: "asignacionarchivados" */'../pages/asignacionarchivados.vue'),
-        meta: {requiresAuth: true},
+        props: (route)=> {
+          const {tipoasignacion} = route.params
+          return {tipoasignacion}
+        }
       },
       { path: '/misrecepciones', component: Misrecepciones,meta: {requiresAuth: true,} },
       { path: '/reportecorrespondencia', component: Reportecorrespondencia,meta: {requiresAuth: true,} },

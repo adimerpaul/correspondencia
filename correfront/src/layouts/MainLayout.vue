@@ -108,31 +108,31 @@
             v-if="$store.state.login.booldesignacion"
             >
 
-              <q-item dense clickable v-ripple class="q-pl-xl" to="/asignacion">
+              <q-item dense clickable v-ripple class="q-pl-xl" to="/asignacion/todo">
                 <q-item-section avatar>
                   <q-icon name="source" />
                 </q-item-section>
                 <q-item-section>Todo</q-item-section>
               </q-item>
-              <q-item dense clickable v-ripple class="q-pl-xl" to="/asignacionrecibidos">
+              <q-item dense clickable v-ripple class="q-pl-xl" to="/asignacion/recibidos">
                 <q-item-section avatar>
                   <q-icon name="receipt" />
                 </q-item-section>
                 <q-item-section>Recibidos</q-item-section>
               </q-item>
-              <q-item dense clickable v-ripple class="q-pl-xl" to="/asignacionpendiente">
+              <q-item dense clickable v-ripple class="q-pl-xl" to="/asignacion/pendientes">
                 <q-item-section avatar>
                   <q-icon name="schedule" />
                 </q-item-section>
                 <q-item-section>Pendientes</q-item-section>
               </q-item>
-              <q-item dense clickable v-ripple class="q-pl-xl" to="/asignacionenviados">
+              <q-item dense clickable v-ripple class="q-pl-xl" to="/asignacion/enviados">
                 <q-item-section avatar>
                   <q-icon name="send" />
                 </q-item-section>
                 <q-item-section>Enviados</q-item-section>
               </q-item>
-              <q-item clickable v-ripple class="q-pl-xl" to="/asignacionarchivados">
+              <q-item clickable v-ripple class="q-pl-xl" to="/asignacion/archivados">
                 <q-item-section avatar>
                   <q-icon name="archive" />
                 </q-item-section>
@@ -239,7 +239,7 @@
     </q-drawer>
 
     <q-page-container>
-      <router-view />
+      <router-view :key="$route.fullPath"/>
     </q-page-container>
   </q-layout>
 </template>
