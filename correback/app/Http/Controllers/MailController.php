@@ -316,6 +316,7 @@ class MailController extends Controller
         $mail->fecha= $request->fecha;
         $mail->folio= $request->folio;
         $mail->remitente= strtoupper( $request->remitente);
+        $mail->destinatario= strtoupper( $request->destinatario);
         $mail->cargo=strtoupper($request->cargo);
         $mail->institucion=strtoupper($request->institucion);
         $mail->codinterno=$request->codinterno;
