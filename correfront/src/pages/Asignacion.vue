@@ -114,7 +114,7 @@
                 <q-btn @click="impresioncondependencias(props.row)" v-if="props.row.estado=='ACEPTADO' &&  secretarios.includes($store.state.login.user.id)" size="xs" label="Hoja de Ruta" icon="print" color="info" flat round/>
 
                 <div v-if="props.row.estado=='EN PROCESO' || props.row.estado=='ACEPTADO'">
-                <q-badge v-if="props.row.accion!='CREADO'" color="warning" :label="'Recibido de: '+props.row.user1"> </q-badge><br>
+                <q-badge v-if="props.row.accion!=''" color="warning" :label="'Recibido de: '+props.row.user1"> </q-badge><br>
                 </div>
 
 
@@ -1661,7 +1661,7 @@ this.$q.loading.hide()
                 user_id:r.mail.user_id,
                 user1: r.user===null?'':r.user.name,
                 user2:r.user2.name,
-                accion:r.accion
+                accion:r.mail.logs[1]!=undefined?r.mail.logs[1].accion:''
 
               })
             }
@@ -1724,7 +1724,7 @@ this.$q.loading.hide()
             user_id:r.mail.user_id,
             user1: r.user===null?'':r.user.name,
             user2:r.user2.name,
-            accion:r.accion
+            accion:r.mail.logs[1]!=undefined?r.mail.logs[1].accion:''
 
           })
 
