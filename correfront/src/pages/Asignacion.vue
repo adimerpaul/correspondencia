@@ -460,7 +460,7 @@ export default {
       codigo:'',
       dest:[],
       contadorcreadosignorados:0,
-      secretarios:[172,292,173,36,190,121,349,169,106,42],
+      secretarios:[172,292,173,36,190,121,349,169,106,42,177],
       secretariageneral:[172,32],
       optionstipodocs:['Notas','Memorandum','Hoja de ruta'],
       tipodoc:null,
@@ -1610,7 +1610,6 @@ this.$q.loading.hide()
                       }
                     }
                     console.log("padreids",padrelog," idmail",r.mail_id)
-                //let ultimoremitido= padrelog[padrelog.length-2]// solo muestra el ultimo
                 for(let padreid of padrelog){
                 if(padreid == r.id){
                       for(let log2 of r.mail.logs){
