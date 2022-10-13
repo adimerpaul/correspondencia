@@ -32,7 +32,7 @@
                     bottom-slots
                     hint="Max 10 Carácteres"
                     counter
-                    maxlength="10"
+                    maxlength="12"
                     />
                     </div>
                   <div class="col-sm-2 col-12 q-pa-xs"><q-input style="text-transform: uppercase" required dense label="Cite entrante" autofocus v-model="dato.cite"  outlined /></div>
@@ -98,7 +98,28 @@
                   {{ props.row.ref.substring(0,20) }} <q-icon name="visibility" color="info"/>
               </q-td>
           </template>
-          <template v-slot:body-cell-logs="props">
+          <!-- opciones de impresion solo para secretaria general -->
+          <template v-if="secretariageneral.includes($store.state.login.user.id)" v-slot:body-cell-logs="props">
+              <q-td key="logs" :props="props">
+                <ul style="font-size: 0.8em;padding: 0px;margin: 0px;border: 0px;    list-style: none;">
+                  <li v-for="l in props.row.logs" :key="l.id">
+
+                    <q-btn @click="impresioncondependenciassecretariageneral(l)" v-if="l.estado=='EN PROCESO'"  size="xs" icon="print" color="info" flat round/>
+                    <!-- uso exclusivo para secretaria del alcalde despacho UNIT_ID=97 -->
+                    <q-btn @click="impresioncondependenciassecretariageneral(l)" v-if="l.estado=='ACEPTADO' &&  secretarios.includes($store.state.login.user.id)" size="xs" icon="print" color="info" flat round/>
+
+                    {{l.unit.nombre}}
+                    <q-badge :color="l.estado=='REMITIDO'||l.estado=='ARCHIVADO'?'positive':'negative'" :label="l.estado" />
+                  </li>
+                </ul>
+                <div v-if="props.row.estado=='EN PROCESO' || props.row.estado=='ACEPTADO'">
+                <q-badge v-if="props.row.accion!=''" color="warning" :label="'Recibido de: '+props.row.user1"> </q-badge><br>
+                </div>
+
+                <q-btn color="positive" dense icon="add_circle_outline" label="REMITIR" @click="dialogremitir=true;mail=props.row; dest=[]" />
+              </q-td>
+          </template>
+          <template v-else v-slot:body-cell-logs="props">
               <q-td key="logs" :props="props">
 
                 <ul style="font-size: 0.8em;padding: 0px;margin: 0px;border: 0px;    list-style: none;">
@@ -116,9 +137,6 @@
                 <div v-if="props.row.estado=='EN PROCESO' || props.row.estado=='ACEPTADO'">
                 <q-badge v-if="props.row.accion!=''" color="warning" :label="'Recibido de: '+props.row.user1"> </q-badge><br>
                 </div>
-
-
-                <q-btn v-if="secretariageneral.includes($store.state.login.user.id)" color="positive" dense icon="add_circle_outline" label="REMITIR" @click="dialogremitir=true;mail=props.row; dest=[]" />
               </q-td>
           </template>
 <!--          <template v-slot:body-cell-dias="props">-->
@@ -717,7 +735,7 @@ export default {
           <strong>Ref: ${row.ref} <br> </strong>
           Fojas: ${row.folio} <br>
           Destinatario: ${row.destinatario} <br>
-          Proveido: ${row.accion} <br>
+          Proveido: ${row.acciondoc} <br>
         `,
         html:true
       })
@@ -1355,6 +1373,238 @@ this.$q.loading.hide()
       })
 
     },
+    impresioncondependenciassecretariageneral(l){
+      // console.log(l)
+      this.$q.loading.show()
+      this.$axios.get(process.env.API+'/mail/'+l.mail_id).then(res=>{
+        // console.log(res.data)
+        let m=res.data
+        this.$q.loading.hide()
+        var doc = new jsPDF()
+        let x=0
+        let y=0
+        //INICIO CABEZERA
+        doc.setDrawColor(122);
+        doc.roundedRect(5, 10, 200, 282, 2, 2, 'S')//principal
+        doc.roundedRect(8, 22, 194, 30, 2, 2, 'S')//destinatario 1
+        doc.roundedRect(58, 22, 20, 30, 2, 2, 'S')//el logo HR
+        doc.roundedRect(183, 11, 20, 8, 1, 1, 'S')//hoja1 hoja de ruta
+        doc.setFillColor(158,158,158)
+        doc.line(8, 28, 58, 28)//line n
+        doc.line(8, 36, 58, 36)//line fecha recepcion
+        doc.line(8, 46, 58, 46)//line hora repeccion
+        doc.line(78, 26, 202, 26)//line remitente
+        doc.line(78, 31, 202, 31)//line entidad
+        doc.line(78, 36, 202, 36)//line CITE
+        doc.line(78, 41, 202, 41)//line referecnia
+        doc.line(78, 46, 202, 46)//line hojas
+        doc.roundedRect(70, 5, 70, 10, 2, 2, 'F') // fondo gamo
+        doc.setFontSize(35);
+        doc.setFont('times', 'bold');
+        doc.setTextColor(255,255,255)
+        doc.text('GAMO',85,14)
+        doc.setTextColor(0,0,0)
+        doc.setFontSize(37);
+        doc.text('HR',58,38)
+        doc.setFontSize(7);
+        doc.text('HOJA DE RUTA',59,42)
+        doc.text(m.tipo.toString(),62,48)
+        doc.setTextColor(158,158,158)
+        doc.setFontSize(10);
+        doc.text('HOJA 1',187,14)
+        doc.setFontSize(7);
+        doc.text('HOJA DE RUTA',184,17)
+        doc.setTextColor(0,0,0)
+        doc.setFontSize(11)
+        doc.text('REGISTRO DE CORRESPONDENCIA - HOJA DE RUTA',58,20)
+        doc.setFontSize(15)
+        doc.text('Nº',10,27)
+        doc.setFont(undefined, 'normal');
+        doc.text(m.codigo.toString(),40,27,'center')
+        doc.setFont('times', 'bold');
+        doc.setFontSize(10)
+        doc.text(['FECHA DE','CREACIÓN:'],10,31)
+        doc.setFont(undefined, 'normal');
+        doc.text(l.fecha.toString(),45,33,'center')
+        doc.setFont('times', 'bold');
+        doc.text(['HORA DE','CREACIÓN:'],10,40)
+        doc.setFont(undefined, 'normal');
+        doc.text(l.hora.toString(),45,42,'center')
+        doc.setFont('times', 'bold');
+        doc.text('CITE:',10,50)
+        doc.setFont('times', 'normal');
+        doc.setFontSize(14)
+        doc.text(m.citecontrol.toString(),40,50,'center')
+        doc.setFontSize(10)
+        doc.setFont('times', 'bold');
+        doc.text('REMITENTE:',80,25)
+        doc.setFont('times', 'normal');
+        doc.text(m.remitente,152,25,'center')
+        doc.setFont('times', 'bold');
+        doc.text('ENTIDAD:',80,30)
+        doc.setFont('times', 'normal');
+        doc.text(m.institucion,152,30,'center')
+        doc.setFont('times', 'bold');
+        doc.text('CITE:',80,35)
+        doc.setFont('times', 'normal');
+        doc.setFontSize(8)
+        doc.text(m.cite,120,35,'center')
+        doc.setFontSize(10)
+        doc.setFont('times', 'bold');
+        doc.text('HOJAS:',160,35)
+        doc.setFont('times', 'normal');
+        doc.text(m.folio,188,35,'center')
+        doc.setFont('times', 'bold');
+        doc.text('REF:',80,40)
+        doc.setFont('times', 'normal');
+        doc.text([m.ref.substring(0,50),m.ref.substring(50,100)],148,40,'center')
+        doc.setFont('times', 'bold');
+        doc.text('A:',80,50)
+        doc.setFont(undefined, 'normal');
+        doc.text(l.user2.name,145,50,'center');
+        doc.setFont('times', 'bold');
+        //FIN CABEZERA
+        //INICIO CORRESPONDENCIA
+        let con=1
+        for (let i=0;i<2;i++){
+          let inicuadro1 = 18, fincuadro1=97,inicuadro2=107,fincuadro2=202;
+          let saltoeny=117;
+          doc.roundedRect(8, 52+i*saltoeny, 194, saltoeny, 2, 2, 'S')
+         //DESTINATARIOS
+       //   doc.roundedRect(8, 52+i*80, 97, 37, 1, 1, 'S')
+          doc.setFontSize(10)
+          doc.setFont('times', 'bold');
+          doc.text('DESTINATARIO',inicuadro1-4,84+i*saltoeny,null, 90)
+
+          doc.line(inicuadro1, 52+i*saltoeny, inicuadro1, 89+i*saltoeny)//vertical2
+
+          doc.line(inicuadro1, 56+i*saltoeny, fincuadro2, 56+i*saltoeny)//line1
+          doc.line(inicuadro1, 60+i*saltoeny, fincuadro2, 60+i*saltoeny)//line2
+          doc.line(inicuadro1, 64+i*saltoeny, fincuadro2, 64+i*saltoeny)//line3
+          doc.line(inicuadro1, 68+i*saltoeny, fincuadro2, 68+i*saltoeny)//line4
+          doc.line(inicuadro1, 72+i*saltoeny, fincuadro2, 72+i*saltoeny)//line5
+          doc.line(inicuadro1, 76+i*saltoeny, fincuadro2, 76+i*saltoeny)//line6
+          doc.line(inicuadro1, 80+i*saltoeny, fincuadro2, 80+i*saltoeny)//line7
+          doc.line(inicuadro1, 84+i*saltoeny, inicuadro2+8, 84+i*saltoeny)//line8
+          doc.line(inicuadro1-10, 89+i*saltoeny, fincuadro2, 89+i*saltoeny)//line9
+          doc.line(inicuadro1+5, 52+i*saltoeny, inicuadro1+5, 89+i*saltoeny)//vertical2
+          doc.line(inicuadro2+8, 52+i*saltoeny, inicuadro2+8, 89+i*saltoeny)//vertical3
+          doc.line(inicuadro2+13, 52+i*saltoeny, inicuadro2+13, 89+i*saltoeny)//vertical4
+
+          doc.setFontSize(7)
+          doc.setFont('times', 'normal');
+          doc.text('',inicuadro1+7,55+i*saltoeny)
+          doc.text('ALCALDE MUNICIPAL',inicuadro1+7,55+i*saltoeny)
+          doc.text('SECRETARIA GENERAL',inicuadro1+7,59+i*saltoeny)
+          doc.text('STRIA. MPAL. DE ECONOMÍA Y HACIENDA',inicuadro1+7,63+i*saltoeny)
+          doc.text('STRIA. MPAL. DE INFRAESTRUCTURA PÚBLICA',inicuadro1+7,67+i*saltoeny)
+          doc.text('STRIA. MPAL. DE GESTIÓN TERRITORIAL',inicuadro1+7,71+i*saltoeny)
+          doc.text('STRIA. MPAL. DE SALUD INTEGRAL Y DEPORTES',inicuadro1+7,75+i*saltoeny)
+          doc.text('STRIA. MPAL. DE DESARROLLO HUMANO',inicuadro1+7,79+i*saltoeny)
+          doc.text('STRIA. MPAL. DE CULTURA',inicuadro1+7,83+i*saltoeny)
+          doc.text('STRIA. MPAL. DE ASUNTOS JURIDICOS',inicuadro1+7,87+i*saltoeny)
+
+          doc.text('DIRECCIÓN DE GESTIÓN DE R.R.H.H.',inicuadro2+15,55+i*saltoeny)
+          doc.text('DIRECCIÓN DE PLANIFICACIÓN INTEGRAL',inicuadro2+15,59+i*saltoeny)
+          doc.text('DIRECCIÓN DE COMUNICACIÓN',inicuadro2+15,63+i*saltoeny)
+          doc.text('DIRECCIÓN DE DESARROLLO ORGANIZACIONAL Y TICS',inicuadro2+15,67+i*saltoeny)
+          doc.text('UNIDAD DE AUDITORIA INTERNA',inicuadro2+15,71+i*saltoeny)
+          doc.text('UNIDAD DE FISCALIZACIÓN DE OBRAS',inicuadro2+15,75+i*saltoeny)
+          doc.text('UNIDAD DE TRANSPARENCIA',inicuadro2+15,79+i*saltoeny)
+          doc.text('OTRO:',inicuadro2+15,83+i*saltoeny)
+          //doc.text('OTRO:',inicuadro2+15,87+i*saltoeny)
+
+
+
+          doc.setFont('times', 'bold');
+          //instrucciones
+        //  doc.roundedRect(8, 89+i*saltoeny, 194, 80, 2, 2, 'S')
+
+          doc.setFontSize(8)
+          doc.text('AGENDAR',21,95+i*saltoeny,{align:'center'})
+          doc.setFontSize(7)
+          doc.text(['ELABORE',' MEMORANDUM','DE INSTRUCCIÓN'],21,102+i*saltoeny,{align:'center'})
+          doc.setFontSize(6)
+          doc.text(['PARA SU','ATENCIÓN','PREVIA VERIFICACIÓN'],21,112+i*saltoeny,{align:'center'})
+          doc.setFontSize(7)
+          doc.text(['PROCEDA',' SEGUN','CORRESPONDA'],21,122+i*saltoeny,{align:'center'})
+          doc.setFontSize(7)
+          doc.text(['ELABORE',' NOTA'],21,134+i*saltoeny,{align:'center'})
+          doc.setFontSize(7)
+          doc.text(['ELABORE','CONVOCATORIA','Y CIRCULAR'],21,142+i*saltoeny,{align:'center'})
+          doc.setFontSize(7)
+          doc.text(['ELABORE','RESOLUCIÓN','EJECUTIVA'],21,152+i*saltoeny,{align:'center'})
+          doc.setFontSize(8)
+          doc.text('ARCHIVAR',21,165+i*saltoeny,{align:'center'})
+
+          doc.roundedRect(35, 89+i*saltoeny, 5, 10, 1, 1, 'S')
+          doc.line(8, 99+i*saltoeny, 40, 99+i*saltoeny)//line1
+          doc.roundedRect(35, 99+i*saltoeny, 5, 10, 1, 1, 'S')
+          doc.line(8, 109+i*saltoeny, 40, 109+i*saltoeny)//line2
+          doc.roundedRect(35, 109+i*saltoeny, 5, 10, 1, 1, 'S')
+          doc.line(8, 119+i*saltoeny, 40, 119+i*saltoeny)//line3
+          doc.roundedRect(35, 119+i*saltoeny, 5, 10, 1, 1, 'S')
+          doc.line(8, 129+i*saltoeny, 40, 129+i*saltoeny)//line4
+          doc.roundedRect(35, 129+i*saltoeny, 5, 10, 1, 1, 'S')
+          doc.line(8, 139+i*saltoeny, 40, 139+i*saltoeny)//line5
+          doc.roundedRect(35, 139+i*saltoeny, 5, 10, 1, 1, 'S')
+          doc.line(8, 149+i*saltoeny, 40, 149+i*saltoeny)//line5
+          doc.roundedRect(35, 149+i*saltoeny, 5, 10, 1, 1, 'S')
+          doc.line(8, 159+i*saltoeny, 40, 159+i*saltoeny)//line6
+          doc.roundedRect(35, 159+i*saltoeny, 5, 10, 1, 1, 'S')
+          doc.setFontSize(9)
+          doc.text('INSTRUCCIONES:',85,94+i*saltoeny,{align:'center'})
+          doc.text('_________________',85,94+i*saltoeny,{align:'center'})
+          if (i==0){
+
+            if(l.accion.toString()==='CREADO'){
+              doc.text(' ',41,98+i*saltoeny)
+            }
+            else
+            {
+              doc.text(l.accion.toString().substring(0,45),41,98+i*saltoeny)
+              doc.text(l.accion.toString().substring(45,90),41,103+i*saltoeny)
+              doc.text(l.accion.toString().substring(90,135),41,108+i*saltoeny)
+              doc.text(l.accion.toString().substring(135,180),41,113+i*saltoeny)
+              doc.text(l.accion.toString().substring(180,225),41,118+i*saltoeny)
+              doc.text(l.accion.toString().substring(225,270),41,123+i*saltoeny)
+              doc.text(l.accion.toString().substring(270,315),41,128+i*saltoeny)
+            }
+            doc.setFont(undefined, 'bold');
+          }
+
+
+          doc.text('.................................................................................................................',40,99+i*saltoeny)
+          doc.text('.................................................................................................................',40,104+i*saltoeny)
+          doc.text('.................................................................................................................',40,109+i*saltoeny)
+          doc.text('.................................................................................................................',40,114+i*saltoeny)
+          doc.text('.................................................................................................................',40,119+i*saltoeny)
+          doc.text('.................................................................................................................',40,124+i*saltoeny)
+          doc.text('.................................................................................................................',40,129+i*saltoeny)
+          doc.text('.................................................................................................................',40,134+i*saltoeny)
+          doc.text('.................................................................................................................',40,139+i*saltoeny)
+          doc.text('.................................................................................................................',40,144+i*saltoeny)
+          doc.text('.................................................................................................................',40,149+i*saltoeny)
+          doc.text('.................................................................................................................',40,154+i*saltoeny)
+          doc.text('.................................................................................................................',40,159+i*saltoeny)
+          doc.text('.................................................................................................................',40,164+i*saltoeny)
+          doc.text('FIRMAR',115,167+i*saltoeny)
+
+          doc.roundedRect(130, 89+i*saltoeny, 72, 80, 1, 1, 'S')
+          doc.line(130, 96+i*saltoeny, 202, 96+i*saltoeny)//line1
+          doc.line(130, 163+i*saltoeny, 202, 163+i*saltoeny)//line2
+          doc.text('DESTINATARIO '+con+':',132,94+i*saltoeny)
+          doc.text('SELLO DE RECEPCION '+con+':',150,162+i*saltoeny)
+          doc.text('FECHA:',132,167+i*saltoeny)
+          doc.text('HORA:',172,167+i*saltoeny)
+          con++
+        }
+
+
+        window.open(doc.output('bloburl'), '_blank');
+      })
+
+    },
         impresion2(id){
       // console.log(id)
       // return false
@@ -1596,78 +1846,15 @@ this.$q.loading.hide()
 
         res.data.data.forEach(r=>{
           console.log("r: ",r)
-          if(r.mail.logs.length>1 && r.user2.id ==this.$store.state.login.user.id && r.accion==="CREADO" && r.log_id===null)
+          if(r.mail.logs.length>1 && r.log_id===null && r.mail.logs[1].estado=='REMITIDO')
           {
-            if(r.mail.logs.length>1 && r.mail.logs[0].user2.id==this.$store.state.login.user.id && r.accion==="CREADO" && r.log_id===null)
-            {
-
-
-                    let cancelarremision = false
-                    let padrelog = []
-                    for(let log of r.mail.logs){
-                      if(log.user_id2 ===this.$store.state.login.user.id && log.estado==="REMITIDO"){
-                        padrelog.push(log.id)
-                      }
-                    }
-                    console.log("padreids",padrelog," idmail",r.mail_id)
-                for(let padreid of padrelog){
-                if(padreid == r.id){
-                      for(let log2 of r.mail.logs){
-                        if(log2.user_id==this.$store.state.login.user.id && log2.estado != "EN PROCESO" && log2.log_id==padreid){
-                          cancelarremision=true
-                          console.log("cancelar remision en true", r.id)
-                            break;
-                        }
-                    }
-                  }
-                }
-
-
-
-              //console.log(r)
-              // const date1 = new Date()
-              // const date2 = date.extractDate(r.mail.fecha, 'YYYY-MM-DD')
-              // const dias = date.getDateDiff(date1, date2, 'days')
-
-
-              const dias=format(r.mail.fecha+' '+r.mail.hora,'es_ES')
-
-
-                this.mails.push({
-                id:r.id,
-                mail_id:r.mail_id,
-                hora:r.hora,
-                citecontrol:r.mail.citecontrol,
-                cite:r.mail.cite,
-                codigo:r.mail.codigo,
-                tipo:r.mail.tipo,
-                tipo2:r.mail.tipo2,
-                ref:r.mail.ref,
-                remitente:r.mail.remitente,
-                destinatario:r.mail.destinatario,
-                cargo:r.mail.cargo,
-                institucion:r.mail.institucion,
-                fecha:r.mail.fecha,
-                fechacarta:r.mail.fechacarta,
-                estado:r.estado,
-                folio:r.mail.folio,
-                archivo:r.mail.archivo,
-                codinterno:r.mail.codinterno,
-                codexterno:r.mail.codexterno,
-                logs:r.mail.logs,
-                dias:dias,
-                nopuedecancelarremision: cancelarremision,
-                user_id:r.mail.user_id,
-                user1: r.user===null?'':r.user.name,
-                user2:r.user2.name,
-                accion:r.mail.logs[1]!=undefined?r.mail.logs[1].accion:''
-
-              })
-            }
              console.log("no muestra creado de un mail que ya tiene varios remitidos",r.mail.codigo)
           }
           else{
-          let cancelarremision = false
+
+
+
+            let cancelarremision = false
           let padrelog = []
           for(let log of r.mail.logs){
             if(log.user_id2 ===this.$store.state.login.user.id && log.estado==="REMITIDO"){
@@ -1694,9 +1881,7 @@ this.$q.loading.hide()
 
 
           const dias=format(r.mail.fecha+' '+r.mail.hora,'es_ES')
-
-
-                this.mails.push({
+          this.mails.push({
             id:r.id,
             mail_id:r.mail_id,
             hora:r.hora,
@@ -1723,12 +1908,18 @@ this.$q.loading.hide()
             user_id:r.mail.user_id,
             user1: r.user===null?'':r.user.name,
             user2:r.user2.name,
-            accion:r.mail.logs[1]!=undefined?r.mail.logs[1].accion:''
-
+            accion:r.mail.logs[1]!=undefined?r.mail.logs[1].accion:'',
+            acciondoc:r.accion
           })
 
+          }
 
-        }
+
+
+
+
+
+
         })
         this.loading=false
         this.$q.loading.hide()

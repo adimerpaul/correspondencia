@@ -112,6 +112,8 @@ class MailController extends Controller
              ->with(['mail' => function ($query){
                  $query->with('logs');
              }])
+             ->groupBy('mail_id','user_id','user_id2')
+            ->orderBy('id','desc')
              ->paginate($request->rowsPerPage);
             return $logreturn;
 
@@ -130,18 +132,17 @@ class MailController extends Controller
                 $query->selectRaw('id')
                 ->from('logs')
                 ->where('user_id2',$request->user()->id)
+
                 ->whereNull('deleted_at');
-                // ->groupBy('mail_id');
             })
-            // ->whereIn('estado',isset($estado)?[$estado]:['ACEPTADO','EN PROCESO','REMITIDO','ARCHIVADO'])
             ->whereIn('estado',$estado)
             ->with('user')
             ->with('user2')
             ->with(['mail' => function ($query) {
                      $query->with('logs');
                  }])
+            ->groupBy('mail_id','user_id','user_id2')
             ->orderBy('id','desc')
-
             ->paginate($request->rowsPerPage);
             return $logreturn;
         }
