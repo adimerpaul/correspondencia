@@ -8,7 +8,6 @@
 <!--        </div>-->
         <q-btn label="Crear" icon="mail" color="primary" @click="fromcrear" />
         <q-btn label="Actualizar" icon="refresh" color="amber-5" @click="actualizar" />
-        <q-btn label="Hoja de ruta extra" icon="post_add" color="teal-9" @click="impresionextra" />
         <q-dialog full-width v-model="crear">
           <q-card>
             <q-card-section>
@@ -108,7 +107,9 @@
                     <!-- uso exclusivo para secretaria del alcalde despacho UNIT_ID=97 -->
                     <q-btn @click="impresioncondependenciassecretariageneral(l)" v-if="l.estado=='ACEPTADO' &&  secretarios.includes($store.state.login.user.id)" size="xs" icon="print" color="info" flat round/>
 
-                    {{l.unit.nombre}}
+                    <q-badge v-if="props.row.id==l.id" color="blue-grey" :label="'->'+l.unit.nombre"> </q-badge>
+                    <template v-else>{{l.unit.nombre}}</template>
+
                     <q-badge :color="l.estado=='REMITIDO'||l.estado=='ARCHIVADO'?'positive':'negative'" :label="l.estado" />
                   </li>
                 </ul>
@@ -117,6 +118,7 @@
                 </div>
 
                 <q-btn color="positive" dense icon="add_circle_outline" label="REMITIR" @click="dialogremitir=true;mail=props.row; dest=[]" />
+                <q-btn @click="impresionextra(props.row.codigo)" class="q-px-lg" size="xs" label="Hoja de Ruta extra" icon="print" color="green-10" flat round/>
               </q-td>
           </template>
           <template v-else v-slot:body-cell-logs="props">
@@ -125,7 +127,8 @@
                 <ul style="font-size: 0.8em;padding: 0px;margin: 0px;border: 0px;    list-style: none;">
                   <li v-for="l in props.row.logs" :key="l.id">
 
-                    {{l.unit.nombre}}
+                    <q-badge v-if="props.row.id==l.id" class="q-px-none q-mx-none" color="blue-grey" :label="'->'+l.unit.nombre"> </q-badge>
+                    <template v-else>{{l.unit.nombre}}</template>
                     <q-badge :color="l.estado=='REMITIDO'||l.estado=='ARCHIVADO'?'positive':'negative'" :label="l.estado" />
                   </li>
                 </ul>
@@ -133,6 +136,9 @@
                 <q-btn @click="impresioncondependencias(props.row)" v-if="props.row.estado=='REMITIDO'" label="Hoja de Ruta" size="xs" icon="print" color="info" flat round/>
                     <!-- uso exclusivo para secretaria del alcalde despacho UNIT_ID=97 -->
                 <q-btn @click="impresioncondependencias(props.row)" v-if="props.row.estado=='ACEPTADO' &&  secretarios.includes($store.state.login.user.id)" size="xs" label="Hoja de Ruta" icon="print" color="info" flat round/>
+                <q-btn @click="impresionextra(props.row.codigo)" class="q-px-lg" v-if="props.row.estado=='REMITIDO'" label="Hoja de Ruta extra" size="xs" icon="print" color="green-10" flat round/>
+
+                <q-btn @click="impresionextra(props.row.codigo)" class="q-px-lg" size="xs" label="Hoja de Ruta extra" icon="print" color="green-10" flat round/>
 
                 <div v-if="props.row.estado=='EN PROCESO' || props.row.estado=='ACEPTADO'">
                 <q-badge v-if="props.row.accion!=''" color="warning" :label="'Recibido de: '+props.row.user1"> </q-badge><br>
@@ -478,7 +484,7 @@ export default {
       codigo:'',
       dest:[],
       contadorcreadosignorados:0,
-      secretarios:[172,292,173,36,190,121,349,169,106,42,177],
+      secretarios:[172,292,173,36,190,121,349,169,106,42,177,217],
       secretariageneral:[172,32],
       optionstipodocs:['Notas','Memorandum','Hoja de ruta'],
       tipodoc:null,
@@ -721,6 +727,7 @@ export default {
       })
     },
     mostrar(row){
+
       this.$q.dialog({
         title:`CODIGO: ${row.codigo}`,
         message:`
@@ -735,7 +742,7 @@ export default {
           <strong>Ref: ${row.ref} <br> </strong>
           Fojas: ${row.folio} <br>
           Destinatario: ${row.destinatario} <br>
-          Proveido: ${row.acciondoc} <br>
+          Proveido: ${row.estado=='ARCHIVADO'?row.archivadodoc:row.acciondoc} <br>
         `,
         html:true
       })
@@ -1019,7 +1026,7 @@ export default {
       //   },700);
       // })
     },
-    impresionextra(){
+    impresionextra(codigo){
        this.$q.dialog({
         title:'Ingrese numero de página?',
          message:'Numero de Pagina permitida (2, 3, 4)',
@@ -1044,7 +1051,15 @@ export default {
         doc.text('HOJA '+n,187,14)
         doc.setFontSize(7);
         doc.text('HOJA DE RUTA',184,17)
+
         doc.setTextColor(0,0,0)
+        //codigo en hoja de ruta extra
+        doc.roundedRect(75, 11, 35, 8, 1, 1, 'S')//hoja1 hoja de ruta
+        doc.setFontSize(14);
+        doc.text(codigo,77,17)
+
+
+
        let con
        switch (n) {
         case 2:
@@ -1851,29 +1866,26 @@ this.$q.loading.hide()
              console.log("no muestra creado de un mail que ya tiene varios remitidos",r.mail.codigo)
           }
           else{
-
-
-
-            let cancelarremision = false
-          let padrelog = []
-          for(let log of r.mail.logs){
-            if(log.user_id2 ===this.$store.state.login.user.id && log.estado==="REMITIDO"){
-              padrelog.push(log.id)
-            }
-          }
-          console.log("padreids",padrelog," idmail",r.mail_id)
-          //let ultimoremitido= padrelog[padrelog.length-2]// solo muestra el ultimo
-          for(let padreid of padrelog){
-          if(padreid == r.id){
-                for(let log2 of r.mail.logs){
-                  if(log2.user_id==this.$store.state.login.user.id && log2.estado != "EN PROCESO" && log2.log_id==padreid){
-                    cancelarremision=true
-                    console.log("cancelar remision en true", r.id)
-                      break;
-                  }
+                let cancelarremision = false
+              let padrelog = []
+              for(let log of r.mail.logs){
+                if(log.user_id2 ===this.$store.state.login.user.id && log.estado==="REMITIDO"){
+                  padrelog.push(log.id)
+                }
               }
-            }
-          }
+              console.log("padreids",padrelog," idmail",r.mail_id)
+              //let ultimoremitido= padrelog[padrelog.length-2]// solo muestra el ultimo
+              for(let padreid of padrelog){
+              if(padreid == r.id){
+                    for(let log2 of r.mail.logs){
+                      if(log2.user_id==this.$store.state.login.user.id && log2.estado != "EN PROCESO" && log2.log_id==padreid){
+                        cancelarremision=true
+                        console.log("cancelar remision en true", r.id)
+                          break;
+                      }
+                  }
+                }
+              }
           //console.log(r)
           // const date1 = new Date()
           // const date2 = date.extractDate(r.mail.fecha, 'YYYY-MM-DD')
@@ -1909,7 +1921,8 @@ this.$q.loading.hide()
             user1: r.user===null?'':r.user.name,
             user2:r.user2.name,
             accion:r.mail.logs[1]!=undefined?r.mail.logs[1].accion:'',
-            acciondoc:r.accion
+            acciondoc:r.accion,
+            archivadodoc:r.archivado
           })
 
           }
