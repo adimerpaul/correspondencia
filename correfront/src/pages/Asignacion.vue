@@ -118,7 +118,7 @@
                 </div>
 
                 <q-btn color="positive" dense icon="add_circle_outline" label="REMITIR" @click="dialogremitir=true;mail=props.row; dest=[]" />
-                <q-btn @click="impresionextra(props.row.codigo)" class="q-px-lg" size="xs" label="Hoja de Ruta extra" icon="print" color="green-10" flat round/>
+                <q-btn @click="impresionextra(props.row.codigo)" v-if="props.row.estado!='ARCHIVADO'" class="q-px-lg" size="xs" label="Hoja de Ruta extra" icon="print" color="green-10" flat round/>
               </q-td>
           </template>
           <template v-else v-slot:body-cell-logs="props">
@@ -136,9 +136,7 @@
                 <q-btn @click="impresioncondependencias(props.row)" v-if="props.row.estado=='REMITIDO'" label="Hoja de Ruta" size="xs" icon="print" color="info" flat round/>
                     <!-- uso exclusivo para secretaria del alcalde despacho UNIT_ID=97 -->
                 <q-btn @click="impresioncondependencias(props.row)" v-if="props.row.estado=='ACEPTADO' &&  secretarios.includes($store.state.login.user.id)" size="xs" label="Hoja de Ruta" icon="print" color="info" flat round/>
-                <q-btn @click="impresionextra(props.row.codigo)" class="q-px-lg" v-if="props.row.estado=='REMITIDO'" label="Hoja de Ruta extra" size="xs" icon="print" color="green-10" flat round/>
-
-                <q-btn @click="impresionextra(props.row.codigo)" class="q-px-lg" size="xs" label="Hoja de Ruta extra" icon="print" color="green-10" flat round/>
+                <q-btn @click="impresionextra(props.row.codigo)" class="q-px-lg" v-if="props.row.estado!='ARCHIVADO'" label="Hoja de Ruta extra" size="xs" icon="print" color="green-10" flat round/>
 
                 <div v-if="props.row.estado=='EN PROCESO' || props.row.estado=='ACEPTADO'">
                 <q-badge v-if="props.row.accion!=''" color="warning" :label="'Recibido de: '+props.row.user1"> </q-badge><br>
@@ -1861,21 +1859,17 @@ this.$q.loading.hide()
 
         res.data.data.forEach(r=>{
           console.log("r: ",r)
-          if(r.mail.logs.length>1 && r.log_id===null && r.mail.logs[1].estado=='REMITIDO')
-          {
-             console.log("no muestra creado de un mail que ya tiene varios remitidos",r.mail.codigo)
-          }
-          else{
-                let cancelarremision = false
-              let padrelog = []
-              for(let log of r.mail.logs){
-                if(log.user_id2 ===this.$store.state.login.user.id && log.estado==="REMITIDO"){
+          let cancelarremision = false
+          let padrelog = []
+          for(let log of r.mail.logs){
+                if(log.user_id2 ===this.$store.state.login.user.id && log.estado==="REMITIDO")
+                {
                   padrelog.push(log.id)
                 }
-              }
-              console.log("padreids",padrelog," idmail",r.mail_id)
+          }
+          console.log("padreids",padrelog," idmail",r.mail_id)
               //let ultimoremitido= padrelog[padrelog.length-2]// solo muestra el ultimo
-              for(let padreid of padrelog){
+          for(let padreid of padrelog){
               if(padreid == r.id){
                     for(let log2 of r.mail.logs){
                       if(log2.user_id==this.$store.state.login.user.id && log2.estado != "EN PROCESO" && log2.log_id==padreid){
@@ -1883,17 +1877,24 @@ this.$q.loading.hide()
                         console.log("cancelar remision en true", r.id)
                           break;
                       }
-                  }
-                }
+                   }
               }
-          //console.log(r)
-          // const date1 = new Date()
-          // const date2 = date.extractDate(r.mail.fecha, 'YYYY-MM-DD')
-          // const dias = date.getDateDiff(date1, date2, 'days')
+          }
 
 
-          const dias=format(r.mail.fecha+' '+r.mail.hora,'es_ES')
-          this.mails.push({
+
+          if(padrelog.length > 1 &&
+          r.mail.logs.length>1 &&
+          r.log_id===null &&
+          r.mail.logs[1].estado=='REMITIDO' &&
+          r.user2.id ===this.$store.state.login.user.id)
+          {
+             console.log("no muestra creado de un mail que ya tiene varios remitidos",r.mail.codigo)
+          }
+          else
+          {
+            const dias=format(r.mail.fecha+' '+r.mail.hora,'es_ES')
+            this.mails.push({
             id:r.id,
             mail_id:r.mail_id,
             hora:r.hora,
@@ -1926,13 +1927,6 @@ this.$q.loading.hide()
           })
 
           }
-
-
-
-
-
-
-
         })
         this.loading=false
         this.$q.loading.hide()
