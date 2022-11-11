@@ -118,7 +118,7 @@
                 </div>
 
                 <q-btn color="positive" dense icon="add_circle_outline" label="REMITIR" @click="dialogremitir=true;mail=props.row; dest=[]" />
-                <q-btn @click="impresionextra(props.row.codigo)" v-if="props.row.estado!='ARCHIVADO'" class="q-px-lg" size="xs" label="Hoja de Ruta extra" icon="print" color="green-10" flat round/>
+                <q-btn @click="impresionextra(props.row)" v-if="props.row.estado!='ARCHIVADO'" class="q-px-lg" size="xs" label="Hoja de Ruta extra" icon="print" color="green-10" flat round/>
               </q-td>
           </template>
           <template v-else v-slot:body-cell-logs="props">
@@ -136,7 +136,7 @@
                 <q-btn @click="impresioncondependencias(props.row)" v-if="props.row.estado=='REMITIDO'" label="Hoja de Ruta" size="xs" icon="print" color="info" flat round/>
                     <!-- uso exclusivo para secretaria del alcalde despacho UNIT_ID=97 -->
                 <q-btn @click="impresioncondependencias(props.row)" v-if="props.row.estado=='ACEPTADO' &&  secretarios.includes($store.state.login.user.id)" size="xs" label="Hoja de Ruta" icon="print" color="info" flat round/>
-                <q-btn @click="impresionextra(props.row.codigo)" class="q-px-lg" v-if="props.row.estado!='ARCHIVADO'" label="Hoja de Ruta extra" size="xs" icon="print" color="green-10" flat round/>
+                <q-btn @click="impresionextra(props.row)" class="q-px-lg" v-if="props.row.estado!='ARCHIVADO'" label="Hoja de Ruta extra" size="xs" icon="print" color="green-10" flat round/>
 
                 <div v-if="props.row.estado=='EN PROCESO' || props.row.estado=='ACEPTADO'">
                 <q-badge v-if="props.row.accion!=''" color="warning" :label="'Recibido de: '+props.row.user1"> </q-badge><br>
@@ -1024,7 +1024,7 @@ export default {
       //   },700);
       // })
     },
-    impresionextra(codigo){
+    impresionextra(row){
        this.$q.dialog({
         title:'Ingrese numero de página?',
          message:'Numero de Pagina permitida (2, 3, 4)',
@@ -1039,6 +1039,8 @@ export default {
         this.$q.loading.show()
         let n = Number(data);
         var doc = new jsPDF()
+
+        var width = doc.internal.pageSize.getWidth()
         //INICIO CORRESPONDENCIA
         doc.setFont('times', 'bold');
         doc.setDrawColor(122);
@@ -1052,11 +1054,47 @@ export default {
 
         doc.setTextColor(0,0,0)
         //codigo en hoja de ruta extra
-        doc.roundedRect(75, 11, 35, 8, 1, 1, 'S')//hoja1 hoja de ruta
-        doc.setFontSize(14);
-        doc.text(codigo,77,17)
+        doc.roundedRect(6, 11, 175, 8, 1, 1, 'S')//hoja1 hoja de ruta
+        doc.setFontSize(5);
+        doc.setFont('times', 'bold');
+        doc.text("CODIGO",15,13.5)
+        doc.setFontSize(12);
+        doc.text(row.codigo,7,17)
+        doc.setFont('times', 'normal');
+        doc.setFontSize(5);
+        doc.setFont('times', 'bold');
+        doc.text("REMITENTE",60,13.5)
+        doc.setFontSize(8);
+        doc.setFont('times', 'normal');
+        doc.text(row.remitente.toString().substring(0,35),36,17)
+
+        doc.setFontSize(5);
+        doc.setFont('times', 'bold');
+        doc.text("REFERENCIA",width/2+28,13.5)
+
+        if(row.ref.toString().length > 100){
+            doc.setFontSize(4);
+            doc.setFont('times', 'normal');
+            let textLines=doc.splitTextToSize(row.ref.trim(),63)
+            doc.text(textLines,width/2,15.5,{maxWidth: 63});
+        }
+        else{
+            doc.setFontSize(6);
+            doc.setFont('times', 'normal');
+            let textLines=doc.splitTextToSize(row.ref.trim(),63)
+            doc.text(textLines,width/2,15.5,{maxWidth: 63});
+        }
+        doc.setFontSize(5);
+        doc.setFont('times', 'bold');
+        doc.text("FOJAS",170,13.5)
+        doc.setFontSize(8);
+         doc.setFont('times', 'normal');
+        doc.text(row.folio,170,17)
 
 
+
+
+        doc.setFont('times', 'bold');
 
        let con
        switch (n) {
@@ -1080,63 +1118,73 @@ export default {
           doc.setDrawColor(122)
           doc.setLineWidth(0.2)
 
+          let offsetx= 16;
+          let inicuadro1 = 18,saltoeny=117;
           doc.setFontSize(9)
-          doc.text('AGENDAR',21,25+i*68,{align:'center'})
+          doc.text('AGENDAR',21+offsetx,25+i*68,{align:'center'})
           doc.setFontSize(6)
-          doc.text(['ELABORE',' MEMORANDUM','DE INSTRUCCIÓN'],21,31+i*68,{align:'center'})
+          doc.text(['ELABORE',' MEMORANDUM','DE INSTRUCCIÓN'],21+offsetx,31+i*68,{align:'center'})
           doc.setFontSize(6)
-          doc.text(['PARA SU','ATENCIÓN','PREVIA VERIFICACIÓN'],21,39+i*68,{align:'center'})
+          doc.text(['PARA SU','ATENCIÓN','PREVIA VERIFICACIÓN'],21+offsetx,39+i*68,{align:'center'})
           doc.setFontSize(6)
-          doc.text(['PROCEDA',' SEGUN','CORRESPONDA'],21,48+i*68,{align:'center'})
+          doc.text(['PROCEDA',' SEGUN','CORRESPONDA'],21+offsetx,48+i*68,{align:'center'})
           doc.setFontSize(7)
-          doc.text(['ELABORE',' NOTA'],21,58+i*68,{align:'center'})
+          doc.text(['ELABORE',' NOTA'],21+offsetx,58+i*68,{align:'center'})
           doc.setFontSize(6)
-          doc.text(['ELABORE','CONVOCATORIA','Y CIRCULAR'],21,65+i*68,{align:'center'})
-          doc.text(['ELABORE','RESOLUCIÓN','EJECUTIVA'],21,74+i*68,{align:'center'})
+          doc.text(['ELABORE','CONVOCATORIA','Y CIRCULAR'],21+offsetx,65+i*68,{align:'center'})
+          doc.text(['ELABORE','RESOLUCIÓN','EJECUTIVA'],21+offsetx,74+i*68,{align:'center'})
           doc.setFontSize(9)
-          doc.text('ARCHIVAR',21,85+i*68,{align:'center'})
-          doc.roundedRect(35, 20+i*68, 5, 8.5, 1, 1, 'S')
-          doc.roundedRect(35, 28.5+i*68, 5, 8.5, 1, 1, 'S')
-          doc.roundedRect(35, 37+i*68, 5, 8.5, 1, 1, 'S')
-          doc.roundedRect(35, 45.5+i*68, 5, 8.5, 1, 1, 'S')
-          doc.roundedRect(35, 54+i*68, 5, 8.5, 1, 1, 'S')
-          doc.roundedRect(35, 62.5+i*68, 5, 8.5, 1, 1, 'S')
-          doc.roundedRect(35, 71+i*68, 5, 8.5, 1, 1, 'S')
-          doc.roundedRect(35, 79.5+i*68, 5, 8.5, 1, 1, 'S')
-          doc.line(8, 28.5+i*68, 40, 28.5+i*68)//line1
-          doc.line(8, 37+i*68, 40, 37+i*68)//line2
-          doc.line(8, 45.5+i*68, 40, 45.5+i*68)//line3
-          doc.line(8, 54+i*68, 40, 54+i*68)//line4
-          doc.line(8, 62.5+i*68, 40, 62.5+i*68)//line5
-          doc.line(8, 71+i*68, 40, 71+i*68)//line5
-          doc.line(8, 79.5+i*68, 40, 79.5+i*68)//line6
+          doc.text('ARCHIVAR',21+offsetx,85+i*68,{align:'center'})
 
-          doc.text('INSTRUCCIONES:',85,23+i*68,{align:'center'})
-          doc.text('_________________',85,23+i*68,{align:'center'})
-          doc.text('.................................................................................................................',40,28.5+i*68)
-          doc.text('.................................................................................................................',40,33+i*68)
-          doc.text('.................................................................................................................',40,37+i*68)
-          doc.text('.................................................................................................................',40,41.5+i*68)
-          doc.text('.................................................................................................................',40,45.5+i*68)
-          doc.text('.................................................................................................................',40,50+i*68)
-          doc.text('.................................................................................................................',40,54+i*68)
-          doc.text('.................................................................................................................',40,58.5+i*68)
-          doc.text('.................................................................................................................',40,62.5+i*68)
-          doc.text('.................................................................................................................',40,67+i*68)
-          doc.text('.................................................................................................................',40,71+i*68)
-          doc.text('.................................................................................................................',40,75.5+i*68)
-          doc.text('.................................................................................................................',40,79.5+i*68)
-          doc.text('.................................................................................................................',40,84+i*68)
-          doc.text('FIRMAR',115,87+i*68)
 
-          doc.roundedRect(130, 20+i*68, 72, 68, 1, 1, 'S')
-          doc.line(130, 24+i*68, 202, 24+i*68)//line1
-          doc.line(130, 84+i*68, 202, 84+i*68)//line2
+          doc.setFontSize(8)
+          doc.setFont('times', 'bold');
+          doc.text('REMISIÓN INTERNA:',inicuadro1-6,87+i*68,null, 90)
+          doc.line(inicuadro1+6, 20+i*68, inicuadro1+6, 88+i*68)//linevertical remitente interno
 
-          doc.text('DESTINATARIO '+con+':',132,23+i*68)
-          doc.text('SELLO DE RECEPCION '+con+':',150,83+i*68)
-          doc.text('FECHA:',132,87+i*68)
-          doc.text('HORA:',172,87+i*68)
+
+          doc.roundedRect(35+offsetx, 20+i*68, 5, 8.5, 1, 1, 'S')
+          doc.roundedRect(35+offsetx, 28.5+i*68, 5, 8.5, 1, 1, 'S')
+          doc.roundedRect(35+offsetx, 37+i*68, 5, 8.5, 1, 1, 'S')
+          doc.roundedRect(35+offsetx, 45.5+i*68, 5, 8.5, 1, 1, 'S')
+          doc.roundedRect(35+offsetx, 54+i*68, 5, 8.5, 1, 1, 'S')
+          doc.roundedRect(35+offsetx, 62.5+i*68, 5, 8.5, 1, 1, 'S')
+          doc.roundedRect(35+offsetx, 71+i*68, 5, 8.5, 1, 1, 'S')
+          doc.roundedRect(35+offsetx, 79.5+i*68, 5, 8.5, 1, 1, 'S')
+          doc.line(8+offsetx, 28.5+i*68, 40+offsetx, 28.5+i*68)//line1
+          doc.line(8+offsetx, 37+i*68, 40+offsetx, 37+i*68)//line2
+          doc.line(8+offsetx, 45.5+i*68, 40+offsetx, 45.5+i*68)//line3
+          doc.line(8+offsetx, 54+i*68, 40+offsetx, 54+i*68)//line4
+          doc.line(8+offsetx, 62.5+i*68, 40+offsetx, 62.5+i*68)//line5
+          doc.line(8+offsetx, 71+i*68, 40+offsetx, 71+i*68)//line5
+          doc.line(8+offsetx, 79.5+i*68, 40+offsetx, 79.5+i*68)//line6
+
+          doc.text('INSTRUCCIONES:',85+offsetx,23+i*68,{align:'center'})
+          doc.text('_________________',85+offsetx,23+i*68,{align:'center'})
+          doc.text('...............................................................................................................................',40+offsetx,28.5+i*68)
+          doc.text('...............................................................................................................................',40+offsetx,33+i*68)
+          doc.text('...............................................................................................................................',40+offsetx,37+i*68)
+          doc.text('...............................................................................................................................',40+offsetx,41.5+i*68)
+          doc.text('...............................................................................................................................',40+offsetx,45.5+i*68)
+          doc.text('...............................................................................................................................',40+offsetx,50+i*68)
+          doc.text('...............................................................................................................................',40+offsetx,54+i*68)
+          doc.text('...............................................................................................................................',40+offsetx,58.5+i*68)
+          doc.text('...............................................................................................................................',40+offsetx,62.5+i*68)
+          doc.text('...............................................................................................................................',40+offsetx,67+i*68)
+          doc.text('...............................................................................................................................',40+offsetx,71+i*68)
+          doc.text('...............................................................................................................................',40+offsetx,75.5+i*68)
+          doc.text('...............................................................................................................................',40+offsetx,79.5+i*68)
+          doc.text('...............................................................................................................................',40+offsetx,84+i*68)
+          doc.text('FIRMAR',115+offsetx,87+i*68)
+
+          doc.roundedRect(130+offsetx, 20+i*68, 55.8, 68, 1, 1, 'S')
+          doc.line(130+offsetx, 24+i*68, 202, 24+i*68)//line1
+          doc.line(130+offsetx, 84+i*68, 202, 84+i*68)//line2
+
+          doc.text('DESTINATARIO '+con+':',132+offsetx,23+i*68)
+          doc.text('SELLO DE RECEPCION '+con,140+offsetx,83+i*68)
+          doc.text('FECHA:',132+offsetx,87+i*68)
+          doc.text('HORA:',162+offsetx,87+i*68)
           con++
         }
 
@@ -1300,84 +1348,90 @@ this.$q.loading.hide()
           doc.setFont('times', 'bold');
           //instrucciones
         //  doc.roundedRect(8, 89+i*saltoeny, 194, 80, 2, 2, 'S')
-
+          let offsetx= 16;
           doc.setFontSize(8)
-          doc.text('AGENDAR',21,95+i*saltoeny,{align:'center'})
+          doc.text('AGENDAR',21+offsetx,95+i*saltoeny,{align:'center'})
           doc.setFontSize(7)
-          doc.text(['ELABORE',' MEMORANDUM','DE INSTRUCCIÓN'],21,102+i*saltoeny,{align:'center'})
+          doc.text(['ELABORE',' MEMORANDUM','DE INSTRUCCIÓN'],21+offsetx,102+i*saltoeny,{align:'center'})
           doc.setFontSize(6)
-          doc.text(['PARA SU','ATENCIÓN','PREVIA VERIFICACIÓN'],21,112+i*saltoeny,{align:'center'})
+          doc.text(['PARA SU','ATENCIÓN','PREVIA VERIFICACIÓN'],21+offsetx,112+i*saltoeny,{align:'center'})
           doc.setFontSize(7)
-          doc.text(['PROCEDA',' SEGUN','CORRESPONDA'],21,122+i*saltoeny,{align:'center'})
+          doc.text(['PROCEDA',' SEGUN','CORRESPONDA'],21+offsetx,122+i*saltoeny,{align:'center'})
           doc.setFontSize(7)
-          doc.text(['ELABORE',' NOTA'],21,134+i*saltoeny,{align:'center'})
+          doc.text(['ELABORE',' NOTA'],21+offsetx,134+i*saltoeny,{align:'center'})
           doc.setFontSize(7)
-          doc.text(['ELABORE','CONVOCATORIA','Y CIRCULAR'],21,142+i*saltoeny,{align:'center'})
+          doc.text(['ELABORE','CONVOCATORIA','Y CIRCULAR'],21+offsetx,142+i*saltoeny,{align:'center'})
           doc.setFontSize(7)
-          doc.text(['ELABORE','RESOLUCIÓN','EJECUTIVA'],21,152+i*saltoeny,{align:'center'})
+          doc.text(['ELABORE','RESOLUCIÓN','EJECUTIVA'],21+offsetx,152+i*saltoeny,{align:'center'})
           doc.setFontSize(8)
-          doc.text('ARCHIVAR',21,165+i*saltoeny,{align:'center'})
+          doc.text('ARCHIVAR',21+offsetx,165+i*saltoeny,{align:'center'})
 
-          doc.roundedRect(35, 89+i*saltoeny, 5, 10, 1, 1, 'S')
-          doc.line(8, 99+i*saltoeny, 40, 99+i*saltoeny)//line1
-          doc.roundedRect(35, 99+i*saltoeny, 5, 10, 1, 1, 'S')
-          doc.line(8, 109+i*saltoeny, 40, 109+i*saltoeny)//line2
-          doc.roundedRect(35, 109+i*saltoeny, 5, 10, 1, 1, 'S')
-          doc.line(8, 119+i*saltoeny, 40, 119+i*saltoeny)//line3
-          doc.roundedRect(35, 119+i*saltoeny, 5, 10, 1, 1, 'S')
-          doc.line(8, 129+i*saltoeny, 40, 129+i*saltoeny)//line4
-          doc.roundedRect(35, 129+i*saltoeny, 5, 10, 1, 1, 'S')
-          doc.line(8, 139+i*saltoeny, 40, 139+i*saltoeny)//line5
-          doc.roundedRect(35, 139+i*saltoeny, 5, 10, 1, 1, 'S')
-          doc.line(8, 149+i*saltoeny, 40, 149+i*saltoeny)//line5
-          doc.roundedRect(35, 149+i*saltoeny, 5, 10, 1, 1, 'S')
-          doc.line(8, 159+i*saltoeny, 40, 159+i*saltoeny)//line6
-          doc.roundedRect(35, 159+i*saltoeny, 5, 10, 1, 1, 'S')
+
+          doc.setFontSize(10)
+          doc.setFont('times', 'bold');
+          doc.text('REMISIÓN INTERNA:',inicuadro1-6,168+i*saltoeny,null, 90)
+          doc.line(inicuadro1+5, 89+i*saltoeny, inicuadro1+5, 169+i*saltoeny)//linevertical remitente interno
+
+          doc.roundedRect(35+offsetx, 89+i*saltoeny, 5, 10, 1, 1, 'S')
+          doc.line(7+offsetx, 99+i*saltoeny, 40+offsetx, 99+i*saltoeny)//line1
+          doc.roundedRect(35+offsetx, 99+i*saltoeny, 5, 10, 1, 1, 'S')
+          doc.line(7+offsetx, 109+i*saltoeny, 40+offsetx, 109+i*saltoeny)//line2
+          doc.roundedRect(35+offsetx, 109+i*saltoeny, 5, 10, 1, 1, 'S')
+          doc.line(7+offsetx, 119+i*saltoeny, 40+offsetx, 119+i*saltoeny)//line3
+          doc.roundedRect(35+offsetx, 119+i*saltoeny, 5, 10, 1, 1, 'S')
+          doc.line(7+offsetx, 129+i*saltoeny, 40+offsetx, 129+i*saltoeny)//line4
+          doc.roundedRect(35+offsetx, 129+i*saltoeny, 5, 10, 1, 1, 'S')
+          doc.line(7+offsetx, 139+i*saltoeny, 40+offsetx, 139+i*saltoeny)//line5
+          doc.roundedRect(35+offsetx, 139+i*saltoeny, 5, 10, 1, 1, 'S')
+          doc.line(7+offsetx, 149+i*saltoeny, 40+offsetx, 149+i*saltoeny)//line5
+          doc.roundedRect(35+offsetx, 149+i*saltoeny, 5, 10, 1, 1, 'S')
+          doc.line(7+offsetx, 159+i*saltoeny, 40+offsetx, 159+i*saltoeny)//line6
+          doc.roundedRect(35+offsetx, 159+i*saltoeny, 5, 10, 1, 1, 'S')
           doc.setFontSize(9)
-          doc.text('INSTRUCCIONES:',85,94+i*saltoeny,{align:'center'})
-          doc.text('_________________',85,94+i*saltoeny,{align:'center'})
+          doc.text('INSTRUCCIONES:',85+offsetx,94+i*saltoeny,{align:'center'})
+          doc.text('_________________',85+offsetx,94+i*saltoeny,{align:'center'})
           if (i==0){
 
             if(l.accion.toString()==='CREADO'){
-              doc.text(' ',41,98+i*saltoeny)
+              doc.text(' ',41+offsetx,98+i*saltoeny)
             }
             else
             {
-              doc.text(l.accion.toString().substring(0,45),41,98+i*saltoeny)
-              doc.text(l.accion.toString().substring(45,90),41,103+i*saltoeny)
-              doc.text(l.accion.toString().substring(90,135),41,108+i*saltoeny)
-              doc.text(l.accion.toString().substring(135,180),41,113+i*saltoeny)
-              doc.text(l.accion.toString().substring(180,225),41,118+i*saltoeny)
-              doc.text(l.accion.toString().substring(225,270),41,123+i*saltoeny)
-              doc.text(l.accion.toString().substring(270,315),41,128+i*saltoeny)
+              doc.text(l.accion.toString().substring(0,45),41+offsetx,98+i*saltoeny)
+              doc.text(l.accion.toString().substring(45,90),41+offsetx,103+i*saltoeny)
+              doc.text(l.accion.toString().substring(90,135),41+offsetx,108+i*saltoeny)
+              doc.text(l.accion.toString().substring(135,180),41+offsetx,113+i*saltoeny)
+              doc.text(l.accion.toString().substring(180,225),41+offsetx,118+i*saltoeny)
+              doc.text(l.accion.toString().substring(225,270),41+offsetx,123+i*saltoeny)
+              doc.text(l.accion.toString().substring(270,315),41+offsetx,128+i*saltoeny)
             }
             doc.setFont(undefined, 'bold');
           }
 
 
-          doc.text('.................................................................................................................',40,99+i*saltoeny)
-          doc.text('.................................................................................................................',40,104+i*saltoeny)
-          doc.text('.................................................................................................................',40,109+i*saltoeny)
-          doc.text('.................................................................................................................',40,114+i*saltoeny)
-          doc.text('.................................................................................................................',40,119+i*saltoeny)
-          doc.text('.................................................................................................................',40,124+i*saltoeny)
-          doc.text('.................................................................................................................',40,129+i*saltoeny)
-          doc.text('.................................................................................................................',40,134+i*saltoeny)
-          doc.text('.................................................................................................................',40,139+i*saltoeny)
-          doc.text('.................................................................................................................',40,144+i*saltoeny)
-          doc.text('.................................................................................................................',40,149+i*saltoeny)
-          doc.text('.................................................................................................................',40,154+i*saltoeny)
-          doc.text('.................................................................................................................',40,159+i*saltoeny)
-          doc.text('.................................................................................................................',40,164+i*saltoeny)
-          doc.text('FIRMAR',115,167+i*saltoeny)
+          doc.text('.................................................................................................................',40+offsetx,99+i*saltoeny)
+          doc.text('.................................................................................................................',40+offsetx,104+i*saltoeny)
+          doc.text('.................................................................................................................',40+offsetx,109+i*saltoeny)
+          doc.text('.................................................................................................................',40+offsetx,114+i*saltoeny)
+          doc.text('.................................................................................................................',40+offsetx,119+i*saltoeny)
+          doc.text('.................................................................................................................',40+offsetx,124+i*saltoeny)
+          doc.text('.................................................................................................................',40+offsetx,129+i*saltoeny)
+          doc.text('.................................................................................................................',40+offsetx,134+i*saltoeny)
+          doc.text('.................................................................................................................',40+offsetx,139+i*saltoeny)
+          doc.text('.................................................................................................................',40+offsetx,144+i*saltoeny)
+          doc.text('.................................................................................................................',40+offsetx,149+i*saltoeny)
+          doc.text('.................................................................................................................',40+offsetx,154+i*saltoeny)
+          doc.text('.................................................................................................................',40+offsetx,159+i*saltoeny)
+          doc.text('.................................................................................................................',40+offsetx,164+i*saltoeny)
+          doc.text('FIRMAR',115+offsetx,167+i*saltoeny)
 
-          doc.roundedRect(130, 89+i*saltoeny, 72, 80, 1, 1, 'S')
-          doc.line(130, 96+i*saltoeny, 202, 96+i*saltoeny)//line1
-          doc.line(130, 163+i*saltoeny, 202, 163+i*saltoeny)//line2
-          doc.text('DESTINATARIO '+con+':',132,94+i*saltoeny)
-          doc.text('SELLO DE RECEPCION '+con+':',150,162+i*saltoeny)
-          doc.text('FECHA:',132,167+i*saltoeny)
-          doc.text('HORA:',172,167+i*saltoeny)
+          doc.roundedRect(130+offsetx, 89+i*saltoeny, 55.8, 80, 1, 1, 'S')
+          doc.line(130+offsetx, 96+i*saltoeny, 202, 96+i*saltoeny)//line1
+          doc.line(130+offsetx, 163+i*saltoeny, 202, 163+i*saltoeny)//line2
+          doc.text('DESTINATARIO '+con+':',132+offsetx,94+i*saltoeny)
+          doc.text('SELLO DE RECEPCION '+con,145+offsetx,162+i*saltoeny)
+          doc.text('FECHA:',132+offsetx,167+i*saltoeny)
+          doc.text('HORA:',164+offsetx,167+i*saltoeny)
           con++
         }
 
@@ -1532,84 +1586,90 @@ this.$q.loading.hide()
           doc.setFont('times', 'bold');
           //instrucciones
         //  doc.roundedRect(8, 89+i*saltoeny, 194, 80, 2, 2, 'S')
-
+          let offsetx= 16;
           doc.setFontSize(8)
-          doc.text('AGENDAR',21,95+i*saltoeny,{align:'center'})
+          doc.text('AGENDAR',21+offsetx,95+i*saltoeny,{align:'center'})
           doc.setFontSize(7)
-          doc.text(['ELABORE',' MEMORANDUM','DE INSTRUCCIÓN'],21,102+i*saltoeny,{align:'center'})
+          doc.text(['ELABORE',' MEMORANDUM','DE INSTRUCCIÓN'],21+offsetx,102+i*saltoeny,{align:'center'})
           doc.setFontSize(6)
-          doc.text(['PARA SU','ATENCIÓN','PREVIA VERIFICACIÓN'],21,112+i*saltoeny,{align:'center'})
+          doc.text(['PARA SU','ATENCIÓN','PREVIA VERIFICACIÓN'],21+offsetx,112+i*saltoeny,{align:'center'})
           doc.setFontSize(7)
-          doc.text(['PROCEDA',' SEGUN','CORRESPONDA'],21,122+i*saltoeny,{align:'center'})
+          doc.text(['PROCEDA',' SEGUN','CORRESPONDA'],21+offsetx,122+i*saltoeny,{align:'center'})
           doc.setFontSize(7)
-          doc.text(['ELABORE',' NOTA'],21,134+i*saltoeny,{align:'center'})
+          doc.text(['ELABORE',' NOTA'],21+offsetx,134+i*saltoeny,{align:'center'})
           doc.setFontSize(7)
-          doc.text(['ELABORE','CONVOCATORIA','Y CIRCULAR'],21,142+i*saltoeny,{align:'center'})
+          doc.text(['ELABORE','CONVOCATORIA','Y CIRCULAR'],21+offsetx,142+i*saltoeny,{align:'center'})
           doc.setFontSize(7)
-          doc.text(['ELABORE','RESOLUCIÓN','EJECUTIVA'],21,152+i*saltoeny,{align:'center'})
+          doc.text(['ELABORE','RESOLUCIÓN','EJECUTIVA'],21+offsetx,152+i*saltoeny,{align:'center'})
           doc.setFontSize(8)
-          doc.text('ARCHIVAR',21,165+i*saltoeny,{align:'center'})
+          doc.text('ARCHIVAR',21+offsetx,165+i*saltoeny,{align:'center'})
 
-          doc.roundedRect(35, 89+i*saltoeny, 5, 10, 1, 1, 'S')
-          doc.line(8, 99+i*saltoeny, 40, 99+i*saltoeny)//line1
-          doc.roundedRect(35, 99+i*saltoeny, 5, 10, 1, 1, 'S')
-          doc.line(8, 109+i*saltoeny, 40, 109+i*saltoeny)//line2
-          doc.roundedRect(35, 109+i*saltoeny, 5, 10, 1, 1, 'S')
-          doc.line(8, 119+i*saltoeny, 40, 119+i*saltoeny)//line3
-          doc.roundedRect(35, 119+i*saltoeny, 5, 10, 1, 1, 'S')
-          doc.line(8, 129+i*saltoeny, 40, 129+i*saltoeny)//line4
-          doc.roundedRect(35, 129+i*saltoeny, 5, 10, 1, 1, 'S')
-          doc.line(8, 139+i*saltoeny, 40, 139+i*saltoeny)//line5
-          doc.roundedRect(35, 139+i*saltoeny, 5, 10, 1, 1, 'S')
-          doc.line(8, 149+i*saltoeny, 40, 149+i*saltoeny)//line5
-          doc.roundedRect(35, 149+i*saltoeny, 5, 10, 1, 1, 'S')
-          doc.line(8, 159+i*saltoeny, 40, 159+i*saltoeny)//line6
-          doc.roundedRect(35, 159+i*saltoeny, 5, 10, 1, 1, 'S')
+
+          doc.setFontSize(10)
+          doc.setFont('times', 'bold');
+          doc.text('REMISIÓN INTERNA:',inicuadro1-6,168+i*saltoeny,null, 90)
+          doc.line(inicuadro1+5, 89+i*saltoeny, inicuadro1+5, 169+i*saltoeny)//linevertical remitente interno
+
+          doc.roundedRect(35+offsetx, 89+i*saltoeny, 5, 10, 1, 1, 'S')
+          doc.line(7+offsetx, 99+i*saltoeny, 40+offsetx, 99+i*saltoeny)//line1
+          doc.roundedRect(35+offsetx, 99+i*saltoeny, 5, 10, 1, 1, 'S')
+          doc.line(7+offsetx, 109+i*saltoeny, 40+offsetx, 109+i*saltoeny)//line2
+          doc.roundedRect(35+offsetx, 109+i*saltoeny, 5, 10, 1, 1, 'S')
+          doc.line(7+offsetx, 119+i*saltoeny, 40+offsetx, 119+i*saltoeny)//line3
+          doc.roundedRect(35+offsetx, 119+i*saltoeny, 5, 10, 1, 1, 'S')
+          doc.line(7+offsetx, 129+i*saltoeny, 40+offsetx, 129+i*saltoeny)//line4
+          doc.roundedRect(35+offsetx, 129+i*saltoeny, 5, 10, 1, 1, 'S')
+          doc.line(7+offsetx, 139+i*saltoeny, 40+offsetx, 139+i*saltoeny)//line5
+          doc.roundedRect(35+offsetx, 139+i*saltoeny, 5, 10, 1, 1, 'S')
+          doc.line(7+offsetx, 149+i*saltoeny, 40+offsetx, 149+i*saltoeny)//line5
+          doc.roundedRect(35+offsetx, 149+i*saltoeny, 5, 10, 1, 1, 'S')
+          doc.line(7+offsetx, 159+i*saltoeny, 40+offsetx, 159+i*saltoeny)//line6
+          doc.roundedRect(35+offsetx, 159+i*saltoeny, 5, 10, 1, 1, 'S')
           doc.setFontSize(9)
-          doc.text('INSTRUCCIONES:',85,94+i*saltoeny,{align:'center'})
-          doc.text('_________________',85,94+i*saltoeny,{align:'center'})
+          doc.text('INSTRUCCIONES:',85+offsetx,94+i*saltoeny,{align:'center'})
+          doc.text('_________________',85+offsetx,94+i*saltoeny,{align:'center'})
           if (i==0){
 
             if(l.accion.toString()==='CREADO'){
-              doc.text(' ',41,98+i*saltoeny)
+              doc.text(' ',41+offsetx,98+i*saltoeny)
             }
             else
             {
-              doc.text(l.accion.toString().substring(0,45),41,98+i*saltoeny)
-              doc.text(l.accion.toString().substring(45,90),41,103+i*saltoeny)
-              doc.text(l.accion.toString().substring(90,135),41,108+i*saltoeny)
-              doc.text(l.accion.toString().substring(135,180),41,113+i*saltoeny)
-              doc.text(l.accion.toString().substring(180,225),41,118+i*saltoeny)
-              doc.text(l.accion.toString().substring(225,270),41,123+i*saltoeny)
-              doc.text(l.accion.toString().substring(270,315),41,128+i*saltoeny)
+              doc.text(l.accion.toString().substring(0,45),41+offsetx,98+i*saltoeny)
+              doc.text(l.accion.toString().substring(45,90),41+offsetx,103+i*saltoeny)
+              doc.text(l.accion.toString().substring(90,135),41+offsetx,108+i*saltoeny)
+              doc.text(l.accion.toString().substring(135,180),41+offsetx,113+i*saltoeny)
+              doc.text(l.accion.toString().substring(180,225),41+offsetx,118+i*saltoeny)
+              doc.text(l.accion.toString().substring(225,270),41+offsetx,123+i*saltoeny)
+              doc.text(l.accion.toString().substring(270,315),41+offsetx,128+i*saltoeny)
             }
             doc.setFont(undefined, 'bold');
           }
 
 
-          doc.text('.................................................................................................................',40,99+i*saltoeny)
-          doc.text('.................................................................................................................',40,104+i*saltoeny)
-          doc.text('.................................................................................................................',40,109+i*saltoeny)
-          doc.text('.................................................................................................................',40,114+i*saltoeny)
-          doc.text('.................................................................................................................',40,119+i*saltoeny)
-          doc.text('.................................................................................................................',40,124+i*saltoeny)
-          doc.text('.................................................................................................................',40,129+i*saltoeny)
-          doc.text('.................................................................................................................',40,134+i*saltoeny)
-          doc.text('.................................................................................................................',40,139+i*saltoeny)
-          doc.text('.................................................................................................................',40,144+i*saltoeny)
-          doc.text('.................................................................................................................',40,149+i*saltoeny)
-          doc.text('.................................................................................................................',40,154+i*saltoeny)
-          doc.text('.................................................................................................................',40,159+i*saltoeny)
-          doc.text('.................................................................................................................',40,164+i*saltoeny)
-          doc.text('FIRMAR',115,167+i*saltoeny)
+          doc.text('.................................................................................................................',40+offsetx,99+i*saltoeny)
+          doc.text('.................................................................................................................',40+offsetx,104+i*saltoeny)
+          doc.text('.................................................................................................................',40+offsetx,109+i*saltoeny)
+          doc.text('.................................................................................................................',40+offsetx,114+i*saltoeny)
+          doc.text('.................................................................................................................',40+offsetx,119+i*saltoeny)
+          doc.text('.................................................................................................................',40+offsetx,124+i*saltoeny)
+          doc.text('.................................................................................................................',40+offsetx,129+i*saltoeny)
+          doc.text('.................................................................................................................',40+offsetx,134+i*saltoeny)
+          doc.text('.................................................................................................................',40+offsetx,139+i*saltoeny)
+          doc.text('.................................................................................................................',40+offsetx,144+i*saltoeny)
+          doc.text('.................................................................................................................',40+offsetx,149+i*saltoeny)
+          doc.text('.................................................................................................................',40+offsetx,154+i*saltoeny)
+          doc.text('.................................................................................................................',40+offsetx,159+i*saltoeny)
+          doc.text('.................................................................................................................',40+offsetx,164+i*saltoeny)
+          doc.text('FIRMAR',115+offsetx,167+i*saltoeny)
 
-          doc.roundedRect(130, 89+i*saltoeny, 72, 80, 1, 1, 'S')
-          doc.line(130, 96+i*saltoeny, 202, 96+i*saltoeny)//line1
-          doc.line(130, 163+i*saltoeny, 202, 163+i*saltoeny)//line2
-          doc.text('DESTINATARIO '+con+':',132,94+i*saltoeny)
-          doc.text('SELLO DE RECEPCION '+con+':',150,162+i*saltoeny)
-          doc.text('FECHA:',132,167+i*saltoeny)
-          doc.text('HORA:',172,167+i*saltoeny)
+          doc.roundedRect(130+offsetx, 89+i*saltoeny, 55.8, 80, 1, 1, 'S')
+          doc.line(130+offsetx, 96+i*saltoeny, 202, 96+i*saltoeny)//line1
+          doc.line(130+offsetx, 163+i*saltoeny, 202, 163+i*saltoeny)//line2
+          doc.text('DESTINATARIO '+con+':',132+offsetx,94+i*saltoeny)
+          doc.text('SELLO DE RECEPCION '+con,145+offsetx,162+i*saltoeny)
+          doc.text('FECHA:',132+offsetx,167+i*saltoeny)
+          doc.text('HORA:',164+offsetx,167+i*saltoeny)
           con++
         }
 
