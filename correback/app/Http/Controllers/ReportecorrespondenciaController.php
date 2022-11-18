@@ -125,6 +125,18 @@ class ReportecorrespondenciaController extends Controller
                 ->get();
         return $recibidos;
     }
+    public function correspondenciapendiente(Request $request){
+        $pendientes = Log::where('user_id2',$request->user()->id)
+                ->whereIN('estado',['ACEPTADO','EN PROCESO'])
+                ->with(['mail','user'=> function ($query) {
+                         $query->with('unit');
+                     },'unit','user2'])
+                 ->orderBy('estado','asc')
+                 ->orderBy('updated_at','desc')
+                //->orderByRaw("estado ASC, updated_at DESC")
+                ->get();
+        return $pendientes;
+    }
 }
 
 

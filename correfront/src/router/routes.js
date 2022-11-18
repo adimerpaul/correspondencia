@@ -10,6 +10,7 @@ import MainLayoutPublico from "layouts/MainLayoutPublico";
 import Reportecorrespondencia from "pages/Reportecorrespondencia";
 import Reportecorrespondenciaremitida from "pages/Reportecorrespondenciaremitida";
 import Reportecorrespondenciarecibida from "pages/Reportecorrespondenciarecibida";
+import Reportecorrespondenciapendiente from "pages/Reportecorrespondenciapendiente";
 
 const routes = [
   {
@@ -33,6 +34,7 @@ const routes = [
       { path: '/reportecorrespondencia', component: Reportecorrespondencia,meta: {requiresAuth: true,} },
       { path: '/reportecorrespondenciaremitida', component: Reportecorrespondenciaremitida,meta: {requiresAuth: true,} },
       { path: '/reportecorrespondenciarecibida', component: Reportecorrespondenciarecibida,meta: {requiresAuth: true,} },
+      { path: '/reportecorrespondenciapendiente', component: Reportecorrespondenciapendiente,meta: {requiresAuth: true,} },
     ]
   },
   {

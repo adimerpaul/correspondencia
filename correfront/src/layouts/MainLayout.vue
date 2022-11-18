@@ -160,6 +160,17 @@
             caption="Reporte de correspondencia"
             v-if="$store.state.login.booldesignacion"
             >
+          <q-item dense v-if="$store.state.login.boolseguimiento" class="q-pl-xl" clickable to="/reportecorrespondenciapendiente">
+            <q-item-section avatar>
+              <q-icon name="print" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Reporte Correpondencia PENDIENTE</q-item-label>
+              <q-item-label caption>
+                correspondencia Pendiente
+              </q-item-label>
+            </q-item-section>
+          </q-item>
           <q-item dense v-if="$store.state.login.boolseguimiento" class="q-pl-xl" clickable to="/reportecorrespondencia">
             <q-item-section avatar>
               <q-icon name="print" />
