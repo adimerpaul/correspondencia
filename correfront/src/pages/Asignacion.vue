@@ -360,7 +360,7 @@
                 <q-list dense bordered padding class="rounded-borders">
                   <q-item clickable v-ripple v-for="(row,index) in dest" :key="index">
                     <q-item-section class="top" no-wrap>
-                      <q-item-label lines="1" >
+                          <q-item-label lines="1" >
                             <span class="text-weight-medium"> {{index+1}} {{row.listuser.name}}</span>
                           </q-item-label>
                           <q-item-label lines="1" class="q-mt-xs text-weight-bold text-primary text-uppercase">
@@ -375,7 +375,7 @@
                             filled
                             clearable
                             autogrow
-                            label="INSTRUCCION / OBSERVACION"
+                            label="INSTRUCCION / PROVEIDO"
                             required
                           />
                     </q-item-section>
@@ -388,6 +388,17 @@
                           </q-select>
 
                           </div>
+                    </q-item-section>
+                    <q-item-section>
+                          <q-input
+                          dense
+                          style="text-transform: uppercase"
+                            v-model="row.observacion"
+                            filled
+                            clearable
+                            autogrow
+                            label="OBSERVACIÓN EXTRA"
+                          />
                     </q-item-section>
                     <q-item-section style="max-width: 150px">
                         <div class="text-grey-8 q-gutter-xs">
@@ -573,7 +584,8 @@ export default {
           listuser:this.usuario,
           instruccion: '',
           tipodoc:'',
-          nfojas:''
+          nfojas:'',
+          observacion:''
           });
           console.log(this.dest)
     },

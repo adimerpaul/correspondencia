@@ -6,6 +6,7 @@ use App\Models\Asigna;
 use App\Models\Log;
 use App\Models\Mail;
 use App\Models\User;
+use FontLib\Table\Type\cmap;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
@@ -33,7 +34,12 @@ class MailController extends Controller
     }
     public function todos(Request $request)
     {
-        return Mail::with('logs')->where('codigo','like','%'.$request->input('codigo').'%')
+        $mailIds = Log::select('mail_id')->where('observacion','like','%'.$request->codigo.'%')
+        ->whereNull('deleted_at')->get();
+
+        return Mail::with('logs')
+        ->whereIN('id',$mailIds)
+        ->orwhere('codigo','like','%'.$request->input('codigo').'%')
         ->orwhere('citecontrol','like','%'.$request->input('codigo').'%')
         ->orwhere('remitente','like','%'.$request->input('codigo').'%')
         ->orwhere('ref','like','%'.$request->input('codigo').'%')

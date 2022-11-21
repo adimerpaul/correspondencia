@@ -37,7 +37,6 @@ class LogController extends Controller
      */
     public function store(Request $request)
     {
-
         $loga=Log::where('id',$request->log_id)->with('mail')->firstOrFail();
         $loga->estado='REMITIDO';
         $loga->save();
@@ -51,6 +50,7 @@ class LogController extends Controller
         $log->unit_id=$list['listuser']['unit_id'];
         $log->tipodoc=strtoupper($list['tipodoc']);
         $log->nfojas=$list['nfojas'];
+        $log->observacion=$list['observacion'];
 //        $log->remitente=$request->user()->name;
 //        $log->destinatario=$list['name'];
         $log->accion=strtoupper($list['instruccion']);

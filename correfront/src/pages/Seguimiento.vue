@@ -5,7 +5,7 @@
       <q-form @submit.prevent="buscar">
         <div class="row">
           <div class="col-12 col-md-10 q-pa-xs">
-            <q-select use-input label="Ingresar cite/codigo" v-model="codigo" :options="mails" outlined @filter="filterFn"/>
+            <q-select use-input label="Ingresar cite/codigo/Referencia/Observación extra" v-model="codigo" :options="mails" outlined @filter="filterFn"/>
           </div>
           <div class="col-12 col-md-2 q-pa-xs flex flex-center">
             <q-btn label="Buscar" color="primary" icon="send" type="submit" />
@@ -36,7 +36,7 @@
       <q-banner dense class="bg-amber text-white">
         Datos de historial
       </q-banner>
-      <q-table dense :columns="columns" :rows="email.logs">
+      <q-table dense :columns="columns" :rows="email.logs" :rows-per-page-options="[10,100,150,200,0]">
         <template v-slot:body-cell-de="props">
           <q-td :props="props">
             <div class="text-caption"  v-if="props.row.user!=undefined">{{ props.row.user.name}}</div >
@@ -61,6 +61,11 @@
             <div class="row">
               <div class="col-12">
                 <q-input dense autogrow disable outlined type="textarea" :model-value="props.row.accion+' '+props.row.archivado" />
+              </div>
+            </div>
+            <div class="row" v-if="props.row.observacion">
+              <div class="col-12">
+                <q-input dense autogrow disable outlined type="textarea" :model-value="props.row.observacion" label="Observación extra"/>
               </div>
             </div>
           </q-td>
@@ -102,11 +107,11 @@ export default {
   data(){
     return{
       columns:[
-        {label:'de',field:'de',name:'de',align:'left'},
-        {label:'a',field:'a',name:'a',align:'left'},
-        {label:'unidad',field:'unidad',name:'unidad',align:'left'},
-        {label:'accion',field:'accion',name:'accion'},
-        {label:'estado',field:'estado',name:'estado'},
+        {label:'De',field:'de',name:'de',align:'left'},
+        {label:'A',field:'a',name:'a',align:'left'},
+        {label:'Unidad',field:'unidad',name:'unidad',align:'left'},
+        {label:'Acción',field:'accion',name:'accion'},
+        {label:'Estado',field:'estado',name:'estado'},
       ],
       url:process.env.API,
       codigo:{},
@@ -163,8 +168,8 @@ export default {
       this.mails.push({label:''})
 
       res.data.forEach(r=>{
-        // console.log(r)
-        r.label=r.codigo+' '+r.citecontrol+' '+r.remitente+' '+r.ref
+         console.log(r)
+        r.label=r.codigo+' '+r.citecontrol+' '+r.remitente+' '+r.ref+' '
         this.mails.push(r)
         // this.mails2.push(r)
       })

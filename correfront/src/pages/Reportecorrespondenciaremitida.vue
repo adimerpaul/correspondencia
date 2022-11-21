@@ -43,15 +43,17 @@
           <div class="">A: {{props.row.user2.name}} | <q-badge color="blue">
              <div class=""> {{props.row.user2.unit.nombre}}</div>
           </q-badge></div>
-          <div class="">REF: {{props.row.mail.ref}}</div>
+          <p style="width:600px">REF: {{props.row.mail.ref.substr(0,100)}}</p>
+
           <div class="">
-            <q-badge v-if="props.row.tipodoc!=null" :color="props.row.tipodoc==='NOTAS'?'teal-5':'amber-8'">Tipo: {{props.row.tipodoc}}</q-badge>
-            <q-badge v-if="props.row.nfojas!=null" color="green">Num Fojas: {{props.row.nfojas}}</q-badge></div>
+            <q-badge v-if="props.row.tipodoc!=null || props.row.tipodoc!='' || props.row.tipodoc!=undefined" :color="props.row.tipodoc==='NOTAS'?'teal-5':'amber-8'">Tipo: {{props.row.tipodoc}}</q-badge>
+            <q-badge v-if="props.row.nfojas!=null" color="green">Num Fojas: {{props.row.nfojas}}</q-badge>
+          </div>
         </q-td>
       </template>
       <template v-slot:body-cell-sello="props" >
         <q-td auto-width :props="props">
-            <!-- <q-btn @click="impresion" icon="print" color="info" /> -->
+            <q-btn @click="dialogimpresionindividual=true" icon="print" color="info" />
         </q-td>
       </template>
       <template v-slot:top-right>
@@ -64,6 +66,57 @@
         </q-input>
       </template>
     </q-table>
+
+    <q-dialog v-model="dialogimpresionindividual">
+          <q-card style="width: 300px;min-width: 40vh">
+            <q-card-section>
+              <div class="text-h6"> <q-icon name="print"/>ELIJA LA POSICION PARA IMPRIMIR</div>
+            </q-card-section>
+            <q-card-section class="q-pt-none">
+               <q-list bordered separator>
+                  <q-item clickable v-ripple>
+                    <q-item-section>
+                      <q-item-label class="relative-position container bg-grey-3 text-black flex flex-center">1</q-item-label>
+                    </q-item-section>
+                  </q-item>
+                  <q-item clickable v-ripple>
+                    <q-item-section>
+                      <q-item-label class="relative-position container bg-grey-3 text-black flex flex-center">2</q-item-label>
+                    </q-item-section>
+                  </q-item>
+                  <q-item clickable v-ripple >
+                    <q-item-section>
+                      <q-item-label class="relative-position container bg-grey-3 text-black flex flex-center">3</q-item-label>
+                    </q-item-section>
+                  </q-item>
+                  <q-item clickable v-ripple >
+                    <q-item-section>
+                      <q-item-label class="relative-position container bg-grey-3 text-black flex flex-center">4</q-item-label>
+                    </q-item-section>
+                  </q-item>
+                  <q-item clickable v-ripple >
+                    <q-item-section>
+                      <q-item-label class="relative-position container bg-grey-3 text-black flex flex-center">5</q-item-label>
+                    </q-item-section>
+                  </q-item>
+                  <q-item clickable v-ripple>
+                    <q-item-section>
+                      <q-item-label class="relative-position container bg-grey-3 text-black flex flex-center">6</q-item-label>
+                    </q-item-section>
+                  </q-item>
+                  <q-item clickable v-ripple>
+                    <q-item-section>
+                      <q-item-label class="relative-position container bg-grey-3 text-black flex flex-center">7</q-item-label>
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+            </q-card-section>
+            <q-card-section align="right">
+              <q-btn flat label="Cancelar" color="primary" icon="delete" v-close-popup />
+            </q-card-section>
+          </q-card>
+    </q-dialog>
+
   </div>
 </div>
 </q-page>
@@ -86,8 +139,9 @@ export default {
         {name:'sello',label:'Impresión individual',field:'sello'},
       ],
       datos:[],
-      optionstipodocs:['TODO','NOTAS','MEMORANDUM'],
+      optionstipodocs:['TODO','NOTAS','MEMORANDUM','HOJA DE RUTA'],
       tipodoc:'TODO',
+      dialogimpresionindividual:false,
     }
   },
   created() {
@@ -147,13 +201,13 @@ export default {
         cont++
         doc.roundedRect(8, 20+i*34, 194, 34, 0, 0, 'S')
         doc.line(40, 20+i*34, 40, 54+i*34)//line1
-        doc.line(170, 20+i*34, 170, 54+i*34)//line1
+        doc.line(160, 20+i*34, 160, 54+i*34)//line1
         doc.setFontSize(10);
         doc.setFont('times', 'normal');
-        doc.text(d.mail.fecha.toString(),23,25+i*34,'center')
-        doc.text(d.mail.hora.toString(),23,30+i*34,'center')
+        doc.text(d.fecha.toString(),23,25+i*34,'center')
+        doc.text(d.hora.toString(),23,30+i*34,'center')
         doc.setFont('times', 'bold');
-        doc.setFontSize(22);
+        doc.setFontSize(15);
         doc.text(d.mail.citecontrol.toString(),23,38+i*34,'center')
 
         doc.setFontSize(10);
@@ -162,14 +216,18 @@ export default {
         doc.text('DE: '+d.user.name,41,25+i*34,'left')
         doc.text('A: '+d.user2.name+' | ('+d.user2.unit.codigo+')',41,30+i*34,'left')
         doc.setFont('times', 'normal');
-        doc.text('REF: '+d.mail.ref.substr(0,50),41,35+i*34,'left')
-        doc.text(d.mail.ref.substr(50,50),41,40+i*34,'left')
-        doc.text(d.mail.ref.substr(100,50),41,45+i*34,'left')
-        doc.text(d.mail.ref.substr(150,50),41,50+i*34,'left')
-
-        if(d.tipodoc!=null){
-          doc.text('TIPO: '+d.tipodoc,130,25+i*34,'left')
+        doc.setFontSize(8);
+        doc.text('REF: '+d.mail.ref.substr(0,60),41,35+i*34,'left')
+        doc.text(d.mail.ref.substr(60,60),41,38+i*34,'left')
+        doc.text(d.mail.ref.substr(120,60),41,41+i*34,'left')
+        doc.text(d.mail.ref.substr(180,60),41,44+i*34,'left')
+        doc.text(d.mail.ref.substr(240,60),41,47+i*34,'left')
+        doc.setFontSize(9);
+         doc.setFont('times', 'bold');
+        if(d.tipodoc!=null || d.tipodoc!=''){
+          doc.text('TIPO: '+d.tipodoc,41,52+i*34,'left')
         }
+         doc.setFont('times', 'normal');
         doc.setFontSize(10);
 
 
@@ -202,6 +260,9 @@ export default {
       this.$q.loading.hide()
 
     },
+    impresionporhoja(n){
+      consoloe.log(n)
+    }
   }
 }
 </script>

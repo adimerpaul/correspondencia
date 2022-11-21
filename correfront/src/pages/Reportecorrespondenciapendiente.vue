@@ -5,13 +5,8 @@
 <!--    <iframe id="docpdf" src="" frameborder="0" style="width: 100%;height: 100vh"></iframe>-->
     <q-form @submit.prevent="consulta">
     <div class="row">
-      <div class="col-4">
-        <q-input dense outlined v-model="fecha1" type="date" label="fecha inicio"/>
-      </div>
-      <div class="col-4">
-        <q-input dense outlined v-model="fecha2" type="date" label="fecha fin"/>
-      </div>
-      <div class="col-4 flex ">
+
+      <div class="col-12 flex ">
         <!--    <q-input dense outlined v-model="fecha1" type="date"/>-->
         <q-btn type="submit" class="full-width" label="consulta" color="primary" icon="search"  />
       </div>
@@ -145,6 +140,8 @@ export default {
       doc.roundedRect(5, 10, 200, 282, 2, 2, 'S')//principal
       doc.roundedRect(183, 11, 20, 8, 1, 1, 'S')//hoja1 hoja de ruta
       doc.setFontSize(10);
+      console.log('store',this.$store.state.login.user)
+      doc.text(this.$store.state.login.user.name+' - '+this.$store.state.login.user.unit.nombre,8,8)
       doc.text('CITE/CODIGO ',12,17)
       doc.text('CORRESPONDENCIA PENDIENTE',52,17)
       doc.setTextColor(158,158,158)
